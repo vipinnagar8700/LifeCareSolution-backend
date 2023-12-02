@@ -1,0 +1,613 @@
+{
+	"info": {
+		"_postman_id": "a8bb0b7d-bd4a-448a-99a0-fc38933e70ea",
+		"name": "LifeCareSolutions",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "26325448"
+	},
+	"item": [
+		{
+			"name": "editUser",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/editUser/6543c3be3bac32ff5a52b97d"
+			},
+			"response": []
+		},
+		{
+			"name": "editSupplier",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/editSupplier/6543c3be3bac32ff5a52b97d"
+			},
+			"response": []
+		},
+		{
+			"name": "AllProducts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/AllProducts"
+			},
+			"response": []
+		},
+		{
+			"name": "AllSupplier",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/AllProducts"
+			},
+			"response": []
+		},
+		{
+			"name": "chats",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/user/654a4eb79e39410edd12a663/chats"
+			},
+			"response": []
+		},
+		{
+			"name": "AllParticipants",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/apiAllParticipants"
+			},
+			"response": []
+		},
+		{
+			"name": "editPharmacy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/editPharmacy/6543c3be3bac32ff5a52b97d"
+			},
+			"response": []
+		},
+		{
+			"name": "editDoctor",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/editDoctor/654a4eee9e39410edd12a670"
+			},
+			"response": []
+		},
+		{
+			"name": "editProduct",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/editProduct/654de42811921448708ed6d6"
+			},
+			"response": []
+		},
+		{
+			"name": "AllProducts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/AllProducts"
+			},
+			"response": []
+		},
+		{
+			"name": "editBlog",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/editBlog/654671085bd971dbeac9f611"
+			},
+			"response": []
+		},
+		{
+			"name": "deleteBlogCategory",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:3000/api/deleteBlogCategory/65467450726e9c7531c1ce2a"
+			},
+			"response": []
+		},
+		{
+			"name": "deleteSupplier",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:3000/api/deleteSupplier/65467450726e9c7531c1ce2a"
+			},
+			"response": []
+		},
+		{
+			"name": "deleteBlog",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:3000/api/deleteBlog/65467450726e9c7531c1ce2a"
+			},
+			"response": []
+		},
+		{
+			"name": "deleteUser",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:3000/api/deleteUser/6543c88ea361b9a8ba70ef86"
+			},
+			"response": []
+		},
+		{
+			"name": "deleteFavourate",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:3000/api/deleteFavourate/654cc55ff76cc2d049535096"
+			},
+			"response": []
+		},
+		{
+			"name": "AllUsers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/AllUsers"
+			},
+			"response": []
+		},
+		{
+			"name": "AllBlogs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/AllBlogs"
+			},
+			"response": []
+		},
+		{
+			"name": "AllAppointments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3001/api/AllAppointments"
+			},
+			"response": []
+		},
+		{
+			"name": "doctor_appointments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3001/api/doctor_appointments/654a4eee9e39410edd12a670"
+			},
+			"response": []
+		},
+		{
+			"name": "Patient_appointments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3001/api/Patient_appointments/6543c87ba361b9a8ba70ef82"
+			},
+			"response": []
+		},
+		{
+			"name": "AllDoctors",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/AllDoctors"
+			},
+			"response": []
+		},
+		{
+			"name": "Allpharmacy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/Allpharmacy"
+			},
+			"response": []
+		},
+		{
+			"name": "AllCategory",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/AllCategory"
+			},
+			"response": []
+		},
+		{
+			"name": "AllFavourates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/api/AllFavourates"
+			},
+			"response": []
+		},
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"pharmacy@gmail.com\",\r\n    \"password\":\"pharmacy@gmail.com\",\r\n    \"mobile\":\"1242141212\",\r\n    \"role\":\"pharmacy\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/register"
+			},
+			"response": []
+		},
+		{
+			"name": "AddProducts",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"pharmacy@gmail.com\",\r\n    \"password\":\"pharmacy@gmail.com\",\r\n    \"mobile\":\"1242141212\",\r\n    \"role\":\"pharmacy\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/AddProducts"
+			},
+			"response": []
+		},
+		{
+			"name": "AddProductCategorys",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"pharmacy@gmail.com\",\r\n    \"password\":\"pharmacy@gmail.com\",\r\n    \"mobile\":\"1242141212\",\r\n    \"role\":\"pharmacy\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/AddProducts"
+			},
+			"response": []
+		},
+		{
+			"name": "AddSupplier",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"pharmacy@gmail.com\",\r\n    \"password\":\"pharmacy@gmail.com\",\r\n    \"mobile\":\"1242141212\",\r\n    \"role\":\"pharmacy\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/AddProducts"
+			},
+			"response": []
+		},
+		{
+			"name": "createChat",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"participants\":\"654a4eb79e39410edd12a663\"\r\n  \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/create"
+			},
+			"response": []
+		},
+		{
+			"name": "send-message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"senderId\":\"654a4eee9e39410edd12a670\" ,\r\n    \"receiverId\":\"654a4eb69e39410edd12a660\" ,\r\n    \"content\":\"I am fine sir\"\r\n  \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/654dd77541f4ea965c3dc336/send-message"
+			},
+			"response": []
+		},
+		{
+			"name": "AddSlot",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"pharmacy@gmail.com\",\r\n    \"password\":\"pharmacy@gmail.com\",\r\n    \"mobile\":\"1242141212\",\r\n    \"role\":\"pharmacy\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/register"
+			},
+			"response": []
+		},
+		{
+			"name": "AddFavourates",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"patient_id\":\"65466a3c5d2515d23a576930\",\r\n    \"doctors_id\":\"654a4eee9e39410edd12a670\"\r\n    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/AddFavourates"
+			},
+			"response": []
+		},
+		{
+			"name": "AddBlogs",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"pharmacy@gmail.com\",\r\n    \"password\":\"pharmacy@gmail.com\",\r\n    \"mobile\":\"1242141212\",\r\n    \"role\":\"pharmacy\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/AddBlogs"
+			},
+			"response": []
+		},
+		{
+			"name": "BookAppointment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"patient_id\":\"65466a3c5d2515d23a576930\",\r\n    \"doctor_id\":\"654a4eee9e39410edd12a670\",\r\n    \"slot_id\":\"654c6d4b2e67ef738c5d322b\",\r\n    \"date\":\"09-11-2023\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3001/api/BookAppointment"
+			},
+			"response": []
+		},
+		{
+			"name": "AddSpecialitiess",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"specialities_name\":\"\",\r\n   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/AddSpecialitiess"
+			},
+			"response": []
+		},
+		{
+			"name": "AddBlogsCategory",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\":\"NutologySurgen\",\r\n    \"written_by\":\"6543c3be3bac32ff5a52b97d\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/AddBlogsCategory"
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"doctor1@gmail.com\",\r\n    \"password\":\"doctor1@gmail.com\"\r\n    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/login"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateUsers",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"firstname\": \"pharmacy\",\r\n\"lastname\": \"pharmacy\",\r\n\"email\": \"pharmacy@gmail.com\",\r\n\"mobile\": \"1246141212\",\r\n\"role\": \"pharmacy\",\r\n\"status\": \"false\",\r\n\"address\": \"pharmacy\",\r\n\"city\": \"pharmacy\",\r\n\"state\": \"pharmacy\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/UpdateUsers/65466a545d2515d23a576933"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateDoctor",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"firstname\": \"pharmacy\",\r\n\r\n\r\n\"status\": \"false\",\r\n\"address\": \"pharmacy\",\r\n\"city\": \"pharmacy\",\r\n\"state\": \"pharmacy\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/UpdateDoctor/654a4eee9e39410edd12a670"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdatePharmacy",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"firstname\":\"Vip pharmacy\",\r\n\r\n\r\n\"status\": \"true\",\r\n\"address\": \"H-71 Jhatta noida\",\r\n\"city\": \"noida\",\r\n\"state\": \"uttarpradesh\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/UpdatePharmacy/654a4ed19e39410edd12a66a"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateBlogs",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"title\": \"Doccure – Making your clinic painless visit!\",\r\n        \"content\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum!.\",\r\n        \"category\": \"Cardiology\",\r\n        \"image\": null,\r\n        \"written_by\": \"6543c3be3bac32ff5a52b97d\",\r\n        \"comments\": \"hii\",\r\n        \"likes\": \"4\",\r\n        \"Dislikes\": \"3\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/UpdateBlogs/654671085bd971dbeac9f611"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateDoctorSocail_Media",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"fb_Url\": \"www.fb.com\",\r\n\"Twitter_Url\": \"www.twitter.com\",\r\n\"Instagram_Url\": \"www.Instagram.com\",\r\n\"Pinterest_url\": \"www.pinterest.com\",\r\n\"Linked_In_Url\": \"www.linkedIn.com\",\r\n\"YouTube_Url\": \"www.youtube.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/UpdateDoctorSocail_Media/654a4eee9e39410edd12a670"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateDoctorBankDetails",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"BankName\": \"Kotak Mahindra Bank\",\r\n\"BranchName\": \"Sec-51 201304\",\r\n\"Account_Number\": \"2765434567890\",\r\n\"AccountName\": \"Vipin Nagar\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/UpdateDoctorBankDetails/654a4eee9e39410edd12a670"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateAppointmentStatus",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"BankName\": \"Kotak Mahindra Bank\",\r\n\"BranchName\": \"Sec-51 201304\",\r\n\"Account_Number\": \"2765434567890\",\r\n\"AccountName\": \"Vipin Nagar\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/UpdateAppointmentStatus/654a4eee9e39410edd12a670"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateSupplier",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"BankName\": \"Kotak Mahindra Bank\",\r\n\"BranchName\": \"Sec-51 201304\",\r\n\"Account_Number\": \"2765434567890\",\r\n\"AccountName\": \"Vipin Nagar\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/UpdateSupplier/654a4eee9e39410edd12a670"
+			},
+			"response": []
+		}
+	]
+}
