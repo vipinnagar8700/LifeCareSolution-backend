@@ -55,6 +55,11 @@ const editDoctor = async (req, res) => {
 const UpdateDoctor = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body; // Assuming you send the updated data in the request body
+    const file = req.file;
+    console.log(file, "aa")
+    if (file) {
+        updateData.image = file.filename; // Add the filename to the updateData object
+    }
 
     // Make sure to exclude the 'role' field from the updateData
     delete updateData.role;
