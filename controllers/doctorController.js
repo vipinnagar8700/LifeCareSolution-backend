@@ -51,7 +51,13 @@ const editDoctor = async (req, res) => {
     }
 }
 
-
+const [special, setSpecial] = useState("");
+const handleSelection = (selected) => {
+    setSelectedOption(selected);
+    // Assuming 'name' is the property you want to display in the input field
+    setSpecial(selected.map(option => option.name).join(", "));
+  };
+  
 const UpdateDoctor = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body; // Assuming you send the updated data in the request body
