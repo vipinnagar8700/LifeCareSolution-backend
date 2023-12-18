@@ -15,7 +15,7 @@ const dbConnect = require('../config/db');
 const userModel = require('../models/userModel');
 dbConnect();
 // Serve static files from the 'public' directory
-app.use(express.static('public'));
+// app.use(express.static('public'));
 
 
 app.use(cors({
@@ -37,9 +37,8 @@ app.use('/api', userRoutes)
 
 
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 3000; // Use 3000 as a fallback
 
-const host = '0.0.0.0'; // Listen on all available network interfaces
-app.listen(port, host, () => {
-    console.log(`Mr Vipin Your Serveer is Running on server ${port}`)
-})
+app.listen(port, () => {
+    console.log(`Mr Vipin Your Server is Running on port ${port}`);
+});
