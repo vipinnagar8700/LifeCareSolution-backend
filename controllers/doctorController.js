@@ -1,5 +1,5 @@
 const { generateToken } = require('../config/JwtToken');
-const { Doctor} = require('../models/userModel');
+const { Doctor } = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 const { generateRefreshToken } = require('../config/refreshToken');
 const jwt = require('jsonwebtoken');
@@ -29,7 +29,7 @@ const editDoctor = async (req, res) => {
     const { id } = req.params;
     console.log(id)
     try {
-        const doctor = await Doctor.findById(id).select('-password'); 
+        const doctor = await Doctor.findById(id).select('-password');
         console.log(doctor)// Exclude the 'password' field
         if (!doctor) {
             res.status(404).json({  // Correct the status code to 404 (Not Found)
@@ -51,13 +51,8 @@ const editDoctor = async (req, res) => {
     }
 }
 
-const [special, setSpecial] = useState("");
-const handleSelection = (selected) => {
-    setSelectedOption(selected);
-    // Assuming 'name' is the property you want to display in the input field
-    setSpecial(selected.map(option => option.name).join(", "));
-  };
-  
+
+
 const UpdateDoctor = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body; // Assuming you send the updated data in the request body
@@ -138,7 +133,7 @@ const UpdateDoctorBankDetails = async (req, res) => {
         BranchName: updateData.BranchName || null,
         Account_Number: updateData.Account_Number || null,
         AccountName: updateData.AccountName || null,
-      
+
     };
 
     // Make sure to exclude the 'role' field from the updateData
@@ -206,5 +201,5 @@ const deleteDoctor = async (req, res) => {
 }
 
 module.exports = {
-     AllDoctors, editDoctor, UpdateDoctor, deleteDoctor,UpdateDoctorSocail_Media,UpdateDoctorBankDetails
+    AllDoctors, editDoctor, UpdateDoctor, deleteDoctor, UpdateDoctorSocail_Media, UpdateDoctorBankDetails
 }
