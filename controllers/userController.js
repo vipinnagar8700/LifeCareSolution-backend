@@ -11,7 +11,7 @@ const path = require('path');
 
 const register = asyncHandler(async (req, res) => {
     const { email, mobile, password, role } = req.body;
-
+console.log(email, mobile, password, role)
     // Check if a user with the given email or phone already exists
     const existingUser = await User.findOne({
         $or: [

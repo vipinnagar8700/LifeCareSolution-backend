@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
     passwordResetExpires: Date,
     role: {
         type: String,
-        enum: [ 'patient', 'pharmacy'],
+        enum: [ 'patient', 'pharmacy','doctor'],
         required: true,
     },
     image:{

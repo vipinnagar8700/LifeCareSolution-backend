@@ -1,6 +1,0 @@
-[build]
-  command = "npm install"
-  publish = "public"  # Adjust this to your actual build output directory
-
-[functions]
-  directory = "netlify/functions"

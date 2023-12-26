@@ -18,17 +18,23 @@ dbConnect();
 // app.use(express.static('public'));
 
 
-app.use(cors({
-    origin: 'https://life-care-solutionq.vercel.app/',
-    credentials: true,
-}));
+const corsOptions = {
+    origin: '*',
+  };
+  
+  app.use(cors(corsOptions));
+  
+// 
+// app.use((err, req, res, next) => {
+//     console.error(err.stack);
+//     res.status(500).send('Something went wrong!');
+// });
 
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something went wrong!');
-});
-
-
+app.use((req, res, next) => {
+    console.log('Request received:', req.method, req.url);
+    next();
+  });
+  
 app.get('/', (req, res) => {
     res.status(200).json([{ message: 'Hello Mr vipin Nagar', status: true }])
 
