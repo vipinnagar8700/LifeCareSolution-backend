@@ -123,6 +123,7 @@ const UpdateDoctorSocail_Media = async (req, res) => {
         });
     }
 }
+
 const UpdateDoctorBankDetails = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body; // Assuming you send the updated data in the request body

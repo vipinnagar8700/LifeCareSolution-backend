@@ -216,7 +216,13 @@ const UpdateUsers = async (req, res) => {
   delete updateData.role;
 
   try {
-    const editUser = await User.findByIdAndUpdate(id, updateData, {
+
+
+
+    const finding = await  Patient.findOne({user_id:id})
+    console.log(finding)
+
+    const editUser = await Patient.findByIdAndUpdate(finding._id, updateData, {
       new: true,
     }).select("-password");
 
