@@ -212,7 +212,15 @@ const UpdateUsers = async (req, res) => {
   if (file) {
     updateData.image = file.filename; // Add the filename to the updateData object
   }
+  const domain = 'https://viplifecaresolution.onrender.com';
 
+  // Replace backslashes with forward slashes and remove leading './'
+  const relativePath = file.path.replace(/\\/g, '/').replace(/^\.\//, '');
+  
+  // Construct the full image URL
+  const imageUrl = `${domain}/${relativePath}`;
+  
+  console.log(imageUrl);
   delete updateData.role;
 
   try {

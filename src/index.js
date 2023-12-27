@@ -15,7 +15,7 @@ const dbConnect = require('../config/db');
 const userModel = require('../models/userModel');
 dbConnect();
 // Serve static files from the 'public' directory
-// app.use(express.static('public'));
+app.use(express.static('public'));
 
 
 const corsOptions = {
