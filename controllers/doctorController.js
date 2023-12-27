@@ -8,11 +8,11 @@ require('dotenv/config')
 
 const AllDoctors = async (req, res) => {
     try {
-        const doctor = await Doctor.find().select('-password'); // Exclude the 'password' field;
-        const length = doctor.length;
+        const doctores = await Doctor.find().select('-password'); // Exclude the 'password' field;
+        const length = doctores.length;
         res.status(200).json([{
             message: "All doctor data retrieved successfully!",
-            data: doctor,
+            data: doctores,
             status: true,
             length
         }]);
@@ -29,7 +29,7 @@ const editDoctor = async (req, res) => {
     const { id } = req.params;
     console.log(id)
     try {
-        const doctor = await Doctor.findById(id).select('-password');
+        const doctor = await Doctor.findOne({ user_id: id });
         console.log(doctor)// Exclude the 'password' field
         if (!doctor) {
             res.status(404).json({  // Correct the status code to 404 (Not Found)
