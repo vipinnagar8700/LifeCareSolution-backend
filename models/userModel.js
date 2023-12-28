@@ -138,15 +138,15 @@ const patientSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    pre_exisiting_conditions: {
+    dob: {
       type: String,
       default: null,
     },
-    medication: {
+    pincode: {
       type: String,
       default: null,
     },
-    member: {
+    country: {
       type: String,
       default: null,
     },
