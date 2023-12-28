@@ -260,6 +260,134 @@ const doctorSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+     image: {
+      type: String,
+      default: null,
+    },
+    gender: {
+      type: String,
+      default: null,
+    },
+    Registered_Clinic_address: {
+      type: String,
+      default: null,
+    },
+    Pincode: {
+      type: String,
+      default: null,
+    },
+    Certification: {
+      type: String,
+      default: null,
+    },
+    photo_id: {
+      type: String,
+      default: null,
+    },
+    clinic_employment: {
+      type: String,
+      default: null,
+    },
+    weight: {
+      type: String,
+      default: null,
+    },
+    height: {
+      type: String,
+      default: null,
+    },
+    age: {
+      type: String,
+      default: null,
+    },
+    blood_type: {
+      type: String,
+      default: null,
+    },
+    fb_Url: {
+      type: String,
+      default: null,
+    },
+    Twitter_Url: {
+      type: String,
+      default: null,
+    },
+    Instagram_Url: {
+      type: String,
+      default: null,
+    },
+    Pinterest_url: {
+      type: String,
+      default: null,
+    },
+    Linked_In_Url: {
+      type: String,
+      default: null,
+    },
+    YouTube_Url: {
+      type: String,
+      default: null,
+    },
+    UserName: {
+      type: String,
+      default: null,
+    },
+    About: {
+      type: String,
+      default: null,
+    },
+    ClinicName: {
+      type: String,
+      default: null,
+    },
+    ClinicImage: {
+      type: String,
+      default: null,
+    },
+    fees: {
+      type: String,
+      default: null,
+    },
+    CoustomPrice_perHour: {
+      type: String,
+      default: null,
+    },
+    Services: {
+      type: String,
+      default: null,
+    },
+    Specailization: {
+      type: String,
+      default: null,
+    },
+    Education: {
+      type: String,
+      default: null,
+    },
+    memberShips: {
+      type: String,
+      default: null,
+    },
+    Registrations: {
+      type: String,
+      default: null,
+    },
+    BankName: {
+      type: String,
+      default: null,
+    },
+    BranchName: {
+      type: String,
+      default: null,
+    },
+    Account_Number: {
+      type: String,
+      default: null,
+    },
+    AccountName: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: true,

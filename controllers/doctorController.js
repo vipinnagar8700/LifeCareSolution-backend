@@ -66,17 +66,21 @@ const UpdateDoctor = async (req, res) => {
     delete updateData.role;
 
     try {
-        const editDoctor = await Doctor.findByIdAndUpdate(id, updateData, { new: true }).select('-password');
+
+
+        const finding = await  Doctor.findOne({user_id:id})
+        console.log(finding)
+        const editDoctor = await Doctor.findByIdAndUpdate(finding._id, updateData, { new: true }).select('-password');
 
         if (!editDoctor) {
             res.status(200).json({
                 message: "Doctor was not found!",
+                status:false
             });
         } else {
             res.status(201).json({
                 message: "Data successfully updated!",
                 success: true,
-                data: editDoctor
             });
         }
     } catch (error) {
