@@ -3,19 +3,19 @@ const asyncHandler = require('express-async-handler');
 
 const AddFavourates = asyncHandler(async (req, res) => {
     try {
-        const { patient_id, doctors_id } = req.body;
+        const { patient_id, doctor_id } = req.body;
 
         // Check if the doctor is already in the favourites
         const existingFavourate = await Favourate.findOne({
             patient_id,
-            'doctors.doctor_id': doctors_id,
+            doctors: doctor_id,
         });
 
         if (existingFavourate) {
             // If the doctor is already in the favourites, remove them
             const updatedFavourate = await Favourate.findOneAndUpdate(
-                { patient_id, 'doctors.doctor_id': doctors_id },
-                { $pull: { doctors: { doctor_id: doctors_id } } },
+                { patient_id },
+                { $pull: { doctors: doctor_id } },
                 { new: true }
             );
 
@@ -28,12 +28,12 @@ const AddFavourates = asyncHandler(async (req, res) => {
             // If the doctor is not in the favourites, add them
             const newFavourate = await Favourate.findOneAndUpdate(
                 { patient_id },
-                { $addToSet: { doctors: { doctor_id: doctors_id } } },
+                { $addToSet: { doctors: doctor_id } },
                 { new: true, upsert: true }
             );
 
             res.status(201).json({
-                message: "Doctor  Successfully added in favourate list!",
+                message: "Doctor successfully added to the favourites list!",
                 success: true,
                 data: newFavourate
             });
@@ -50,16 +50,22 @@ const AddFavourates = asyncHandler(async (req, res) => {
 });
 
 
+
 const AllFavourates = async (req, res) => {
+    const { id } = req.params;
     try {
-        const patients = await Favourate.find(); // Exclude the 'password' field;
-        const length = patients.length;
-        res.status(200).json([{
+        // Use find instead of findOne to get an array of favourates
+        const favourates = await Favourate.find({ patient_id: id })
+            .populate('doctors', '-password'); // Populate the doctors and exclude the 'password' field
+
+        const length = favourates.length;
+
+        res.status(200).json({
             message: "All Doctor Favourates data retrieved successfully!",
-            data: patients,
+            data: favourates,
             status: true,
             length
-        }]);
+        });
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error",
@@ -68,6 +74,7 @@ const AllFavourates = async (req, res) => {
         });
     }
 };
+
 
 
 const deleteFavourate = asyncHandler(async (req, res) => {
