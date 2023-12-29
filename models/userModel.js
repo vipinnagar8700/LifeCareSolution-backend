@@ -272,6 +272,14 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    Registered_Clinic_city: {
+      type: String,
+      default: null,
+    },
+    Registered_Clinic_state: {
+      type: String,
+      default: null,
+    },
     Pincode: {
       type: String,
       default: null,
@@ -388,6 +396,7 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+
   },
   {
     timestamps: true,
