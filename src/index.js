@@ -33,10 +33,15 @@ app.use((req, res, next) => {
   console.log("Request received:", req.method, req.url);
   next();
 });
+const path = require('path');
+app.set('view engine', 'ejs'); // Set EJS as the template engine
+app.set('Views', path.join(__dirname, 'Views'));
+
 
 app.get("/", (req, res) => {
-  res.status(200).json([{ message: "Hello Mr vipin Nagar", status: true }]);
+  res.render('index.ejs');
 });
+
 app.use("/api", userRoutes);
 
 const port = process.env.PORT || 3000; // Use 3000 as a fallback

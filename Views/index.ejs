@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Binary Image Form</title>
+</head>
+
+<body>
+  <input type="file" id="imageInput" />
+  <input type="file" id="clinicImagesInput" multiple="true" />
+
+  <button onclick="submitForm()">Submit</button>
+
+  <script>
+    function submitForm() {
+      const imageInput = document.getElementById('imageInput');
+      const clinicImagesInput = document.getElementById('clinicImagesInput');
+
+      const formData = new FormData();
+
+      // Append binary image data to the FormData object
+      formData.append('image', imageInput.files[0]);
+      
+      // Append all clinic images to the same array in the FormData object
+      for (let i = 0; i < clinicImagesInput.files.length; i++) {
+  // Append each file to the FormData object with the same key
+  formData.append('clinicImages', clinicImagesInput.files[i]);
+}
+
+
+      // Other form fields can be appended similarly
+
+      const requestOptions = {
+        method: 'PUT', // Change the method as needed (e.g., PUT)
+        body: formData,
+        headers: {
+          // You may need to set additional headers based on your server requirements
+        },
+      };
+
+      fetch('http://localhost:3000/api/UpdateDoctor/658bab1824ef87ba89307766', requestOptions)
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+    }
+  </script>
+</body>
+
+</html>

@@ -53,29 +53,50 @@ const editDoctor = async (req, res) => {
 
 
 
+
 const UpdateDoctor = async (req, res) => {
     const { id } = req.params;
-    const updateData = req.body; // Assuming you send the updated data in the request body
-    const file = req.file;
-    console.log(file, "aa")
-    if (file) {
-        updateData.image = file.filename; // Add the filename to the updateData object
+    const updateData = req.body;
+    const imageFile = req.files['image']; // Use req.files to get multiple files
+    const clinicImageFile = req.files['ClinicImage'];
+
+    if (imageFile) {
+        updateData.image = imageFile[0].filename;
     }
 
-    // Make sure to exclude the 'role' field from the updateData
+    if (clinicImageFile) {
+        updateData.ClinicImage = clinicImageFile.map((file) => file.filename);
+    }
+    if (updateData.Services) {
+        updateData.Services = updateData.Services.split(',').map((service) => service.trim());
+      }
+      if (updateData.Specailization) {
+        updateData.Specailization = updateData.Specailization.split(',').map((service) => service.trim());
+      }
+      if (updateData.Education) {
+        updateData.Education = JSON.parse(updateData.Education);
+        console.log(updateData.Education)
+      }
+      if (updateData.Experience) {
+        updateData.Experience = JSON.parse(updateData.Experience);
+        console.log(updateData.Experience)
+      }
+    
+      if (updateData.Awards) {
+        updateData.Awards = JSON.parse(updateData.Awards);
+        console.log(updateData.Awards)
+      }
+    
     delete updateData.role;
 
     try {
-
-
-        const finding = await  Doctor.findOne({user_id:id})
-        console.log(finding)
+        const finding = await Doctor.findOne({ user_id: id });
         const editDoctor = await Doctor.findByIdAndUpdate(finding._id, updateData, { new: true }).select('-password');
 
         if (!editDoctor) {
             res.status(200).json({
                 message: "Doctor was not found!",
-                status:false
+                status: false,
             });
         } else {
             res.status(201).json({
@@ -84,12 +105,13 @@ const UpdateDoctor = async (req, res) => {
             });
         }
     } catch (error) {
+        console.error(error);
         res.status(500).json({
             message: "Failed to update data!",
-            status: false
+            status: false,
         });
     }
-}
+};
 const UpdateDoctorSocail_Media = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body; // Assuming you send the updated data in the request body

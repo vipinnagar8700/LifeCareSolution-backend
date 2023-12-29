@@ -260,7 +260,7 @@ const doctorSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-     image: {
+    image: {
       type: String,
       default: null,
     },
@@ -349,8 +349,8 @@ const doctorSchema = new mongoose.Schema(
       default: null,
     },
     ClinicImage: {
-      type: String,
-      default: null,
+      type: [String],
+      default: [],index: true, 
     },
     fees: {
       type: String,
@@ -361,17 +361,33 @@ const doctorSchema = new mongoose.Schema(
       default: null,
     },
     Services: {
-      type: String,
-      default: null,
+      type: [String],
+      default: [],
     },
     Specailization: {
-      type: String,
-      default: null,
+      type: [String],
+      default: [],
     },
     Education: {
-      type: String,
-      default: null,
+      type: [
+        {
+          degree: {
+            type: String,
+            default: null,
+          },
+          college: {
+            type: String,
+            default: null,
+          },
+          year: {
+            type: String, // You might want to use a different type if the year is a number
+            default: null,
+          },
+        },
+      ],
+      default: [],
     },
+    
     memberShips: {
       type: String,
       default: null,
@@ -396,16 +412,57 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-
+    country: {
+      type: String, 
+      default: null,
+    },
+    Experience: {
+      type: [
+        {
+          hospital_name: {
+            type: String,
+            default: null,
+          },
+          from: {
+            type: String,
+            default: null,
+          },
+          to: {
+            type: String, // You might want to use a different type if the year is a number
+            default: null,
+          },
+          Designation: {
+            type: String, // You might want to use a different type if the year is a number
+            default: null,
+          },
+        },
+      ],
+      default: [],
+    },
+    Awards: {
+      type: [
+        {
+          Awards: {
+            type: String,
+            default: null,
+          },
+          Year: {
+            type: String,
+            default: null,
+          },
+          
+        },
+      ],
+      default: [],
+    },
   },
   {
     timestamps: true,
   }
 );
 
-
 const Patient = mongoose.model("Patient", patientSchema);
 const Doctor = mongoose.model("Doctor", doctorSchema);
 const Pharmacy = mongoose.model("Pharmacy", pharmacySchema);
 
-module.exports = { User, Patient, Pharmacy,Doctor };
+module.exports = { User, Patient, Pharmacy, Doctor };

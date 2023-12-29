@@ -57,7 +57,7 @@ router.post('/Addfeaturess',authenticateToken, Addfeaturess)
 router.get('/Allfeaturess', Allfeaturess)
 router.delete('/deletefeatures',authenticateToken, deletefeatures)
 router.get('/editDoctor/:id', editDoctor)
-router.put('/UpdateDoctor/:id', upload.single('image'), authenticateToken,UpdateDoctor)
+router.put('/UpdateDoctor/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'ClinicImage', maxCount: 5 }]), authenticateToken, UpdateDoctor);
 router.delete('/deleteDoctor/:id',authenticateToken, deleteDoctor)
 router.get('/editPharmacy/:id', editPharmacy)
 router.put('/UpdatePharmacy/:id', upload.single('image'),authenticateToken, UpdatePharmacy)
