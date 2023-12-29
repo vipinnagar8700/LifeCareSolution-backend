@@ -102,6 +102,7 @@ const login = asyncHandler(async (req, res) => {
     if (
       findUser.role !== "patient" &&
       findUser.role !== "admin" &&
+      findUser.role !== "doctor" &&
       !findUser.permission
     ) {
       return res.status(401).json({
@@ -307,7 +308,7 @@ const Accept_User = asyncHandler(async (req, res) => {
 
   try {
     // Find the user by userId
-    const user = await User.findById(id);
+    const user = await Doctor.findOne({user_id:id});
     console.log(user);
     if (!user) {
       return res.status(404).json({
