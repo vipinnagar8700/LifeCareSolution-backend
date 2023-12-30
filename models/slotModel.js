@@ -18,10 +18,7 @@ const slotSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    doctor_id: {
-        type: String,
-        required: true
-    },
+    doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: "Doctor" },
 }, {
     timestamps: true
 });

@@ -2,18 +2,9 @@ const mongoose = require('mongoose'); // Erase if already required
 
 // Declare the Schema of the Mongo model
 const appointmentSchema = new mongoose.Schema({
-    patient_id: {
-        type: String,
-        required: true,
-    },
-    doctor_id: {
-        type: String,
-        required: true,
-    },
-    slot_id: {
-        type: String,
-        required: true,
-    },
+    patient_id: { type: mongoose.Schema.Types.ObjectId, ref: "Patient" },
+    doctor_id:{ type: mongoose.Schema.Types.ObjectId, ref: "Doctor" },
+    slot_id: { type: mongoose.Schema.Types.ObjectId, ref: "Slot" },
     date: {
         type: String,
         required: true,
