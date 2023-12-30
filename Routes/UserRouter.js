@@ -64,7 +64,7 @@ router.put('/UpdatePharmacy/:id', upload.single('image'),authenticateToken, Upda
 router.delete('/deletePharmacy/:id', authenticateToken,deletePharmacy)
 router.put('/UpdateDoctorSocail_Media/:id',authenticateToken, UpdateDoctorSocail_Media)
 router.put('/UpdateDoctorBankDetails/:id',authenticateToken, UpdateDoctorBankDetails)
-router.get('/AllSlots', AllSlots)
+router.get('/AllSlots/:id', AllSlots)
 router.get('/editSlot/:id', editSlot)
 router.put('/UpdateSlot/:id',authenticateToken, UpdateSlot)
 router.delete('/deleteSlot/:id',authenticateToken, deleteSlot)
