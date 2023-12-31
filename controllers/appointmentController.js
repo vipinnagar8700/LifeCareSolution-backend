@@ -150,8 +150,7 @@ const doctor_appointments = async (req, res) => {
 
   try {
     // Retrieve appointments for the given doctor
-    const appointments = await Appointment.find({ doctor_id: id });
-    console.log(appointments);
+    const appointments = await Appointment.find({ doctor_id: id }).populate('doctor_id').populate('patient_id').populate('slot_id').exec();
     const length = appointments.length;
 
     // Check if appointments exist
@@ -163,36 +162,12 @@ const doctor_appointments = async (req, res) => {
     }
 
     // Retrieve patient details for each appointment
-    const patients = await Promise.all(
-      appointments.map(async (appointment) => {
-        const patient = await Patient.findById(appointment.patient_id);
-        return patient;
-      })
-    );
-    const slots = await Promise.all(
-      appointments.map(async (appointment) => {
-        const slots = await Slot.findById(appointment.slot_id);
-        return slots;
-      })
-    );
-    const doctors = await Promise.all(
-      appointments.map(async (appointment) => {
-        const doctors = await Doctor.findById(appointment.doctor_id);
-        return doctors;
-      })
-    );
+   
 
-    console.log(patients, "patients");
-    console.log(doctors, "doctors");
 
     res.status(200).json({
       message: "Appointments by doctor retrieved successfully!",
-      data: {
-        appointments: appointments,
-        patients: patients,
-        doctors: doctors,
-        slots: slots,
-      },
+      data: appointments,
       length,
       status: true,
     });
@@ -208,48 +183,15 @@ const doctor_appointments = async (req, res) => {
 const Patient_appointments = async (req, res) => {
   try {
     const { id } = req.params;
-    const appointments = await Appointment.find({ patient_id: id });
+    const appointments = await Appointment.find({ patient_id: id }).populate('doctor_id').populate('patient_id').populate('slot_id').exec();;
     const length = appointments.length;
 
     // Check if appointments exist
-    if (!appointments || appointments.length === 0) {
-      return res.status(404).json({
-        message: "No appointments found for the doctor!",
-        success: false,
-      });
-    }
-
-    // Retrieve patient details for each appointment
-    const patients = await Promise.all(
-      appointments.map(async (appointment) => {
-        const patient = await Patient.findById(appointment.patient_id);
-        return patient;
-      })
-    );
-    const slots = await Promise.all(
-      appointments.map(async (appointment) => {
-        const slots = await Slot.findById(appointment.slot_id);
-        return slots;
-      })
-    );
-    const doctors = await Promise.all(
-      appointments.map(async (appointment) => {
-        const doctors = await Doctor.findById(appointment.doctor_id);
-        return doctors;
-      })
-    );
-
-    console.log(patients, "patients");
-    console.log(doctors, "doctors");
+    
 
     res.status(200).json({
       message: "Appointments by doctor retrieved successfully!",
-      data: {
-        appointments: appointments,
-        patients: patients,
-        doctors: doctors,
-        slots: slots,
-      },
+      data: appointments,
       length,
       status: true,
     });
