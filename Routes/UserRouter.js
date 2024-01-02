@@ -4,7 +4,7 @@ const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_Use
 const { AddBlogs, AllBlogs, editBlog, UpdateBlogs, AddBlogsCategory, AllCategory, deleteBlogCategory, deleteBlog } = require('../controllers/blogController');
 const { AddSpecialitiess, AllSpecialitiess, deleteSpecialities } = require('../controllers/specialitiesControllers');
 const { Addfeaturess, Allfeaturess, deletefeatures } = require('../controllers/featuresControllers');
-const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails } = require('../controllers/doctorController');
+const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails, deleteDoctorAwards, deleteDoctorEducation, deleteDoctorExperience, deleteClinicImage } = require('../controllers/doctorController');
 const { AllPharmacys, editPharmacy, UpdatePharmacy, deletePharmacy } = require('../controllers/pharmacyController');
 const { AllSlots, editSlot, UpdateSlot, deleteSlot, AddSlot } = require('../controllers/slotController');
 const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, BookAppointment, doctor_appointments, UpdateAppointmentStatus, Patient_appointments } = require('../controllers/appointmentController');
@@ -125,6 +125,10 @@ router.delete('/deleteCart/:id',authenticateToken, deleteCart)
 router.post('/createOrderFromCart',authenticateToken, createOrderFromCart)
 router.get('/getUserOrders/:user_id',authenticateToken, getUserOrders)
 router.put('/Accept_User/:id',authenticateToken, Accept_User)
+router.delete('/deleteDoctorAwards/:doctorId/:awardId',deleteDoctorAwards,authenticateToken)
+router.delete('/deleteDoctorEducation/:doctorId/:EducationId',deleteDoctorEducation,authenticateToken)
+router.delete('/deleteDoctorExperience/:doctorId/:ExperienceId',deleteDoctorExperience,authenticateToken)
+router.delete('/deleteClinicImage/:doctorId/:ClinicImageId',deleteClinicImage,authenticateToken)
 // router.get('')
 
 module.exports = router;

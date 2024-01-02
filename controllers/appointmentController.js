@@ -14,6 +14,9 @@ const BookAppointment = async (req, res) => {
     // Create a new Appointment
     const newAppointment = await Appointment.create(req.body);
 
+    // Update the status of the associated slot to 'booked'
+    await Slot.findByIdAndUpdate(slot_id, { status: 'booked' });
+
     res.status(201).json({
       message: "Appointment Successfully Booked!",
       success: true,
@@ -29,6 +32,7 @@ const BookAppointment = async (req, res) => {
     });
   }
 };
+
 
 const AllAppointments = async (req, res) => {
   try {
@@ -210,6 +214,32 @@ const UpdateAppointmentStatus = async (req, res) => {
       { new: true }
     );
 
+    let message = '';
+    let slotStatus = '';
+
+    switch (status) {
+      case 'accept':
+        message = 'Appointment accepted successfully!';
+        slotStatus = 'processing';
+        break;
+      case 'cancel':
+        message = 'Appointment canceled successfully!';
+        slotStatus = 'pending';
+        break;
+      case 'completed':
+        message = 'Appointment completed successfully!';
+        slotStatus = 'pending';
+        break;
+      default:
+        message = 'Appointment status updated successfully!';
+    }
+
+    // Update the status of the associated slot
+    if (slotStatus) {
+      console.log(updatedAppointment,"updatedAppointment")
+      await Slot.findByIdAndUpdate(updatedAppointment.slot_id, { status: slotStatus });
+    }
+
     if (!updatedAppointment) {
       res.status(404).json({
         message: "Appointment was not found!",
@@ -217,18 +247,22 @@ const UpdateAppointmentStatus = async (req, res) => {
       });
     } else {
       res.status(200).json({
-        message: "Appointment status updated successfully!",
+        message: message,
         success: true,
         data: updatedAppointment,
       });
     }
   } catch (error) {
+    console.error(error); // Log the error for debugging purposes
+
     res.status(500).json({
       message: "Failed to update Appointment status!",
-      success: false, // Correct the key to 'success'
+      success: false,
+      error: error.message, // Provide the error message in the response
     });
   }
 };
+
 
 module.exports = {
   AllAppointments,

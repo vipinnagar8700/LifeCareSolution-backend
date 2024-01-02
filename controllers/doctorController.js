@@ -4,6 +4,8 @@ const asyncHandler = require('express-async-handler');
 const { generateRefreshToken } = require('../config/refreshToken');
 const jwt = require('jsonwebtoken');
 require('dotenv/config')
+const mongoose = require('mongoose')
+const { ObjectId } = require('mongodb');
 
 
 const AllDoctors = async (req, res) => {
@@ -52,21 +54,32 @@ const editDoctor = async (req, res) => {
 }
 
 
-
-
 const UpdateDoctor = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
     const imageFile = req.files['image']; // Use req.files to get multiple files
     const clinicImageFile = req.files['ClinicImage'];
-
-    if (imageFile) {
-        updateData.image = imageFile[0].filename;
-    }
-
-    if (clinicImageFile) {
-        updateData.ClinicImage = clinicImageFile.map((file) => file.filename);
-    }
+console.log(clinicImageFile,"clinicImageFile")
+    // if (clinicImageFile) {
+    //     updateData.ClinicImage = clinicImageFile.map((file) => {
+    //         return {
+    //             filename: file.filename,
+    //             _id: new ObjectId(), // Generate a unique ObjectId
+    //             // Add other properties if needed
+    //         };
+    //     });
+    //     console.log(updateData.ClinicImage,"updateData.ClinicImage")
+    // }
+   
+   
+if (clinicImageFile) {
+    // Assuming clinicImageFile is an array of images
+    const clinicImages = clinicImageFile.map(file => ({ image: file.filename }));
+  
+    // Update ClinicImage property in updateData with the array of images
+    updateData.ClinicImage = clinicImages;
+  }
+  
     if (updateData.Services) {
         updateData.Services = updateData.Services.split(',').map((service) => service.trim());
       }
@@ -75,16 +88,13 @@ const UpdateDoctor = async (req, res) => {
       }
       if (updateData.Education) {
         updateData.Education = JSON.parse(updateData.Education);
-        console.log(updateData.Education)
       }
       if (updateData.Experience) {
         updateData.Experience = JSON.parse(updateData.Experience);
-        console.log(updateData.Experience)
       }
     
       if (updateData.Awards) {
         updateData.Awards = JSON.parse(updateData.Awards);
-        console.log(updateData.Awards)
       }
     
     delete updateData.role;
@@ -227,6 +237,177 @@ const deleteDoctor = async (req, res) => {
     }
 }
 
+const deleteDoctorAwards = async (req, res) => {
+    const { doctorId, awardId } = req.params;
+  
+    try {
+      // Find the Doctor by ID
+      const doctor = await Doctor.findById(doctorId);
+  
+      if (!doctor) {
+        return res.status(404).json({
+          message: "Doctor not found!",
+          success: false,
+        });
+      }
+  
+      // Find the Award by ID
+      const awardIndex = doctor.Awards.findIndex((award) => award._id == awardId);
+  
+      if (awardIndex === -1) {
+        return res.status(404).json({
+          message: "Award not found!",
+          success: false,
+        });
+      }
+  
+      // Remove the Award from the array
+      doctor.Awards.splice(awardIndex, 1);
+  
+      // Save the updated Doctor document
+      await doctor.save();
+  
+      return res.status(200).json({
+        message: "Award successfully deleted!",
+        success: true,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Failed to delete award!",
+        success: false,
+        error: error.message,
+      });
+    }
+  };
+  
+
+  const deleteDoctorEducation = async (req, res) => {
+    const { doctorId, EducationId } = req.params;
+  
+    try {
+      // Find the Doctor by ID
+      const doctor = await Doctor.findById(doctorId);
+  
+      if (!doctor) {
+        return res.status(404).json({
+          message: "Doctor not found!",
+          success: false,
+        });
+      }
+  
+      // Find the Award by ID
+      const awardIndex = doctor.Education.findIndex((award) => award._id == EducationId);
+  
+      if (awardIndex === -1) {
+        return res.status(404).json({
+          message: "Education not found!",
+          success: false,
+        });
+      }
+  
+      // Remove the Award from the array
+      doctor.Education.splice(awardIndex, 1);
+  
+      // Save the updated Doctor document
+      await doctor.save();
+  
+      return res.status(200).json({
+        message: "Education successfully deleted!",
+        success: true,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Failed to delete Education!",
+        success: false,
+        error: error.message,
+      });
+    }
+  };
+
+  const deleteDoctorExperience = async (req, res) => {
+    const { doctorId, ExperienceId } = req.params;
+  
+    try {
+      // Find the Doctor by ID
+      const doctor = await Doctor.findById(doctorId);
+  
+      if (!doctor) {
+        return res.status(404).json({
+          message: "Doctor not found!",
+          success: false,
+        });
+      }
+  
+      // Find the Award by ID
+      const awardIndex = doctor.Experience.findIndex((award) => award._id == ExperienceId);
+  
+      if (awardIndex === -1) {
+        return res.status(404).json({
+          message: "Experience not found!",
+          success: false,
+        });
+      }
+  
+      // Remove the Award from the array
+      doctor.Experience.splice(awardIndex, 1);
+  
+      // Save the updated Doctor document
+      await doctor.save();
+  
+      return res.status(200).json({
+        message: "Experience successfully deleted!",
+        success: true,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Failed to delete Experience!",
+        success: false,
+        error: error.message,
+      });
+    }
+  };
+  const deleteClinicImage = async (req, res) => {
+    const { doctorId, ClinicImageId } = req.params;
+  
+    try {
+      // Find the Doctor by ID
+      const doctor = await Doctor.findById(doctorId);
+  
+      if (!doctor) {
+        return res.status(404).json({
+          message: "Doctor not found!",
+          success: false,
+        });
+      }
+  
+      // Find the Award by ID
+      const awardIndex = doctor.ClinicImage.findIndex((award) => award._id == ClinicImageId);
+  
+      if (awardIndex === -1) {
+        return res.status(404).json({
+          message: "ClinicImage not found!",
+          success: false,
+        });
+      }
+  
+      // Remove the Award from the array
+      doctor.ClinicImage.splice(awardIndex, 1);
+  
+      // Save the updated Doctor document
+      await doctor.save();
+  
+      return res.status(200).json({
+        message: "ClinicImage successfully deleted!",
+        success: true,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Failed to delete ClinicImage!",
+        success: false,
+        error: error.message,
+      });
+    }
+  };
 module.exports = {
-    AllDoctors, editDoctor, UpdateDoctor, deleteDoctor, UpdateDoctorSocail_Media, UpdateDoctorBankDetails
+    AllDoctors, editDoctor, UpdateDoctor, deleteDoctor, UpdateDoctorSocail_Media, UpdateDoctorBankDetails,deleteDoctorAwards,deleteDoctorEducation,deleteDoctorExperience,deleteClinicImage
 }

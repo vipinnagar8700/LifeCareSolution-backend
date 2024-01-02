@@ -2,11 +2,7 @@ const mongoose = require('mongoose'); // Erase if already required
 
 // Declare the Schema of the Mongo model
 var orderSchema = new mongoose.Schema({
-    cart_id: {
-        type: String,
-        required: true,
-        unique: true,
-    },
+    cart_id:  { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
     products: [
         {
             product_id: {
@@ -45,6 +41,7 @@ var orderSchema = new mongoose.Schema({
         type: String,
         default: null,
     },
+    
     ExpiryYear: {
         type: String,
         default: null,

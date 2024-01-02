@@ -349,8 +349,15 @@ const doctorSchema = new mongoose.Schema(
       default: null,
     },
     ClinicImage: {
-      type: [String],
-      default: [],index: true, 
+      type: [
+        {
+          image: {
+            type: String,
+            default: null,
+          },
+          
+        },
+      ]
     },
     fees: {
       type: String,

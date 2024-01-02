@@ -19,6 +19,11 @@ const slotSchema = new mongoose.Schema({
         required: true,
     },
     doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: "Doctor" },
+    status: {
+        type: String,
+        enum: ['pending', 'booked', 'processing', 'completed'],
+        default: 'pending',
+    },
 }, {
     timestamps: true
 });

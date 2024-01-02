@@ -2,10 +2,7 @@ const mongoose = require('mongoose'); // Erase if already required
 
 // Declare the Schema of the Mongo model
 const medicineSchema = new mongoose.Schema({
-    patient_id: {
-        type: String,
-        required: true,
-    },
+    patient_id:  { type: mongoose.Schema.Types.ObjectId, ref: "Patient" },
     title_name: {
         type: String,
         required: true,
