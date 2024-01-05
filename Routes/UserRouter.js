@@ -131,4 +131,5 @@ router.delete('/deleteDoctorExperience/:doctorId/:ExperienceId',deleteDoctorExpe
 router.delete('/deleteClinicImage/:doctorId/:ClinicImageId',deleteClinicImage,authenticateToken)
 // router.get('')
 
+
 module.exports = router;

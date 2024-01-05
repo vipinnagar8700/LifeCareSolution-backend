@@ -57,21 +57,20 @@ const editDoctor = async (req, res) => {
 const UpdateDoctor = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
+    
     const imageFile = req.files['image']; // Use req.files to get multiple files
     const clinicImageFile = req.files['ClinicImage'];
-console.log(clinicImageFile,"clinicImageFile")
-    // if (clinicImageFile) {
-    //     updateData.ClinicImage = clinicImageFile.map((file) => {
-    //         return {
-    //             filename: file.filename,
-    //             _id: new ObjectId(), // Generate a unique ObjectId
-    //             // Add other properties if needed
-    //         };
-    //     });
-    //     console.log(updateData.ClinicImage,"updateData.ClinicImage")
-    // }
-   
-   
+console.log(imageFile,"imageFile")
+console.log('All Files:', req.files[0]); // Log all uploaded files
+
+console.log('Image File:', imageFile);
+
+if (imageFile) {
+  updateData.image = imageFile[0].filename;
+  console.log('Updated Image:', updateData.image); // Update the "image" property with the filename
+} else {
+  console.log('No image file found in req.files');
+}
 if (clinicImageFile) {
     // Assuming clinicImageFile is an array of images
     const clinicImages = clinicImageFile.map(file => ({ image: file.filename }));

@@ -39,7 +39,10 @@ app.set('Views', path.join(__dirname, 'Views'));
 
 
 app.get("/", (req, res) => {
-  res.render('index.ejs');
+  res.json({
+    "message":"Successfully Runed!",
+    "status":true
+  });
 });
 
 app.use("/api", userRoutes);

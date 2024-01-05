@@ -138,13 +138,12 @@ const login = asyncHandler(async (req, res) => {
         token: token,
       };
       if (findUser.role === "doctor") {
-        response.doctorData = await Doctor.findOne({ user: findUser._id });
+        response.doctorData = await Doctor.findOne({ user_id: findUser._id });
       } else if (findUser.role === "patient") {
-        response.patientData = await Patient.findOne({ user: findUser._id });
+        response.patientData = await Patient.findOne({ user_id: findUser._id });
       } else if (findUser.role === "pharmacy") {
         response.pharmacyData = await Pharmacy.findOne({ user: findUser._id });
       }
-
       res.status(200).json({
         message: "Successfully Login!",
         data: response,
