@@ -13,6 +13,14 @@ require("dotenv/config");
 const multer = require("multer");
 const path = require("path");
 
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+  cloud_name: "durzgbfjf",
+  api_key: "512412315723482",
+  api_secret: "e3kLlh_vO5XhMBCMoIjkbZHjazo",
+});
+
+
 const register = asyncHandler(async (req, res) => {
   const { email, mobile, password, role } = req.body;
   console.log(email, mobile, password, role);
@@ -208,19 +216,31 @@ const UpdateUsers = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body; // Assuming you send the updated data in the request body
   const file = req.file;
-  console.log(file, "aa");
-  if (file) {
-    updateData.image = file.filename; // Add the filename to the updateData object
-  }
-  const domain = 'https://viplifecaresolution.onrender.com';
 
-  // Replace backslashes with forward slashes and remove leading './'
-  const relativePath = file.path.replace(/\\/g, '/').replace(/^\.\//, '');
-  
-  // Construct the full image URL
-  const imageUrl = `${domain}/${relativePath}`;
-  
-  console.log(imageUrl);
+if (file) {
+    try {
+        const result = await cloudinary.uploader.upload(file.path, {
+            folder: 'LifeCareSolution', // Optional: You can specify a folder in your Cloudinary account
+            resource_type: 'auto', // Automatically detect the file type
+        });
+
+        updateData.image = result.secure_url;
+    } catch (error) {
+        console.error('Error uploading image to Cloudinary:', error);
+        // Handle the error appropriately
+    }
+}
+
+const domain = 'https://viplifecaresolution.onrender.com';
+
+// Replace backslashes with forward slashes and remove leading './'
+const relativePath = file.path.replace(/\\/g, '/').replace(/^\.\//, '');
+
+// Construct the full image URL
+const imageUrl = `${domain}/${relativePath}`;
+
+console.log(imageUrl);
+
   delete updateData.role;
 
   try {
