@@ -451,6 +451,8 @@ const deleteClinicImage = async (req, res) => {
     });
   }
 };
+
+
 module.exports = {
   AllDoctors,
   editDoctor,

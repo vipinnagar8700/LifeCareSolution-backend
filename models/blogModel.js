@@ -11,10 +11,8 @@ var blogSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    category: {
-        type: String,
-        required: true,
-    },
+    category_id:  { type: mongoose.Schema.Types.ObjectId, ref: "BlogCategory" },
+    specailitie_id:  { type: mongoose.Schema.Types.ObjectId, ref: "Specialities" },
     image: {
         type: String,
         default:null,
@@ -22,7 +20,6 @@ var blogSchema = new mongoose.Schema({
     written_by: {
         type: String,
         required: true,
-        
     },
     comments: {
         type: String,

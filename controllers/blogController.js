@@ -5,30 +5,57 @@ const { generateRefreshToken } = require('../config/refreshToken');
 const jwt = require('jsonwebtoken');
 require('dotenv/config')
 const BlogCategory = require('../models/blogCategoryModel')
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+  cloud_name: "durzgbfjf",
+  api_key: "512412315723482",
+  api_secret: "e3kLlh_vO5XhMBCMoIjkbZHjazo",
+});
+
 
 const AddBlogs = asyncHandler(async (req, res) => {
-    const { title, content, category,written_by } = req.body;
+    const { title, content, category_id,specailitie_id,written_by } = req.body;
+console.log(title, content, category_id,specailitie_id,written_by )
+    let imageUrl; // to store the Cloudinary image URL
 
-    // Check if a Blog with the given email or phone already exists
-    const existingBlog = await Blog.findOne({
-        $or: [
-            { title }
-        ]
-    });
+    const file = req.file;
+
+    if (file) {
+        try {
+            const result = await cloudinary.uploader.upload(file.path, {
+                folder: 'Blogs', // Specify your Cloudinary folder
+                resource_type: 'auto',
+            });
+            imageUrl = result.secure_url;
+        } catch (error) {
+            console.error('Error uploading image to Cloudinary:', error);
+            return res.status(500).json({
+                message: 'Internal Server Error',
+                success: false,
+            });
+        }
+    }
+
+    const existingBlog = await Blog.findOne({ title: title });
 
     if (!existingBlog) {
-        // Blog does not exist, so create a new Blog
-        const newBlog = await Blog.create(req.body);
+        const newBlog = await Blog.create({
+            title: title,
+            content: content,
+            written_by: written_by,category_id: category_id,specailitie_id: specailitie_id,
+            image: imageUrl, // add the Cloudinary image URL to the newBlog object
+        });
+
         res.status(201).json({
             message: "Blog Successfully Created!",
             success: true,
-            data:newBlog
+            data: newBlog
         });
     } else {
-        // Blog with the same email or phone already exists
         const message = existingBlog.title === title
-            ? "title is already exists."
-            : "title is already exists.";
+            ? "Title is already exists."
+            : "Blog with the same title already exists.";
+
         res.status(409).json({
             message,
             success: false
@@ -42,7 +69,7 @@ const AddBlogs = asyncHandler(async (req, res) => {
 
 const AllBlogs = async (req, res) => {
     try {
-        const patients = await Blog.find(); // Exclude the 'password' field;
+        const patients = await Blog.find().populate('category_id').populate('specailitie_id'); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Blogs data retrieved successfully!",
@@ -63,7 +90,7 @@ const AllBlogs = async (req, res) => {
 const editBlog = async (req, res) => {
     const { id } = req.params;
     try {
-        const editBlog = await Blog.findById(id); // Exclude the 'password' field
+        const editBlog = await Blog.findById(id).populate('category_id').populate('specailitie_id'); // Exclude the 'password' field
         if (!editBlog) {
             res.status(200).json({
                 message: "Blog was not found!",

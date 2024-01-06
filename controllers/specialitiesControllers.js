@@ -5,30 +5,58 @@ const { generateRefreshToken } = require('../config/refreshToken');
 const jwt = require('jsonwebtoken');
 require('dotenv/config')
 
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+  cloud_name: "durzgbfjf",
+  api_key: "512412315723482",
+  api_secret: "e3kLlh_vO5XhMBCMoIjkbZHjazo",
+});
+
 const AddSpecialitiess = asyncHandler(async (req, res) => {
     const { specialities_name } = req.body;
 
-    // Check if a Specialities with the given email or phone already exists
+    const file = req.file;
+
+    let imageUrl; // to store the Cloudinary image URL
+
+    if (file) {
+        try {
+            const result = await cloudinary.uploader.upload(file.path, {
+                folder: 'Specialities',
+                resource_type: 'auto',
+            });
+
+            imageUrl = result.secure_url;
+        } catch (error) {
+            console.error('Error uploading image to Cloudinary:', error);
+            return res.status(500).json({
+                message: 'Internal Server Error',
+                success: false,
+            });
+        }
+    }
+
     const existingSpecialities = await Specialities.findOne({
-        $or: [
-            { specialities_name }
-        ]
+        specialities_name: specialities_name
     });
 
     if (!existingSpecialities) {
-        // Specialities does not exist, so create a new Specialities
-        const newSpecialities = await Specialities.create(req.body);
-        res.status(201).json({
+        const newSpecialities = await Specialities.create({
+            specialities_name: specialities_name,
+            image: imageUrl, // add the Cloudinary image URL to the newSpecialities object
+        });
+
+        return res.status(201).json({
             message: "Specialities Successfully Created!",
             success: true,
-            data:newSpecialities
+            data: newSpecialities
         });
     } else {
-        // Specialities with the same email or phone already exists
         const message = existingSpecialities.specialities_name === specialities_name
-            ? "specialities_name is already exists."
-            : "specialities_name is already exists.";
-        res.status(409).json({
+            ? "Speciality name already exists."
+            : "Speciality with the same name already exists.";
+
+        return res.status(409).json({
             message,
             success: false
         });

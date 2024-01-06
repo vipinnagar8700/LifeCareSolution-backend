@@ -4,36 +4,66 @@ const asyncHandler = require('express-async-handler');
 const { generateRefreshToken } = require('../config/refreshToken');
 const jwt = require('jsonwebtoken');
 require('dotenv/config')
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+  cloud_name: "durzgbfjf",
+  api_key: "512412315723482",
+  api_secret: "e3kLlh_vO5XhMBCMoIjkbZHjazo",
+});
+
 
 const Addfeaturess = asyncHandler(async (req, res) => {
     const { features_name } = req.body;
 
-    // Check if a features with the given email or phone already exists
+    const file = req.file;
+
+    let imageUrl; // to store the Cloudinary image URL
+
+    if (file) {
+        try {
+            const result = await cloudinary.uploader.upload(file.path, {
+                folder: 'Features', // Specify your Cloudinary folder
+                resource_type: 'auto',
+            });
+
+            imageUrl = result.secure_url;
+        } catch (error) {
+            console.error('Error uploading image to Cloudinary:', error);
+            return res.status(500).json({
+                message: 'Internal Server Error',
+                success: false,
+            });
+        }
+    }
+
     const existingfeatures = await Features.findOne({
-        $or: [
-            { features_name }
-        ]
+        features_name: features_name
     });
 
     if (!existingfeatures) {
-        // features does not exist, so create a new features
-        const newfeatures = await features.create(req.body);
-        res.status(201).json({
-            message: "features Successfully Created!",
+        const newfeatures = await Features.create({
+            features_name: features_name,
+            image: imageUrl,
+        });
+        
+
+        return res.status(201).json({
+            message: "Features Successfully Created!",
             success: true,
-            data:newfeatures
+            data: newfeatures
         });
     } else {
-        // features with the same email or phone already exists
         const message = existingfeatures.features_name === features_name
-            ? "features_name is already exists."
-            : "features_name is already exists.";
-        res.status(409).json({
+            ? "Feature name already exists."
+            : "Feature with the same name already exists.";
+
+        return res.status(409).json({
             message,
             success: false
         });
     }
 });
+
 
 const Allfeaturess = async (req, res) => {
     try {
