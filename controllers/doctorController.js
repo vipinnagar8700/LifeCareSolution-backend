@@ -38,7 +38,7 @@ const editDoctor = async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
-    const doctor = await Doctor.findOne({ user_id: id });
+    const doctor = await Doctor.findOne({ user_id: id }).populate('Specailization');
     console.log(doctor); // Exclude the 'password' field
     if (!doctor) {
       res.status(404).json({

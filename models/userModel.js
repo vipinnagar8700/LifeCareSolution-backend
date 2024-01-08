@@ -371,10 +371,7 @@ const doctorSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    Specailization: {
-      type: [String],
-      default: [],
-    },
+    Specailization:  [{ type: mongoose.Schema.Types.ObjectId, ref: "Specialities" }],
     Education: {
       type: [
         {
