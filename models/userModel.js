@@ -60,14 +60,17 @@ userSchema.methods.isPasswordMatched = async function (enteredPassword) {
 };
 
 userSchema.methods.createPasswordResetToken = async function () {
-  const resettoken = crypto.randomBytes(32).toString("hex");
+  const resetToken = crypto.randomBytes(32).toString("hex"); // Corrected variable name
+  console.log("Generated Reset Token:", resetToken);
   this.passwordResetToken = crypto
     .createHash("sha256")
-    .update(resettoken)
+    .update(resetToken)
     .digest("hex");
   this.passwordResetExpires = Date.now() + 30 * 60 * 1000; // 30 minutes
-  return resettoken;
+  return resetToken;
 };
+
+
 
 const User = mongoose.model("User", userSchema);
 
@@ -288,7 +291,7 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    photo_id: {
+    Aadhar_id: {
       type: String,
       default: null,
     },
@@ -442,6 +445,10 @@ const doctorSchema = new mongoose.Schema(
         },
       ],
       default: [],
+    },
+    Total_Exp:{
+type:String,
+default:null
     },
     Awards: {
       type: [

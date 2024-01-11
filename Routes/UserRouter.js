@@ -1,10 +1,10 @@
 const express = require('express')
 const { authenticateToken } = require('../config/JwtToken');
-const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User } = require('../controllers/userController');
+const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword } = require('../controllers/userController');
 const { AddBlogs, AllBlogs, editBlog, UpdateBlogs, AddBlogsCategory, AllCategory, deleteBlogCategory, deleteBlog } = require('../controllers/blogController');
 const { AddSpecialitiess, AllSpecialitiess, deleteSpecialities } = require('../controllers/specialitiesControllers');
 const { Addfeaturess, Allfeaturess, deletefeatures } = require('../controllers/featuresControllers');
-const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails, deleteDoctorAwards, deleteDoctorEducation, deleteDoctorExperience, deleteClinicImage } = require('../controllers/doctorController');
+const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails, deleteDoctorAwards, deleteDoctorEducation, deleteDoctorExperience, deleteClinicImage, FilterDoctors } = require('../controllers/doctorController');
 const { AllPharmacys, editPharmacy, UpdatePharmacy, deletePharmacy } = require('../controllers/pharmacyController');
 const { AllSlots, editSlot, UpdateSlot, deleteSlot, AddSlot } = require('../controllers/slotController');
 const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, BookAppointment, doctor_appointments, UpdateAppointmentStatus, Patient_appointments } = require('../controllers/appointmentController');
@@ -20,6 +20,7 @@ const { addToCart, AllCarts, AllUserCarts, deleteCart } = require('../controller
 const { createOrderFromCart, getUserOrders } = require('../controllers/orderController');
 const multer = require('multer');
 const path = require('path');
+const { Reviews, DislikeReview, LikeReview, PatientReview, DoctorReview, AllReviews } = require('../controllers/reviewController');
 // Multer configuration
 const storage = multer.diskStorage({
     destination: './public/images', // Specify the destination folder
@@ -129,7 +130,12 @@ router.delete('/deleteDoctorAwards/:doctorId/:awardId',deleteDoctorAwards,authen
 router.delete('/deleteDoctorEducation/:doctorId/:EducationId',deleteDoctorEducation,authenticateToken)
 router.delete('/deleteDoctorExperience/:doctorId/:ExperienceId',deleteDoctorExperience,authenticateToken)
 router.delete('/deleteClinicImage/:doctorId/:ClinicImageId',deleteClinicImage,authenticateToken)
-// router.get('')
-
-
+router.post('/changePassword/:resetToken',authenticateToken,changePassword)
+router.get("/doctors/filter", FilterDoctors);
+router.post('/Reviews',Reviews,authenticateToken)
+router.post('/DislikeReview/:id',DislikeReview,authenticateToken)
+router.post('/LikeReview/:id',LikeReview,authenticateToken)
+router.get("/PatientReview/:patient_id",PatientReview,authenticateToken)
+router.get("/DoctorReview/:doctor_id",DoctorReview,authenticateToken)
+router.get("/AllReviews",AllReviews)
 module.exports = router;

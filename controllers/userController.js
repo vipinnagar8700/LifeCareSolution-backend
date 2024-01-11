@@ -37,6 +37,11 @@ const register = asyncHandler(async (req, res) => {
       password,
       role,
     });
+ // Generate the password reset token
+ await newUser.createPasswordResetToken();
+
+ // Save the user with the generated token
+ await newUser.save();
 
     // Add role-specific data based on the role
     let roleData;
@@ -94,7 +99,6 @@ const login = asyncHandler(async (req, res) => {
   const { email, mobile, password, role } = req.body;
 
   let findUser;
-
   // Check if a user with the given email or mobile exists and matches the role
   if (role) {
     findUser = await User.findOne({
@@ -105,6 +109,8 @@ const login = asyncHandler(async (req, res) => {
       $or: [{ email }, { mobile }],
     });
   }
+
+  console.log(findUser,"uuuu")
 
   if (findUser && (await findUser.isPasswordMatched(password))) {
     if (
@@ -132,6 +138,7 @@ const login = asyncHandler(async (req, res) => {
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
+
       const response = {
         _id: findUser._id,
         firstname: findUser.firstname,
@@ -144,6 +151,7 @@ const login = asyncHandler(async (req, res) => {
         state: findUser.state,
         role: findUser.role,
         token: token,
+        passwordResetToken:findUser.passwordResetToken
       };
       if (findUser.role === "doctor") {
         response.doctorData = await Doctor.findOne({ user_id: findUser._id });
@@ -354,6 +362,53 @@ const Accept_User = asyncHandler(async (req, res) => {
   }
 });
 
+
+const changePassword = asyncHandler(async (req, res) => {
+  const resetToken = req.params.resetToken;
+  console.log(resetToken,"AAA")
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+  console.log( oldPassword, newPassword, confirmPassword ,"AAA")
+  try {
+    // Find the user by the reset token
+    const user = await User.findOne({
+      passwordResetToken: resetToken,
+      passwordResetExpires: { $gt: Date.now() }, // Check if the token is still valid
+    });
+console.log(resetToken,"AAA")
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired reset token",status:false });
+    }
+
+    // Check if the old password is correct
+    const isOldPasswordCorrect = await user.isPasswordMatched(oldPassword);
+
+    if (!isOldPasswordCorrect) {
+      return res.status(400).json({ message: "Old password is incorrect",status:false });
+    }
+
+    // Check if the new password and confirmation match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "New password and confirmation do not match",status:false });
+    }
+
+    // Update the user's password
+    user.password = newPassword;
+    user.passwordChangeAt = new Date(); // Update the password change timestamp
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    // Save the updated user
+await user.createPasswordResetToken();
+
+    // Save the updated user
+    await user.save();
+    res.json({ message: "Password reset successful",status:true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
 module.exports = {
   register,
   login,
@@ -362,4 +417,5 @@ module.exports = {
   UpdateUsers,
   deleteUser,
   Accept_User,
+  changePassword
 };

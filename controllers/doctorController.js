@@ -15,7 +15,9 @@ cloudinary.config({
 
 const AllDoctors = async (req, res) => {
   try {
-    const doctores = await Doctor.find().select("-password"); // Exclude the 'password' field;
+    const doctores = await Doctor.find()
+      .select("-password")
+      .populate("Specailization"); // Exclude the 'password' field;
     const length = doctores.length;
     res.status(200).json([
       {
@@ -38,7 +40,9 @@ const editDoctor = async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
-    const doctor = await Doctor.findOne({ user_id: id }).populate('Specailization');
+    const doctor = await Doctor.findOne({ user_id: id }).populate(
+      "Specailization"
+    );
     console.log(doctor); // Exclude the 'password' field
     if (!doctor) {
       res.status(404).json({
@@ -452,6 +456,92 @@ const deleteClinicImage = async (req, res) => {
   }
 };
 
+const FilterDoctors = async (req, res) => {
+  try {
+    // Extract filter criteria from the request query
+    const {
+      gender,
+      fees,
+      specialization_id,
+      Total_Exp,
+      firstname,
+      lastname,
+      Registered_Clinic_address,
+      ClinicName,
+      Services,
+      Registered_Clinic_city,
+    } = req.query;
+
+    // Build the filter object based on provided criteria
+    const filter = {};
+
+    if (gender) filter.gender = gender;
+    if (fees) filter.fees = fees;
+    if (specialization_id) {
+      // Check if Specailization property exists, if not, initialize it
+      if (!filter.Specailization) {
+        filter.Specailization = {};
+        console.log(filter.Specailization, "filter.Specailization");
+      }
+      // Set the _id property
+      filter.Specailization._id = specialization_id;
+    }
+
+    // // ...
+    // if (Total_Exp) {
+    //   const [minExp, maxExp] = Total_Exp.split('-').map(part => (part ? parseInt(part) : undefined));
+    
+    //   if (minExp !== undefined && maxExp !== undefined) {
+    //     // If both min and max values are provided, set $gte and $lte conditions
+    //     filter.Total_Exp = { $gte: minExp, $lte: maxExp };
+    //   } else if (minExp !== undefined) {
+    //     // If only one value is provided, set $eq condition
+    //     filter.Total_Exp = minExp;
+    //   }
+    // }
+    if (Total_Exp) {
+      const [minExp, maxExp] = Total_Exp.split('-').map(part => (part ? parseInt(part) : undefined));
+    console.log([minExp, maxExp])
+      if (minExp !== undefined && maxExp !== undefined) {
+        // If both min and max values are provided, set $gte and $lte conditions
+        filter.Total_Exp = { $gte: minExp, $lte: maxExp };
+        console.log(filter.Total_Exp,"filter.Total_Exp")
+      } else if (minExp !== undefined) {
+        // If only one value is provided, set $gte and $lte conditions
+        filter.Total_Exp = { $gte: minExp, $lte: minExp };
+        console.log(filter.Total_Exp ,"filter.Total_Exp1")
+      }
+    }
+
+    if (firstname) filter.firstname = new RegExp(firstname, "i");
+    if (lastname) filter.lastname = new RegExp(lastname, "i");
+    if (Registered_Clinic_address)
+      filter.Registered_Clinic_address = Registered_Clinic_address;
+    if (ClinicName) filter.ClinicName = ClinicName;
+    if (Services) filter["Services"] = { $in: Services.split(",") };
+    if (Registered_Clinic_city)
+      filter.Registered_Clinic_city = Registered_Clinic_city;
+
+    const doctores = await Doctor.find(filter)
+      .select("-password")
+      .populate("Specailization");
+
+    const length = doctores.length;
+
+    res.status(200).json({
+      message: "Filtered doctor data retrieved successfully!",
+      data: doctores,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
 
 module.exports = {
   AllDoctors,
@@ -464,4 +554,5 @@ module.exports = {
   deleteDoctorEducation,
   deleteDoctorExperience,
   deleteClinicImage,
+  FilterDoctors,
 };
