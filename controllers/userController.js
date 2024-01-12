@@ -81,6 +81,7 @@ const register = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Successfully Registered!",
       success: true,
+      data:newUser
     });
   } else {
     // User with the same email or phone already exists
