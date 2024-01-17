@@ -5,30 +5,102 @@ const { generateRefreshToken } = require("../config/refreshToken");
 const jwt = require("jsonwebtoken");
 const { Patient, Doctor } = require("../models/userModel");
 const Slot = require("../models/slotModel");
+const VideoSlot = require("../models/videoSlotModel");
 require("dotenv/config");
 
+const Payment = require("../models/paymentModel");
+const Invoice = require("../models/invoiceModel");
 const BookAppointment = async (req, res) => {
   try {
-    const { patient_id, doctor_id, slot_id, date } = req.body;
+    const { patient_id, doctor_id, slot_id, videoSlot_id, date, type, amount, paymentMethod, transactionId } = req.body;
 
-    // Create a new Appointment
-    const newAppointment = await Appointment.create(req.body);
+    // Check if payment details are incomplete for online payments
+    if (paymentMethod === 'online' && (!amount || !transactionId)) {
+      return res.status(400).json({
+        message: "Payment details are incomplete.",
+        success: false,
+      });
+    }
+    const generateInvoiceId = () => {
+      // Generating a numeric invoice ID
+      const numericId = Math.floor(10000 + Math.random() * 90000); // Generates a random 5-digit number
+      return `${numericId}`;
+    };
+    
+    
 
+    const invoiceId = generateInvoiceId();
+
+    // Create a new Appointment with payment details
+    const newAppointment = await Appointment.create({
+      patient_id,
+      doctor_id,
+      slot_id,
+      videoSlot_id,
+      date,
+      type,
+      amount,
+      payment: {
+        method: paymentMethod,
+        transactionId: paymentMethod === 'code' ? null : transactionId,
+        status: 'pending', // Set an initial status if needed
+      },
+      invoice_id: invoiceId, // Include the generated invoice ID
+      // Other appointment details
+      // Other appointment details
+    });
+
+    const newInvoice = await Invoice.create({
+      appointment_id: newAppointment._id,
+      invoice_id: invoiceId,
+      // Other invoice details
+    });
     // Update the status of the associated slot to 'booked'
     await Slot.findByIdAndUpdate(slot_id, { status: 'booked' });
+    await VideoSlot.findByIdAndUpdate(videoSlot_id, { status: 'booked' });
 
-    res.status(201).json({
+    // Extract payment details from the appointment
+    const { payment } = newAppointment;
+
+    // Create a new Payment using the Payment model for online payments
+    if (paymentMethod === 'online') {
+      const newPayment = await Payment.create({
+        appointment_id: newAppointment._id,
+        method: payment.method,
+        transactionId: payment.transactionId,
+        status: payment.status,
+        amount: payment.amount,
+        // Other payment details
+      });
+
+      // Optionally, you can update the appointment to include the payment's _id
+      await Appointment.findByIdAndUpdate(newAppointment._id, { payment: newPayment._id });
+
+      return res.status(201).json({
+        message: "Appointment Successfully Booked!",
+        success: true,
+        data: {
+          appointment: newAppointment,
+          invoice: newInvoice,
+        payment: newPayment
+
+        },
+      });
+    }
+
+    // If COD, return success response without creating a Payment entry
+    return res.status(201).json({
       message: "Appointment Successfully Booked!",
       success: true,
       data: newAppointment,
     });
   } catch (error) {
-    console.error(error); // Log the error for debugging purposes
+    console.error(error);
 
     res.status(500).json({
       message: "Failed to book Appointment.",
       success: false,
-      error: error.message, // Provide the error message in the response
+      error: error.message,
     });
   }
 };
@@ -36,7 +108,9 @@ const BookAppointment = async (req, res) => {
 
 const AllAppointments = async (req, res) => {
   try {
-    const AppointmentA = await Appointment.find(); // Exclude the 'password' field;
+    const AppointmentA = await Appointment.find()
+      .populate("slot_id")
+      .populate("videoSlot_id"); // Exclude the 'password' field;
     const length = Appointment.length;
     res.status(200).json([
       {
@@ -59,7 +133,9 @@ const editAppointment = async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
-    const AppointmentA = await Appointment.findById(id);
+    const AppointmentA = await Appointment.findById(id)
+      .populate("slot_id")
+      .populate("videoSlot_id");
     console.log(AppointmentA); // Exclude the 'password' field
     if (!Appointment) {
       res.status(404).json({
@@ -150,11 +226,17 @@ const deleteAppointment = async (req, res) => {
 
 const doctor_appointments = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
 
   try {
     // Retrieve appointments for the given doctor
-    const appointments = await Appointment.find({ doctor_id: id }).populate('doctor_id').populate('patient_id').populate('slot_id').exec();
+    const appointments = await Appointment.find({ doctor_id: id })
+      .populate("doctor_id")
+      .populate("patient_id")
+      .populate("slot_id")
+      .populate("videoSlot_id")
+      .sort({ createdAt: -1 }) // Sort by date in descending order
+      .exec();
+
     const length = appointments.length;
 
     // Check if appointments exist
@@ -164,10 +246,6 @@ const doctor_appointments = async (req, res) => {
         success: false,
       });
     }
-
-    // Retrieve patient details for each appointment
-   
-
 
     res.status(200).json({
       message: "Appointments by doctor retrieved successfully!",
@@ -187,11 +265,16 @@ const doctor_appointments = async (req, res) => {
 const Patient_appointments = async (req, res) => {
   try {
     const { id } = req.params;
-    const appointments = await Appointment.find({ patient_id: id }).populate('doctor_id').populate('patient_id').populate('slot_id').exec();;
+    const appointments = await Appointment.find({ patient_id: id })
+      .populate("doctor_id")
+      .populate("patient_id")
+      .populate("slot_id")
+      .populate("videoSlot_id")
+      .exec()
+      .sort({ createdAt: -1 }); // Sort by date in descending order;
     const length = appointments.length;
 
     // Check if appointments exist
-    
 
     res.status(200).json({
       message: "Appointments by doctor retrieved successfully!",
@@ -214,30 +297,43 @@ const UpdateAppointmentStatus = async (req, res) => {
       { new: true }
     );
 
-    let message = '';
-    let slotStatus = '';
+    let message = "";
+    let slotStatus = "";
+    let VideoslotStatus = "";
 
     switch (status) {
-      case 'accept':
-        message = 'Appointment accepted successfully!';
-        slotStatus = 'processing';
+      case "accept":
+        message = "Appointment accepted successfully!";
+        slotStatus = "processing";
+        VideoslotStatus = "processing";
+
         break;
-      case 'cancel':
-        message = 'Appointment canceled successfully!';
-        slotStatus = 'pending';
+      case "cancel":
+        message = "Appointment canceled successfully!";
+        slotStatus = "pending";
+        VideoslotStatus = "pending";
         break;
-      case 'completed':
-        message = 'Appointment completed successfully!';
-        slotStatus = 'pending';
+      case "completed":
+        message = "Appointment completed successfully!";
+        slotStatus = "pending";
+        VideoslotStatus = "pending";
         break;
       default:
-        message = 'Appointment status updated successfully!';
+        message = "Appointment status updated successfully!";
     }
 
     // Update the status of the associated slot
     if (slotStatus) {
-      console.log(updatedAppointment,"updatedAppointment")
-      await Slot.findByIdAndUpdate(updatedAppointment.slot_id, { status: slotStatus });
+      console.log(updatedAppointment, "updatedAppointment");
+      await Slot.findByIdAndUpdate(updatedAppointment.slot_id, {
+        status: slotStatus,
+      });
+    }
+    if (VideoslotStatus) {
+      console.log(updatedAppointment, "updatedAppointment");
+      await VideoSlot.findByIdAndUpdate(updatedAppointment.videoSlot_id, {
+        status: VideoslotStatus,
+      });
     }
 
     if (!updatedAppointment) {
@@ -262,7 +358,6 @@ const UpdateAppointmentStatus = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   AllAppointments,

@@ -4,7 +4,23 @@ const asyncHandler = require('express-async-handler');
 const { generateRefreshToken } = require('../config/refreshToken');
 const jwt = require('jsonwebtoken');
 require('dotenv/config')
+const multer = require('multer')
 const BlogCategory = require('../models/blogCategoryModel')
+
+// Multer configuration
+const storage = multer.diskStorage({
+    destination: './public/images', // Specify the destination folder
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // Set file size limit (optional)
+});
+
+
+
 const cloudinary = require("cloudinary").v2;
 cloudinary.config({
   cloud_name: "durzgbfjf",

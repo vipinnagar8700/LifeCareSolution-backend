@@ -21,6 +21,9 @@ const { createOrderFromCart, getUserOrders } = require('../controllers/orderCont
 const multer = require('multer');
 const path = require('path');
 const { Reviews, DislikeReview, LikeReview, PatientReview, DoctorReview, AllReviews } = require('../controllers/reviewController');
+const { AllVideoSlots, editVideoSlot, UpdateVideoSlot, deleteVideoSlot, AddVideoSlot } = require('../controllers/VideoSlotController');
+const { AllPayments } = require('../controllers/paymentController');
+const { AllInvoices,AllDoctorInvoice, AllPatientInvoice } = require('../controllers/invoiceController');
 // Multer configuration
 const storage = multer.diskStorage({
     destination: './public/images', // Specify the destination folder
@@ -138,4 +141,14 @@ router.post('/LikeReview/:id',LikeReview,authenticateToken)
 router.get("/PatientReview/:patient_id",PatientReview,authenticateToken)
 router.get("/DoctorReview/:doctor_id",DoctorReview,authenticateToken)
 router.get("/AllReviews",AllReviews)
+router.get('/AllVideoSlots/:id', AllVideoSlots)
+router.get('/editVideoSlot/:id', editVideoSlot)
+router.put('/UpdateVideoSlot/:id',authenticateToken, UpdateVideoSlot)
+router.delete('/deleteVideoSlot/:id',authenticateToken, deleteVideoSlot)
+router.post('/AddVideoSlot',authenticateToken, AddVideoSlot)
+router.get('/AllPayments',AllPayments)
+router.get('/AllInvoices',AllInvoices)
+router.get('/AllDoctorInvoice/:id',AllDoctorInvoice)
+router.get('/AllPatientInvoice/:id',AllPatientInvoice)
+
 module.exports = router;
