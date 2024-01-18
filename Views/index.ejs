@@ -1,50 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <title>Binary Image Form</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCavenue Payment</title>
 </head>
-
 <body>
-  <input type="file" id="imageInput" />
-  <input type="file" id="clinicImagesInput" multiple="true" />
 
-  <button onclick="submitForm()">Submit</button>
+    <h1>CCavenue Payment Form</h1>
 
-  <script>
-    function submitForm() {
-      const imageInput = document.getElementById('imageInput');
-      const clinicImagesInput = document.getElementById('clinicImagesInput');
+    <form action="http://localhost:3000/api/ccavenue" method="post">
+        <!-- Add your input fields for user information here -->
+        <label for="order_id">Order ID:</label>
+        <input type="text" id="order_id" name="order_id" value="UNIQUE_ORDER_ID" required>
 
-      const formData = new FormData();
+        <label for="amount">Amount (INR):</label>
+        <input type="text" id="amount" name="amount" value="AMOUNT_IN_INR" required>
 
-      // Append binary image data to the FormData object
-      formData.append('image', imageInput.files[0]);
-      
-      // Append all clinic images to the same array in the FormData object
-      for (let i = 0; i < clinicImagesInput.files.length; i++) {
-  // Append each file to the FormData object with the same key
-  formData.append('clinicImages', clinicImagesInput.files[i]);
-}
+        <!-- Add other input fields as needed -->
 
+        <input type="submit" value="Proceed to Payment">
+    </form>
 
-      // Other form fields can be appended similarly
-
-      const requestOptions = {
-        method: 'PUT', // Change the method as needed (e.g., PUT)
-        body: formData,
-        headers: {
-          // You may need to set additional headers based on your server requirements
-        },
-      };
-
-      fetch('http://localhost:3000/api/UpdateDoctor/658bab1824ef87ba89307766', requestOptions)
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error('Error:', error));
-    }
-  </script>
 </body>
-
 </html>

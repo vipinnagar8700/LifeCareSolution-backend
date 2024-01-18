@@ -13,7 +13,7 @@ const messageSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: true,
+    required: null,
   },
   image: {
     type: String,
@@ -24,6 +24,7 @@ const messageSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
 
 const chatSchema = new mongoose.Schema({
   participants: [{

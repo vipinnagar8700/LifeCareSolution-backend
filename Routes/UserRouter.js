@@ -11,7 +11,7 @@ const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, 
 const { AddDependents, AllDependents, editDependent, UpdateDependents, deleteDependent } = require('../controllers/dependendController');
 const { AddMedicines, AllMedicines, editMedicine, UpdateMedicines, deleteMedicine } = require('../controllers/medicineController');
 const { AddFavourates, deleteFavourate, AllFavourates } = require('../controllers/favourateControllers');
-const { sendMessages, AddUserforChat, GetAllChat, AllParticipants } = require('../controllers/chatController');
+const { sendMessages, AddUserforChat, GetAllChat, AllParticipants, deleteChat, getMessages } = require('../controllers/chatController');
 const { AddProducts, AllProducts, editProduct, UpdateProducts, deleteProduct, AllPharmacyProducts } = require('../controllers/productController');
 const { AllProductCategorys, editProductCategory, UpdateProductCategorys, deleteProductCategory, AddProductCategorys, pharmacyProductCategory } = require('../controllers/productCategoryController');
 const { AddSupplier, AllSupplier, editSupplier, UpdateSupplier, deleteSupplier, AllPharmacySupplier } = require('../controllers/supplierController');
@@ -94,10 +94,10 @@ router.post('/AddMedicines',authenticateToken, AddMedicines)
 router.delete('/deleteFavourate/:id',authenticateToken, deleteFavourate)
 router.post('/AddFavourates',authenticateToken, AddFavourates)
 router.get('/AllFavourates/:id',authenticateToken, AllFavourates)
-router.post('/:chatId/send-message',authenticateToken, sendMessages)
-router.get('/user/:userId/chats',authenticateToken, GetAllChat)
-router.post('/create',authenticateToken, AddUserforChat)
-router.get('/AllParticipants',authenticateToken, AllParticipants)
+router.post('/sendMessages',upload.single('image'),authenticateToken, sendMessages)
+router.get('/getMessages/:userId',authenticateToken, getMessages)
+router.post('/deleteChat',authenticateToken, deleteChat)
+
 router.get('/AllProducts',authenticateToken, AllProducts)
 router.get('/editProduct/:id', editProduct)
 router.put('/UpdateProducts/:id', upload.single('image'),authenticateToken, UpdateProducts)
