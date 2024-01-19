@@ -263,15 +263,17 @@ const doctor_appointments = async (req, res) => {
 };
 
 const Patient_appointments = async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
     const appointments = await Appointment.find({ patient_id: id })
       .populate("doctor_id")
       .populate("patient_id")
       .populate("slot_id")
       .populate("videoSlot_id")
-      .exec()
-      .sort({ createdAt: -1 }); // Sort by date in descending order;
+      .sort({ createdAt: -1 })
+      .exec();
+       // Sort by date in descending order;
     const length = appointments.length;
 
     // Check if appointments exist
