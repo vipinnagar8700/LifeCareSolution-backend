@@ -24,6 +24,7 @@ const { Reviews, DislikeReview, LikeReview, PatientReview, DoctorReview, AllRevi
 const { AllVideoSlots, editVideoSlot, UpdateVideoSlot, deleteVideoSlot, AddVideoSlot } = require('../controllers/VideoSlotController');
 const { AllPayments } = require('../controllers/paymentController');
 const { AllInvoices,AllDoctorInvoice, AllPatientInvoice } = require('../controllers/invoiceController');
+const { edit_admin_profile, Update_admin_profile } = require('../controllers/adminController');
 // Multer configuration
 const storage = multer.diskStorage({
     destination: './public/images', // Specify the destination folder
@@ -150,5 +151,10 @@ router.get('/AllPayments',AllPayments)
 router.get('/AllInvoices',AllInvoices)
 router.get('/AllDoctorInvoice/:id',AllDoctorInvoice)
 router.get('/AllPatientInvoice/:id',AllPatientInvoice)
+
+// admin
+
+router.get('/edit_admin_profile/:id',edit_admin_profile,authenticateToken)
+router.put('/Update_admin_profile/:id',upload.single('image'),Update_admin_profile,authenticateToken)
 
 module.exports = router;
