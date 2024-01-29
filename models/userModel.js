@@ -22,9 +22,10 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     status: {
-      type: Boolean,
-      default: false,
-    },
+    type: String,
+    enum: ['pending', 'approved', 'blocked'],
+    default: 'pending',
+  },
     address: String,
     city: String,
     state: String,
@@ -95,9 +96,10 @@ const patientSchema = new mongoose.Schema(
       required: true,
     },
     status: {
-      type: Boolean,
-      default: false,
-    },
+    type: String,
+    enum: ['pending', 'approved', 'blocked'],
+    default: 'pending',
+  },
     address: String,
     city: String,
     state: String,
@@ -138,7 +140,7 @@ const patientSchema = new mongoose.Schema(
       default: null,
     },
     Allergies: {
-      type: String,
+    type: String,
       default: null,
     },
     dob: {
@@ -184,9 +186,10 @@ const pharmacySchema = new mongoose.Schema(
       required: true,
     },
     status: {
-      type: Boolean,
-      default: false,
-    },
+    type: String,
+    enum: ['pending', 'approved', 'blocked'],
+    default: 'pending',
+  },
     dob: {
       type: String,
       default: null,
@@ -237,9 +240,10 @@ const doctorSchema = new mongoose.Schema(
       required: true,
     },
     status: {
-      type: Boolean,
-      default: false,
-    },
+    type: String,
+    enum: ['pending', 'approved', 'blocked'],
+    default: 'pending',
+  },
     dob: {
       type: String,
       default: null,

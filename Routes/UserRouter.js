@@ -60,7 +60,7 @@ router.get('/AllSpecialitiess', AllSpecialitiess)
 router.delete('/deleteSpecialities/:id',authenticateToken, deleteSpecialities)
 router.post('/Addfeaturess',upload.single('image'),authenticateToken, Addfeaturess)
 router.get('/Allfeaturess', Allfeaturess)
-router.delete('/deletefeatures',authenticateToken, deletefeatures)
+router.delete('/deletefeatures/:id',authenticateToken, deletefeatures)
 router.get('/editDoctor/:id', editDoctor)
 router.put('/UpdateDoctor/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'ClinicImage', maxCount: 5 }]), authenticateToken, UpdateDoctor);
 router.delete('/deleteDoctor/:id',authenticateToken, deleteDoctor)
