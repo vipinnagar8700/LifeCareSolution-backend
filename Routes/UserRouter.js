@@ -1,6 +1,6 @@
 const express = require('express')
 const { authenticateToken } = require('../config/JwtToken');
-const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword } = require('../controllers/userController');
+const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword, register_admin } = require('../controllers/userController');
 const { AddBlogs, AllBlogs, editBlog, UpdateBlogs, AddBlogsCategory, AllCategory, deleteBlogCategory, deleteBlog } = require('../controllers/blogController');
 const { AddSpecialitiess, AllSpecialitiess, deleteSpecialities } = require('../controllers/specialitiesControllers');
 const { Addfeaturess, Allfeaturess, deletefeatures } = require('../controllers/featuresControllers');
@@ -156,5 +156,5 @@ router.get('/AllPatientInvoice/:id',AllPatientInvoice)
 
 router.get('/edit_admin_profile/:id',edit_admin_profile,authenticateToken)
 router.put('/Update_admin_profile/:id',upload.single('image'),Update_admin_profile,authenticateToken)
-
+router.post('/register_admin',authenticateToken,register_admin)
 module.exports = router;

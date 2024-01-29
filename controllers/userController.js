@@ -96,6 +96,100 @@ const register = asyncHandler(async (req, res) => {
   }
 });
 
+const register_admin = asyncHandler(async (req, res) => {
+  const {firstname, lastname,email, mobile, password, role,address,city,state,gender,UserName ,pincode} = req.body;
+  console.log(email, mobile, password, role);
+  // Check if a user with the given email or phone already exists
+  const existingUser = await User.findOne({
+    $or: [{ email }, { mobile }],
+  });
+
+  if (!existingUser) {
+    // User does not exist, so create a new user
+    const newUser = await User.create({
+      firstname, lastname,email, mobile, password, role,address,city,state,gender,UserName ,pincode
+
+    });
+ // Generate the password reset token
+ await newUser.createPasswordResetToken();
+
+ // Save the user with the generated token
+ await newUser.save();
+
+    // Add role-specific data based on the role
+    let roleData;
+
+    if (role === "doctor") {
+      roleData = await Doctor.create({
+        user_id: newUser._id,
+        firstname:newUser.firstname,
+        lastname:newUser.lastname,
+        address:newUser.address,
+        city:newUser.city,
+        state:newUser.state,
+        gender:newUser.gender,
+        UserName:newUser.UserName,pincode:newUser.pincode,
+        // Add the necessary fields for the Student model here
+        password: newUser.password, // Assuming this is the password from newUser
+        mobile: newUser.mobile,
+        email: newUser.email,
+        role: newUser.role,
+        Education: null, // Replace this with the actual array of education data
+        experience: null, // Replace this with the actual array of experience data
+        Registrations: null,
+      });
+    } else if (role === "patient") {
+      roleData = await Patient.create({
+        user_id: newUser._id,
+        // Add the necessary fields for the Student model here
+        password: newUser.password, // Assuming this is the password from newUser
+        mobile: newUser.mobile,
+        email: newUser.email,
+        role: newUser.role,
+        firstname:newUser.firstname,
+        lastname:newUser.lastname,
+        address:newUser.address,
+        city:newUser.city,
+        state:newUser.state,
+        gender:newUser.gender,
+        UserName:newUser.UserName,pincode:newUser.pincode,
+      });
+    } else if (role === "pharmacy") {
+      roleData = await Pharmacy.create({
+        user_id: newUser._id,
+        // Add the necessary fields for the Student model here
+        password: newUser.password, // Assuming this is the password from newUser
+        mobile: newUser.mobile,
+        email: newUser.email,
+        role: newUser.role,
+        firstname:newUser.firstname,
+        lastname:newUser.lastname,
+        address:newUser.address,
+        city:newUser.city,
+        state:newUser.state,
+        gender:newUser.gender,
+        UserName:newUser.UserName,pincode:newUser.pincode,
+      });
+    }
+
+    res.status(201).json({
+      message: "Successfully Registered!",
+      success: true,
+      data:newUser
+    });
+  } else {
+    // User with the same email or phone already exists
+    const message =
+      existingUser.email === email
+        ? "Email is already registered."
+        : "Mobile number is already registered.";
+    res.status(409).json({
+      message,
+      success: false,
+    });
+  }
+});
+
 const login = asyncHandler(async (req, res) => {
   const { email, mobile, password, role } = req.body;
 
@@ -418,5 +512,5 @@ module.exports = {
   UpdateUsers,
   deleteUser,
   Accept_User,
-  changePassword
+  changePassword,register_admin
 };
