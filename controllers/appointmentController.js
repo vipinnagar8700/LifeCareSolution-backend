@@ -110,6 +110,8 @@ const AllAppointments = async (req, res) => {
   try {
     const AppointmentA = await Appointment.find()
       .populate("slot_id")
+      .populate("doctor_id")
+      .populate("patient_id")
       .populate("videoSlot_id"); // Exclude the 'password' field;
     const length = Appointment.length;
     res.status(200).json([
