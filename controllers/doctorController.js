@@ -411,6 +411,7 @@ const deleteDoctorExperience = async (req, res) => {
     });
   }
 };
+
 const deleteClinicImage = async (req, res) => {
   const { doctorId, ClinicImageId } = req.params;
 
@@ -464,12 +465,7 @@ const FilterDoctors = async (req, res) => {
       fees,
       specialization_id,
       Total_Exp,
-      firstname,
-      lastname,
-      Registered_Clinic_address,
-      ClinicName,
-      Services,
-      Registered_Clinic_city,
+      search_data,
     } = req.query;
 
     // Build the filter object based on provided criteria
@@ -478,63 +474,84 @@ const FilterDoctors = async (req, res) => {
     if (gender) filter.gender = gender;
     if (fees) filter.fees = fees;
     if (specialization_id) {
-      // Check if Specailization property exists, if not, initialize it
-      if (!filter.Specailization) {
-        filter.Specailization = {};
-        console.log(filter.Specailization, "filter.Specailization");
+      // Check if Specialization property exists, if not, initialize it
+      if (!filter.Specialization) {
+        filter.Specialization = {};
+        console.log(filter.Specialization, "filter.Specialization");
       }
       // Set the _id property
-      filter.Specailization._id = specialization_id;
+      filter.Specialization._id = specialization_id;
     }
 
-    // // ...
-    // if (Total_Exp) {
-    //   const [minExp, maxExp] = Total_Exp.split('-').map(part => (part ? parseInt(part) : undefined));
-    
-    //   if (minExp !== undefined && maxExp !== undefined) {
-    //     // If both min and max values are provided, set $gte and $lte conditions
-    //     filter.Total_Exp = { $gte: minExp, $lte: maxExp };
-    //   } else if (minExp !== undefined) {
-    //     // If only one value is provided, set $eq condition
-    //     filter.Total_Exp = minExp;
-    //   }
-    // }
     if (Total_Exp) {
-      const [minExp, maxExp] = Total_Exp.split('-').map(part => (part ? parseInt(part) : undefined));
-    console.log([minExp, maxExp])
+      const [minExp, maxExp] = Total_Exp.split("-").map((part) =>
+        part ? parseInt(part) : undefined
+      );
+      console.log([minExp, maxExp]);
       if (minExp !== undefined && maxExp !== undefined) {
         // If both min and max values are provided, set $gte and $lte conditions
         filter.Total_Exp = { $gte: minExp, $lte: maxExp };
-        console.log(filter.Total_Exp,"filter.Total_Exp")
+        console.log(filter.Total_Exp, "filter.Total_Exp");
       } else if (minExp !== undefined) {
         // If only one value is provided, set $gte and $lte conditions
         filter.Total_Exp = { $gte: minExp, $lte: minExp };
-        console.log(filter.Total_Exp ,"filter.Total_Exp1")
+        console.log(filter.Total_Exp, "filter.Total_Exp1");
       }
     }
 
-    if (firstname) filter.firstname = new RegExp(firstname, "i");
-    if (lastname) filter.lastname = new RegExp(lastname, "i");
-    if (Registered_Clinic_address)
-      filter.Registered_Clinic_address = Registered_Clinic_address;
-    if (ClinicName) filter.ClinicName = ClinicName;
-    if (Services) filter["Services"] = { $in: Services.split(",") };
-    if (Registered_Clinic_city)
-      filter.Registered_Clinic_city = Registered_Clinic_city;
+    if (search_data) {
+      // Use multiple conditions to search across different fields
+      filter["$or"] = [
+        { firstname: new RegExp(search_data, "i") },
+        { lastname: new RegExp(search_data, "i") },
+        { Registered_Clinic_address: new RegExp(search_data, "i") },
+        { ClinicName: new RegExp(search_data, "i") },
+        { Registered_Clinic_city: new RegExp(search_data, "i") },
+        { Services: { $in: search_data.split(",") } },
+      ];
+    }
 
-    const doctores = await Doctor.find(filter)
+    const doctors = await Doctor.find(filter)
       .select("-password")
       .populate("Specailization");
 
-    const length = doctores.length;
+    const length = doctors.length;
 
     res.status(200).json({
       message: "Filtered doctor data retrieved successfully!",
-      data: doctores,
+      data: doctors,
       status: true,
       length,
     });
   } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+
+
+
+const search_specialities = async (req, res) => {
+  try {
+    const { specialityId } = req.params;
+
+    console.log("Speciality ID received:", specialityId);
+
+    // Assuming that your doctor model is named 'Doctor' and it has the 'Specailization' field
+    const doctors = await Doctor.find({ Specailization: specialityId });
+    const length = await doctors.length;
+    res.status(200).json({
+      message: "Doctors found successfully",
+      doctors,
+      length,
+      status: true,
+    });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({
       message: "Internal Server Error",
       error: error.message,
@@ -555,4 +572,5 @@ module.exports = {
   deleteDoctorExperience,
   deleteClinicImage,
   FilterDoctors,
+  search_specialities,
 };
