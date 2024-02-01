@@ -108,7 +108,55 @@ const deletefeatures = async (req, res) => {
     }
 }
 
+
+const editFeatures = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const editFeatures = await Features.findById(id); // Exclude the 'password' field
+        if (!editFeatures) {
+            res.status(200).json({
+                message: "Features was not found!",
+            });
+        } else {
+            res.status(201).json({
+                message: "Data successfully Retrived!",
+                success: true,
+                data:editFeatures
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to Retrived Data!",
+            status: false
+        });
+    }
+}
+
+const updateFeatures = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const editFeatures = await Features.findByIdAndUpdate(id); // Exclude the 'password' field
+        if (!editFeatures) {
+            res.status(200).json({
+                message: "Features was not found!",
+            });
+        } else {
+            res.status(201).json({
+                message: "Data successfully Updated!",
+                success: true,
+                
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to Updated Data!",
+            status: false
+        });
+    }
+}
+
+
 module.exports = {
     Addfeaturess,
-     Allfeaturess,deletefeatures
+     Allfeaturess,deletefeatures,editFeatures,updateFeatures
 }

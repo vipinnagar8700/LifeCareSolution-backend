@@ -457,6 +457,7 @@ const deleteClinicImage = async (req, res) => {
   }
 };
 
+
 const FilterDoctors = async (req, res) => {
   try {
     // Extract filter criteria from the request query
@@ -466,47 +467,47 @@ const FilterDoctors = async (req, res) => {
       specialization_id,
       Total_Exp,
       search_data,
+      Registered_Clinic_city,
     } = req.query;
 
     // Build the filter object based on provided criteria
     const filter = {};
 
     if (gender) filter.gender = gender;
-    if (fees) filter.fees = fees;
-    if (specialization_id) {
-      // Check if Specialization property exists, if not, initialize it
-      if (!filter.Specialization) {
-        filter.Specialization = {};
-        console.log(filter.Specialization, "filter.Specialization");
+    if (Registered_Clinic_city) filter.Registered_Clinic_city = Registered_Clinic_city;
+
+    if (fees) {
+      const [minFees, maxFees] = fees.split("-").map((part) =>
+        part ? parseInt(part) : undefined
+      );
+      if (minFees !== undefined && maxFees !== undefined) {
+        filter.fees = { $gte: minFees, $lte: maxFees };
+      } else if (minFees !== undefined) {
+        filter.fees = { $gte: minFees, $lte: minFees };
       }
-      // Set the _id property
-      filter.Specialization._id = specialization_id;
+    }
+
+    if (specialization_id && mongoose.Types.ObjectId.isValid(specialization_id)) {
+      filter.Specialization = { _id: specialization_id };
     }
 
     if (Total_Exp) {
       const [minExp, maxExp] = Total_Exp.split("-").map((part) =>
         part ? parseInt(part) : undefined
       );
-      console.log([minExp, maxExp]);
       if (minExp !== undefined && maxExp !== undefined) {
-        // If both min and max values are provided, set $gte and $lte conditions
         filter.Total_Exp = { $gte: minExp, $lte: maxExp };
-        console.log(filter.Total_Exp, "filter.Total_Exp");
       } else if (minExp !== undefined) {
-        // If only one value is provided, set $gte and $lte conditions
         filter.Total_Exp = { $gte: minExp, $lte: minExp };
-        console.log(filter.Total_Exp, "filter.Total_Exp1");
       }
     }
 
     if (search_data) {
-      // Use multiple conditions to search across different fields
       filter["$or"] = [
         { firstname: new RegExp(search_data, "i") },
         { lastname: new RegExp(search_data, "i") },
         { Registered_Clinic_address: new RegExp(search_data, "i") },
         { ClinicName: new RegExp(search_data, "i") },
-        { Registered_Clinic_city: new RegExp(search_data, "i") },
         { Services: { $in: search_data.split(",") } },
       ];
     }
@@ -531,6 +532,7 @@ const FilterDoctors = async (req, res) => {
     });
   }
 };
+
 
 
 

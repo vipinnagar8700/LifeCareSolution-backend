@@ -85,9 +85,51 @@ const AllSpecialitiess = async (req, res) => {
         });
     }
 };
+const editSpecialities = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const editSpecialities = await Specialities.findById(id); // Exclude the 'password' field
+        if (!editSpecialities) {
+            res.status(200).json({
+                message: "Specialities was not found!",
+            });
+        } else {
+            res.status(201).json({
+                message: "Data successfully Retrived!",
+                success: true,
+                data:editSpecialities
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to Retrived Data!",
+            status: false
+        });
+    }
+}
 
-
-
+const updateSpecialities = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const editSpecialities = await Specialities.findByIdAndUpdate(id); // Exclude the 'password' field
+        if (!editSpecialities) {
+            res.status(200).json({
+                message: "Specialities was not found!",
+            });
+        } else {
+            res.status(201).json({
+                message: "Data successfully Updated!",
+                success: true,
+                
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to Updated Data!",
+            status: false
+        });
+    }
+}
 
 const deleteSpecialities = async (req, res) => {
     const { id } = req.params;
@@ -114,5 +156,5 @@ const deleteSpecialities = async (req, res) => {
 
 module.exports = {
     AddSpecialitiess,
-     AllSpecialitiess,deleteSpecialities
+     AllSpecialitiess,deleteSpecialities,updateSpecialities,editSpecialities
 }

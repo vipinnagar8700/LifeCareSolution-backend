@@ -2,8 +2,8 @@ const express = require('express')
 const { authenticateToken } = require('../config/JwtToken');
 const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword, register_admin } = require('../controllers/userController');
 const { AddBlogs, AllBlogs, editBlog, UpdateBlogs, AddBlogsCategory, AllCategory, deleteBlogCategory, deleteBlog } = require('../controllers/blogController');
-const { AddSpecialitiess, AllSpecialitiess, deleteSpecialities } = require('../controllers/specialitiesControllers');
-const { Addfeaturess, Allfeaturess, deletefeatures } = require('../controllers/featuresControllers');
+const { AddSpecialitiess, AllSpecialitiess, deleteSpecialities, updateSpecialities, editSpecialities } = require('../controllers/specialitiesControllers');
+const { Addfeaturess, Allfeaturess, deletefeatures, editFeatures, updateFeatures } = require('../controllers/featuresControllers');
 const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails, deleteDoctorAwards, deleteDoctorEducation, deleteDoctorExperience, deleteClinicImage, FilterDoctors, search_specialities } = require('../controllers/doctorController');
 const { AllPharmacys, editPharmacy, UpdatePharmacy, deletePharmacy } = require('../controllers/pharmacyController');
 const { AllSlots, editSlot, UpdateSlot, deleteSlot, AddSlot } = require('../controllers/slotController');
@@ -158,4 +158,10 @@ router.get('/edit_admin_profile/:id',edit_admin_profile,authenticateToken)
 router.put('/Update_admin_profile/:id',upload.single('image'),Update_admin_profile,authenticateToken)
 router.post('/register_admin',authenticateToken,register_admin)
 router.get('/search_specialities/:specialityId',search_specialities)
+router.put('/updateSpecialities/:id',updateSpecialities,authenticateToken)
+router.get('/editSpecialities/:id',editSpecialities)
+router.put('/updateFeatures/:id',updateFeatures,authenticateToken)
+router.get('/editFeatures/:id',editFeatures)
+
+
 module.exports = router;
