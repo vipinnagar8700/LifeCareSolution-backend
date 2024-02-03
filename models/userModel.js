@@ -21,11 +21,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-  //   // status: {
-  //   // type: String,
-  //   // enum: ['pending', 'approved', 'blocked'],
-  //   // default: 'pending',
-  // },
+    status: {
+    type: String,
+    enum: ['pending', 'approved', 'blocked'],
+    default: 'pending',
+  },
     address: String,
     city: String,
     state: String,

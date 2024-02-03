@@ -16,19 +16,16 @@ const userModel = require("../models/userModel");
 dbConnect();
 // Serve static files from the 'public' directory
 app.use(express.static("public"));
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger'); 
 
 const corsOptions = {
   origin: "*",
 };
 
-app.use(cors(corsOptions));
 
-//
-// app.use((err, req, res, next) => {
-//     console.error(err.stack);
-//     res.status(500).send('Something went wrong!');
-// });
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use((req, res, next) => {
   console.log("Request received:", req.method, req.url);
   next();
