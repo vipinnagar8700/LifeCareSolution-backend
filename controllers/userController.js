@@ -99,6 +99,8 @@ const register = asyncHandler(async (req, res) => {
   }
 });
 
+
+
 const register_admin = asyncHandler(async (req, res) => {
   const {firstname, lastname,email, mobile, password, role,address,city,state,gender,UserName ,pincode} = req.body;
   console.log(email, mobile, password, role);
@@ -193,6 +195,9 @@ const register_admin = asyncHandler(async (req, res) => {
   }
 });
 
+
+
+
 const login = asyncHandler(async (req, res) => {
   const { email, mobile, password, role } = req.body;
 
@@ -214,7 +219,7 @@ const login = asyncHandler(async (req, res) => {
     if (
       findUser.role !== "patient" &&
       findUser.role !== "admin" &&
-      findUser.role !== "doctor" &&
+      findUser.role == "doctor" &&
       !findUser.permission
     ) {
       return res.status(401).json({
@@ -249,7 +254,8 @@ const login = asyncHandler(async (req, res) => {
         state: findUser.state,
         role: findUser.role,
         token: token,
-        passwordResetToken:findUser.passwordResetToken
+        passwordResetToken:findUser.passwordResetToken,
+        permission:findUser.permission
       };
       if (findUser.role === "doctor") {
         response.doctorData = await Doctor.findOne({ user_id: findUser._id });
@@ -270,6 +276,8 @@ const login = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
 
 const AllUsers = async (req, res) => {
   try {
@@ -419,37 +427,50 @@ const deleteUser = async (req, res) => {
   }
 };
 
+
+
 const Accept_User = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  console.log(id);
-
-  // Check if the user making the request is an admin
-  if (!req.user || req.user.role !== "admin") {
-    return res.status(403).json({
-      message: "You don't have permission to perform this action",
-      success: false,
-    });
-  }
-
+  const userIdFromToken = req.user.userId;
+  console.log(userIdFromToken, "userIdFromToken");
+  
   try {
+    // Check if the user making the request is an admin
+    const adminUser = await User.findById(userIdFromToken);
+console.log(adminUser,"adminUser")
+    if (!adminUser || adminUser.role !== "admin") {
+      return res.status(403).json({
+        message: "You don't have permission to perform this action",
+        success: false,
+      });
+    }
+
     // Find the user by userId
-    const user = await Doctor.findOne({user_id:id});
-    console.log(user);
-    if (!user) {
+    const userToUpdate = await User.findById(id);
+
+    if (!userToUpdate) {
       return res.status(404).json({
         message: "User not found",
         success: false,
       });
     }
 
-    // Update the user's permission to true
-    user.permission = true;
-    await user.save();
+    // Check if the user making the request has the permission to update the target user
+    if (userToUpdate.role === "admin") {
+      return res.status(403).json({
+        message: "You don't have permission to update another admin",
+        success: false,
+      });
+    }
+
+    // Toggle the permission value
+    userToUpdate.permission = !userToUpdate.permission;
+    await userToUpdate.save();
 
     res.status(200).json({
-      message: "Permission Granted successfully!",
+      message: "Permission toggled successfully!",
       success: true,
-      data: { id, permission: true },
+      data: { id, permission: userToUpdate.permission },
     });
   } catch (error) {
     console.error(error);
@@ -584,6 +605,18 @@ const New_password = asyncHandler(async(req,res)=>{
   }
 })
 
+
+
+const payment = asyncHandler(async(req,res)=>{
+  try {
+    
+  
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error',status:true });
+  }
+})
+
 module.exports = {
   register,
   login,
@@ -592,5 +625,5 @@ module.exports = {
   UpdateUsers,
   deleteUser,
   Accept_User,
-  changePassword,register_admin,ResetPassword,New_password
+  changePassword,register_admin,ResetPassword,New_password,payment
 };

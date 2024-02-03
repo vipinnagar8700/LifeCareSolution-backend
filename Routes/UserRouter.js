@@ -1,10 +1,10 @@
 const express = require('express')
 const { authenticateToken } = require('../config/JwtToken');
-const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword, register_admin, ResetPassword, New_password } = require('../controllers/userController');
+const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword, register_admin, ResetPassword, New_password, payment } = require('../controllers/userController');
 const { AddBlogs, AllBlogs, editBlog, UpdateBlogs, AddBlogsCategory, AllCategory, deleteBlogCategory, deleteBlog } = require('../controllers/blogController');
 const { AddSpecialitiess, AllSpecialitiess, deleteSpecialities, updateSpecialities, editSpecialities } = require('../controllers/specialitiesControllers');
 const { Addfeaturess, Allfeaturess, deletefeatures, editFeatures, updateFeatures } = require('../controllers/featuresControllers');
-const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails, deleteDoctorAwards, deleteDoctorEducation, deleteDoctorExperience, deleteClinicImage, FilterDoctors, search_specialities } = require('../controllers/doctorController');
+const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails, deleteDoctorAwards, deleteDoctorEducation, deleteDoctorExperience, deleteClinicImage, FilterDoctors, search_specialities, AllDoctorPermitted, AllDoctorApproved, AllDoctorBlocked, AllDoctorPending, deleteDoctorBlock } = require('../controllers/doctorController');
 const { AllPharmacys, editPharmacy, UpdatePharmacy, deletePharmacy } = require('../controllers/pharmacyController');
 const { AllSlots, editSlot, UpdateSlot, deleteSlot, AddSlot } = require('../controllers/slotController');
 const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, BookAppointment, doctor_appointments, UpdateAppointmentStatus, Patient_appointments } = require('../controllers/appointmentController');
@@ -39,15 +39,36 @@ const upload = multer({
 
 
 const router = express.Router();
+
+
 // User Auth 
 router.post('/register', register);
 router.post('/login', login);
+
 // Patient
 router.get('/AllUsers', AllUsers)
 router.get('/editUser/:id', editUser)
 router.put('/UpdateUsers/:id', upload.single('image'),authenticateToken, UpdateUsers)
 router.delete('/deleteUser/:id',authenticateToken, deleteUser)
 router.get('/Patient_appointments/:id',authenticateToken, Patient_appointments)
+router.get("/PatientReview/:patient_id",PatientReview,authenticateToken);
+router.get('/AllDependents',authenticateToken, AllDependents)
+router.get('/editDependent/:id',authenticateToken, editDependent)
+router.put('/UpdateDependents/:id', upload.single('image'),authenticateToken, UpdateDependents)
+router.delete('/deleteDependent/:id', authenticateToken,deleteDependent)
+router.post('/AddDependents',upload.single('image'),authenticateToken, AddDependents)
+router.get('/AllMedicines', AllMedicines)
+router.get('/editMedicine/:id', editMedicine)
+router.put('/UpdateMedicines/:id', upload.single('image'),authenticateToken, UpdateMedicines)
+router.delete('/deleteMedicine/:id',authenticateToken, deleteMedicine)
+router.post('/AddMedicines',authenticateToken, AddMedicines)
+router.delete('/deleteFavourate/:id',authenticateToken, deleteFavourate)
+router.post('/AddFavourates',authenticateToken, AddFavourates)
+router.get('/AllFavourates/:id',authenticateToken, AllFavourates)
+router.post('/sendMessages',upload.single('image'),authenticateToken, sendMessages)
+router.get('/getMessages/:userId',authenticateToken, getMessages)
+router.post('/deleteChat',authenticateToken, deleteChat)
+
 
 
 // Doctor
@@ -67,44 +88,29 @@ router.put('/UpdateAppointment/:id',authenticateToken, UpdateAppointment)
 router.delete('/deleteAppointment/:id',authenticateToken, deleteAppointment)
 router.post('/BookAppointment',authenticateToken, BookAppointment)
 router.get('/doctor_appointments/:id',authenticateToken, doctor_appointments)
+router.get("/DoctorReview/:doctor_id",DoctorReview,authenticateToken);
+router.get('/AllVideoSlots/:id', AllVideoSlots);
+router.get('/editVideoSlot/:id', editVideoSlot);
+router.put('/UpdateVideoSlot/:id',authenticateToken, UpdateVideoSlot);
+router.delete('/deleteVideoSlot/:id',authenticateToken, deleteVideoSlot);
+router.post('/AddVideoSlot',authenticateToken, AddVideoSlot);
+router.put('/UpdateAppointmentStatus/:id',authenticateToken, UpdateAppointmentStatus)
+router.delete('/deleteDoctorAwards/:doctorId/:awardId',deleteDoctorAwards,authenticateToken)
+router.delete('/deleteDoctorEducation/:doctorId/:EducationId',deleteDoctorEducation,authenticateToken)
+router.delete('/deleteDoctorExperience/:doctorId/:ExperienceId',deleteDoctorExperience,authenticateToken)
+router.delete('/deleteClinicImage/:doctorId/:ClinicImageId',deleteClinicImage,authenticateToken)
+router.post('/changePassword/:resetToken',authenticateToken,changePassword)
+router.get("/doctors/filter", FilterDoctors);
+router.post('/Reviews',Reviews,authenticateToken);
+router.post('/DislikeReview/:id',DislikeReview,authenticateToken);
+router.post('/LikeReview/:id',LikeReview,authenticateToken);
+
 
 // Pharmacy
 router.get('/Allpharmacy', AllPharmacys)
 router.get('/editPharmacy/:id', editPharmacy)
 router.put('/UpdatePharmacy/:id', upload.single('image'),authenticateToken, UpdatePharmacy)
 router.delete('/deletePharmacy/:id', authenticateToken,deletePharmacy)
-
-// Blogs
-router.post('/AddBlogs',upload.single('image'),authenticateToken,  AddBlogs)
-router.get('/AllBlogs', AllBlogs)
-router.get('/editBlog/:id', editBlog)
-router.put('/UpdateBlogs/:id', upload.single('image'),authenticateToken, UpdateBlogs)
-router.post('/AddBlogsCategory',authenticateToken, AddBlogsCategory)
-router.get('/AllCategory', AllCategory)
-router.delete('/deleteBlogCategory/:id',authenticateToken, deleteBlogCategory)
-router.delete('/deleteBlog/:id',authenticateToken, deleteBlog)
-
-
-
-
-router.put('/UpdateAppointmentStatus/:id',authenticateToken, UpdateAppointmentStatus)
-router.get('/AllDependents',authenticateToken, AllDependents)
-router.get('/editDependent/:id',authenticateToken, editDependent)
-router.put('/UpdateDependents/:id', upload.single('image'),authenticateToken, UpdateDependents)
-router.delete('/deleteDependent/:id', authenticateToken,deleteDependent)
-router.post('/AddDependents',upload.single('image'),authenticateToken, AddDependents)
-router.get('/AllMedicines', AllMedicines)
-router.get('/editMedicine/:id', editMedicine)
-router.put('/UpdateMedicines/:id', upload.single('image'),authenticateToken, UpdateMedicines)
-router.delete('/deleteMedicine/:id',authenticateToken, deleteMedicine)
-router.post('/AddMedicines',authenticateToken, AddMedicines)
-router.delete('/deleteFavourate/:id',authenticateToken, deleteFavourate)
-router.post('/AddFavourates',authenticateToken, AddFavourates)
-router.get('/AllFavourates/:id',authenticateToken, AllFavourates)
-router.post('/sendMessages',upload.single('image'),authenticateToken, sendMessages)
-router.get('/getMessages/:userId',authenticateToken, getMessages)
-router.post('/deleteChat',authenticateToken, deleteChat)
-
 router.get('/AllProducts',authenticateToken, AllProducts)
 router.get('/editProduct/:id', editProduct)
 router.put('/UpdateProducts/:id', upload.single('image'),authenticateToken, UpdateProducts)
@@ -135,51 +141,60 @@ router.get('/AllUserCarts/:id',authenticateToken, AllUserCarts)
 router.delete('/deleteCart/:id',authenticateToken, deleteCart)
 router.post('/createOrderFromCart',authenticateToken, createOrderFromCart)
 router.get('/getUserOrders/:user_id',authenticateToken, getUserOrders)
-router.put('/Accept_User/:id',authenticateToken, Accept_User)
-router.delete('/deleteDoctorAwards/:doctorId/:awardId',deleteDoctorAwards,authenticateToken)
-router.delete('/deleteDoctorEducation/:doctorId/:EducationId',deleteDoctorEducation,authenticateToken)
-router.delete('/deleteDoctorExperience/:doctorId/:ExperienceId',deleteDoctorExperience,authenticateToken)
-router.delete('/deleteClinicImage/:doctorId/:ClinicImageId',deleteClinicImage,authenticateToken)
-router.post('/changePassword/:resetToken',authenticateToken,changePassword)
-router.get("/doctors/filter", FilterDoctors);
-router.post('/Reviews',Reviews,authenticateToken)
-router.post('/DislikeReview/:id',DislikeReview,authenticateToken)
-router.post('/LikeReview/:id',LikeReview,authenticateToken)
-router.get("/PatientReview/:patient_id",PatientReview,authenticateToken)
-router.get("/DoctorReview/:doctor_id",DoctorReview,authenticateToken)
-router.get("/AllReviews",AllReviews)
-router.get('/AllVideoSlots/:id', AllVideoSlots)
-router.get('/editVideoSlot/:id', editVideoSlot)
-router.put('/UpdateVideoSlot/:id',authenticateToken, UpdateVideoSlot)
-router.delete('/deleteVideoSlot/:id',authenticateToken, deleteVideoSlot)
-router.post('/AddVideoSlot',authenticateToken, AddVideoSlot)
-router.get('/AllPayments',AllPayments)
-router.get('/AllInvoices',AllInvoices)
-router.get('/AllDoctorInvoice/:id',AllDoctorInvoice)
-router.get('/AllPatientInvoice/:id',AllPatientInvoice)
+
+
+
+// Blogs
+router.post('/AddBlogs',upload.single('image'),authenticateToken,  AddBlogs)
+router.get('/AllBlogs', AllBlogs)
+router.get('/editBlog/:id', editBlog)
+router.put('/UpdateBlogs/:id', upload.single('image'),authenticateToken, UpdateBlogs)
+router.post('/AddBlogsCategory',authenticateToken, AddBlogsCategory)
+router.get('/AllCategory', AllCategory)
+router.delete('/deleteBlogCategory/:id',authenticateToken, deleteBlogCategory)
+router.delete('/deleteBlog/:id',authenticateToken, deleteBlog)
+
+
+
+
 
 // admin
+router.put('/Accept_User/:id',authenticateToken, Accept_User)
+router.get('/edit_admin_profile/:id',edit_admin_profile,authenticateToken);
+router.put('/Update_admin_profile/:id',upload.single('image'),Update_admin_profile,authenticateToken);
+router.post('/register_admin',authenticateToken,register_admin);
+router.get('/search_specialities/:specialityId',search_specialities);
+router.put('/updateSpecialities/:id',updateSpecialities,authenticateToken);
+router.get('/editSpecialities/:id',editSpecialities);
+router.put('/updateFeatures/:id',updateFeatures,authenticateToken);
+router.get('/editFeatures/:id',editFeatures);
+router.get('/AllAppointments',authenticateToken, AllAppointments);
+router.post('/AddSpecialitiess',upload.single('image'),authenticateToken, AddSpecialitiess);
+router.get('/AllSpecialitiess', AllSpecialitiess);
+router.delete('/deleteSpecialities/:id',authenticateToken, deleteSpecialities);
+router.post('/Addfeaturess',upload.single('image'),authenticateToken, Addfeaturess);
+router.get('/Allfeaturess', Allfeaturess);
+router.delete('/deletefeatures/:id',authenticateToken, deletefeatures);
+router.get('/AllDoctorPermitted', AllDoctorPermitted);
+router.get('/AllDoctorApproved', AllDoctorApproved,authenticateToken);
+router.get('/AllDoctorBlocked', AllDoctorBlocked,authenticateToken);
+router.get('/AllDoctorPending', AllDoctorPending,authenticateToken);
+router.put('/deleteDoctorBlock/:id',authenticateToken,deleteDoctorBlock)
+router.get('/AllPayments',AllPayments);
+router.get('/AllInvoices',AllInvoices);
+router.get('/AllDoctorInvoice/:id',AllDoctorInvoice);
+router.get('/AllPatientInvoice/:id',AllPatientInvoice);
+router.get("/AllReviews",AllReviews);
 
-router.get('/edit_admin_profile/:id',edit_admin_profile,authenticateToken)
-router.put('/Update_admin_profile/:id',upload.single('image'),Update_admin_profile,authenticateToken)
-router.post('/register_admin',authenticateToken,register_admin)
-router.get('/search_specialities/:specialityId',search_specialities)
-router.put('/updateSpecialities/:id',updateSpecialities,authenticateToken)
-router.get('/editSpecialities/:id',editSpecialities)
-router.put('/updateFeatures/:id',updateFeatures,authenticateToken)
-router.get('/editFeatures/:id',editFeatures)
-router.get('/AllAppointments',authenticateToken, AllAppointments)
 
-router.post('/AddSpecialitiess',upload.single('image'),authenticateToken, AddSpecialitiess)
-router.get('/AllSpecialitiess', AllSpecialitiess)
-router.delete('/deleteSpecialities/:id',authenticateToken, deleteSpecialities)
-router.post('/Addfeaturess',upload.single('image'),authenticateToken, Addfeaturess)
-router.get('/Allfeaturess', Allfeaturess)
-router.delete('/deletefeatures/:id',authenticateToken, deletefeatures)
 
 // Email Reset Password
-router.post('/ResetPassword',ResetPassword)
-router.post('/New_password/:token',New_password)
+router.post('/ResetPassword',ResetPassword);
+router.post('/New_password/:token',New_password);
 
+
+
+
+router.post('/payment',payment);
 
 module.exports = router;

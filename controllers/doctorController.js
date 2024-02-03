@@ -1,5 +1,5 @@
 const { generateToken } = require("../config/JwtToken");
-const { Doctor } = require("../models/userModel");
+const { Doctor, User } = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const { generateRefreshToken } = require("../config/refreshToken");
 const jwt = require("jsonwebtoken");
@@ -27,6 +27,98 @@ const AllDoctors = async (req, res) => {
         length,
       },
     ]);
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+const AllDoctorPermitted = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({ permission: true, status: "approved" })
+      .select("-password")
+      .populate("Specailization"); // Exclude the 'password' field and populate 'Specailization'
+
+    const length = doctors.length;
+
+    res.status(200).json({
+      message: "All doctor data retrieved successfully!",
+      data: doctors,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+const AllDoctorPending = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({ status: "pending" })
+      .select("-password")
+      .populate("Specailization"); // Exclude the 'password' field and populate 'Specailization'
+
+    const length = doctors.length;
+
+    res.status(200).json({
+      message: "All doctor data retrieved successfully!",
+      data: doctors,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+const AllDoctorApproved = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({ status: "approved" })
+      .select("-password")
+      .populate("Specailization"); // Exclude the 'password' field and populate 'Specailization'
+
+    const length = doctors.length;
+
+    res.status(200).json({
+      message: "All doctor data retrieved successfully!",
+      data: doctors,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+const AllDoctorBlocked = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({ status: "blocked" })
+      .select("-password")
+      .populate("Specailization"); // Exclude the 'password' field and populate 'Specailization'
+
+    const length = doctors.length;
+
+    res.status(200).json({
+      message: "All doctor data retrieved successfully!",
+      data: doctors,
+      status: true,
+      length,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Internal Server Error",
@@ -279,6 +371,56 @@ const deleteDoctor = async (req, res) => {
   }
 };
 
+const deleteDoctorBlock = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userIdFromToken = req.user.userId;
+  console.log(userIdFromToken, "userIdFromToken");
+  try {
+    // Check if the user making the request is an admin
+    const adminUser = await User.findById(userIdFromToken);
+    console.log(adminUser, "adminUser");
+    if (!adminUser || adminUser.role !== "admin") {
+      return res.status(403).json({
+        message: "You don't have permission to perform this action",
+        success: false,
+      });
+    }
+
+    // Find the user by userId
+    const userToUpdate = await Doctor.findById(id);
+    console.log(userToUpdate, "userToUpdate");
+    if (!userToUpdate) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    if (userToUpdate.role === "admin") {
+      return res.status(403).json({
+        message: "Admin Doctor cannot be deleted.",
+        status: false,
+      });
+    }
+
+    // If the Doctor is not an admin, update status and permission
+    userToUpdate.status = "Blocked";
+    userToUpdate.permission = false;
+
+    await userToUpdate.save();
+
+    return res.status(201).json({
+      message: "Doctor status updated successfully!",
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to update Doctor status!",
+      status: false,
+    });
+  }
+});
+
 const deleteDoctorAwards = async (req, res) => {
   const { doctorId, awardId } = req.params;
 
@@ -457,7 +599,6 @@ const deleteClinicImage = async (req, res) => {
   }
 };
 
-
 const FilterDoctors = async (req, res) => {
   try {
     // Extract filter criteria from the request query
@@ -474,12 +615,13 @@ const FilterDoctors = async (req, res) => {
     const filter = {};
 
     if (gender) filter.gender = gender;
-    if (Registered_Clinic_city) filter.Registered_Clinic_city = Registered_Clinic_city;
+    if (Registered_Clinic_city)
+      filter.Registered_Clinic_city = Registered_Clinic_city;
 
     if (fees) {
-      const [minFees, maxFees] = fees.split("-").map((part) =>
-        part ? parseInt(part) : undefined
-      );
+      const [minFees, maxFees] = fees
+        .split("-")
+        .map((part) => (part ? parseInt(part) : undefined));
       if (minFees !== undefined && maxFees !== undefined) {
         filter.fees = { $gte: minFees, $lte: maxFees };
       } else if (minFees !== undefined) {
@@ -487,7 +629,10 @@ const FilterDoctors = async (req, res) => {
       }
     }
 
-    if (specialization_id && mongoose.Types.ObjectId.isValid(specialization_id)) {
+    if (
+      specialization_id &&
+      mongoose.Types.ObjectId.isValid(specialization_id)
+    ) {
       filter.Specialization = { _id: specialization_id };
     }
 
@@ -533,10 +678,6 @@ const FilterDoctors = async (req, res) => {
   }
 };
 
-
-
-
-
 const search_specialities = async (req, res) => {
   try {
     const { specialityId } = req.params;
@@ -575,4 +716,9 @@ module.exports = {
   deleteClinicImage,
   FilterDoctors,
   search_specialities,
+  AllDoctorPermitted,
+  AllDoctorApproved,
+  AllDoctorBlocked,
+  AllDoctorPending,
+  deleteDoctorBlock,
 };

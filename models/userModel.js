@@ -21,11 +21,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    status: {
-    type: String,
-    enum: ['pending', 'approved', 'blocked'],
-    default: 'pending',
-  },
+    permission: {
+      type: Boolean,
+      default: false,
+    },
+  //   status: {
+  //   type: String,
+  //   enum: ['pending', 'approved', 'blocked'],
+  //   default: 'pending',
+  // },
     address: String,
     city: String,
     state: String,
@@ -155,10 +159,7 @@ const patientSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    permission: {
-      type: Boolean,
-      default: false,
-    },
+   
   },
   {
     timestamps: true,
@@ -209,10 +210,7 @@ const pharmacySchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    permission: {
-      type: Boolean,
-      default: false,
-    },
+  
   },
   {
     timestamps: true,
@@ -263,10 +261,7 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    permission: {
-      type: Boolean,
-      default: false,
-    },
+   
     image: {
       type: String,
       default: null,
