@@ -85,6 +85,7 @@ const AllSpecialitiess = async (req, res) => {
         });
     }
 };
+
 const editSpecialities = async (req, res) => {
     const { id } = req.params;
     try {

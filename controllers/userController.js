@@ -6,9 +6,12 @@ const {
   Pharmacy,
   Role,
 } = require("../models/userModel");
+const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
 const { generateRefreshToken } = require("../config/refreshToken");
 const jwt = require("jsonwebtoken");
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 require("dotenv/config");
 const multer = require("multer");
 const path = require("path");
@@ -400,7 +403,7 @@ const deleteUser = async (req, res) => {
 
     if (!deletedUser) {
       return res.status(200).json({
-        message: "User was not found!",
+        message: "User was not found!",      success: false,
       });
     } else {
       return res.status(201).json({
@@ -504,6 +507,83 @@ await user.createPasswordResetToken();
 });
 
 
+const ResetPassword = asyncHandler(async(req,res)=>{
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found',     success: false });
+    }
+
+    // Create and save password reset token
+    const resetToken = await user.createPasswordResetToken();
+    await user.save();
+
+    // Create a nodemailer transport
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      auth: {
+        user: 'bonnie.olson0@ethereal.email',
+        pass: 'Nu9vPVh1wmyvuMzzpM'
+    }
+    });
+
+    // Compose the email message
+    const mailOptions = {
+      from: 'bonnie.olson0@ethereal.email',
+      to: 'vipinnagar8700@gmail.com',
+      subject: 'Password Reset',
+      text: `Click the following link to reset your password: http://localhost:3000/reset/${resetToken}`,
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: 'Password reset email sent successfully' ,status:true});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error',status:false });
+  }
+})
+
+
+const New_password = asyncHandler(async(req,res)=>{
+  const { token } = req.params;
+  const { newPassword, confirmPassword } = req.body;
+
+  // Check if the new password matches the confirmation
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ message: 'New password and confirmation do not match' });
+  }
+
+  try {
+    const user = await User.findOne({
+      passwordResetToken: token,
+      passwordResetExpires: { $gt: Date.now() }, // Ensure the token is not expired
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    // Update the user's password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashedPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+
+    await user.save();
+
+    res.status(200).json({ message: 'Password reset successful',status:true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error',status:true });
+  }
+})
+
 module.exports = {
   register,
   login,
@@ -512,5 +592,5 @@ module.exports = {
   UpdateUsers,
   deleteUser,
   Accept_User,
-  changePassword,register_admin
+  changePassword,register_admin,ResetPassword,New_password
 };

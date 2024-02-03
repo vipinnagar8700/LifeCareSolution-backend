@@ -1,6 +1,6 @@
 const express = require('express')
 const { authenticateToken } = require('../config/JwtToken');
-const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword, register_admin } = require('../controllers/userController');
+const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword, register_admin, ResetPassword, New_password } = require('../controllers/userController');
 const { AddBlogs, AllBlogs, editBlog, UpdateBlogs, AddBlogsCategory, AllCategory, deleteBlogCategory, deleteBlog } = require('../controllers/blogController');
 const { AddSpecialitiess, AllSpecialitiess, deleteSpecialities, updateSpecialities, editSpecialities } = require('../controllers/specialitiesControllers');
 const { Addfeaturess, Allfeaturess, deletefeatures, editFeatures, updateFeatures } = require('../controllers/featuresControllers');
@@ -39,13 +39,42 @@ const upload = multer({
 
 
 const router = express.Router();
+// User Auth 
 router.post('/register', register);
 router.post('/login', login);
+// Patient
 router.get('/AllUsers', AllUsers)
 router.get('/editUser/:id', editUser)
-router.get('/AllDoctors', AllDoctors)
-router.get('/Allpharmacy', AllPharmacys)
 router.put('/UpdateUsers/:id', upload.single('image'),authenticateToken, UpdateUsers)
+router.delete('/deleteUser/:id',authenticateToken, deleteUser)
+router.get('/Patient_appointments/:id',authenticateToken, Patient_appointments)
+
+
+// Doctor
+router.get('/AllDoctors', AllDoctors)
+router.get('/editDoctor/:id', editDoctor)
+router.put('/UpdateDoctor/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'ClinicImage', maxCount: 5 }]), authenticateToken, UpdateDoctor);
+router.delete('/deleteDoctor/:id',authenticateToken, deleteDoctor)
+router.put('/UpdateDoctorSocail_Media/:id',authenticateToken, UpdateDoctorSocail_Media)
+router.put('/UpdateDoctorBankDetails/:id',authenticateToken, UpdateDoctorBankDetails)
+router.get('/AllSlots/:id', AllSlots)
+router.get('/editSlot/:id', editSlot)
+router.put('/UpdateSlot/:id',authenticateToken, UpdateSlot)
+router.delete('/deleteSlot/:id',authenticateToken, deleteSlot)
+router.post('/AddSlot',authenticateToken, AddSlot)
+router.get('/editAppointment/:id', editAppointment)
+router.put('/UpdateAppointment/:id',authenticateToken, UpdateAppointment)
+router.delete('/deleteAppointment/:id',authenticateToken, deleteAppointment)
+router.post('/BookAppointment',authenticateToken, BookAppointment)
+router.get('/doctor_appointments/:id',authenticateToken, doctor_appointments)
+
+// Pharmacy
+router.get('/Allpharmacy', AllPharmacys)
+router.get('/editPharmacy/:id', editPharmacy)
+router.put('/UpdatePharmacy/:id', upload.single('image'),authenticateToken, UpdatePharmacy)
+router.delete('/deletePharmacy/:id', authenticateToken,deletePharmacy)
+
+// Blogs
 router.post('/AddBlogs',upload.single('image'),authenticateToken,  AddBlogs)
 router.get('/AllBlogs', AllBlogs)
 router.get('/editBlog/:id', editBlog)
@@ -54,33 +83,10 @@ router.post('/AddBlogsCategory',authenticateToken, AddBlogsCategory)
 router.get('/AllCategory', AllCategory)
 router.delete('/deleteBlogCategory/:id',authenticateToken, deleteBlogCategory)
 router.delete('/deleteBlog/:id',authenticateToken, deleteBlog)
-router.delete('/deleteUser/:id',authenticateToken, deleteUser)
-router.post('/AddSpecialitiess',upload.single('image'),authenticateToken, AddSpecialitiess)
-router.get('/AllSpecialitiess', AllSpecialitiess)
-router.delete('/deleteSpecialities/:id',authenticateToken, deleteSpecialities)
-router.post('/Addfeaturess',upload.single('image'),authenticateToken, Addfeaturess)
-router.get('/Allfeaturess', Allfeaturess)
-router.delete('/deletefeatures/:id',authenticateToken, deletefeatures)
-router.get('/editDoctor/:id', editDoctor)
-router.put('/UpdateDoctor/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'ClinicImage', maxCount: 5 }]), authenticateToken, UpdateDoctor);
-router.delete('/deleteDoctor/:id',authenticateToken, deleteDoctor)
-router.get('/editPharmacy/:id', editPharmacy)
-router.put('/UpdatePharmacy/:id', upload.single('image'),authenticateToken, UpdatePharmacy)
-router.delete('/deletePharmacy/:id', authenticateToken,deletePharmacy)
-router.put('/UpdateDoctorSocail_Media/:id',authenticateToken, UpdateDoctorSocail_Media)
-router.put('/UpdateDoctorBankDetails/:id',authenticateToken, UpdateDoctorBankDetails)
-router.get('/AllSlots/:id', AllSlots)
-router.get('/editSlot/:id', editSlot)
-router.put('/UpdateSlot/:id',authenticateToken, UpdateSlot)
-router.delete('/deleteSlot/:id',authenticateToken, deleteSlot)
-router.post('/AddSlot',authenticateToken, AddSlot)
-router.get('/AllAppointments',authenticateToken, AllAppointments)
-router.get('/editAppointment/:id', editAppointment)
-router.put('/UpdateAppointment/:id',authenticateToken, UpdateAppointment)
-router.delete('/deleteAppointment/:id',authenticateToken, deleteAppointment)
-router.post('/BookAppointment',authenticateToken, BookAppointment)
-router.get('/doctor_appointments/:id',authenticateToken, doctor_appointments)
-router.get('/Patient_appointments/:id',authenticateToken, Patient_appointments)
+
+
+
+
 router.put('/UpdateAppointmentStatus/:id',authenticateToken, UpdateAppointmentStatus)
 router.get('/AllDependents',authenticateToken, AllDependents)
 router.get('/editDependent/:id',authenticateToken, editDependent)
@@ -162,6 +168,18 @@ router.put('/updateSpecialities/:id',updateSpecialities,authenticateToken)
 router.get('/editSpecialities/:id',editSpecialities)
 router.put('/updateFeatures/:id',updateFeatures,authenticateToken)
 router.get('/editFeatures/:id',editFeatures)
+router.get('/AllAppointments',authenticateToken, AllAppointments)
+
+router.post('/AddSpecialitiess',upload.single('image'),authenticateToken, AddSpecialitiess)
+router.get('/AllSpecialitiess', AllSpecialitiess)
+router.delete('/deleteSpecialities/:id',authenticateToken, deleteSpecialities)
+router.post('/Addfeaturess',upload.single('image'),authenticateToken, Addfeaturess)
+router.get('/Allfeaturess', Allfeaturess)
+router.delete('/deletefeatures/:id',authenticateToken, deletefeatures)
+
+// Email Reset Password
+router.post('/ResetPassword',ResetPassword)
+router.post('/New_password/:token',New_password)
 
 
 module.exports = router;
