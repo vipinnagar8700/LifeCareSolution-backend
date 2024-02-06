@@ -10,6 +10,8 @@ require("dotenv/config");
 
 const Payment = require("../models/paymentModel");
 const Invoice = require("../models/invoiceModel");
+
+
 const BookAppointment = async (req, res) => {
   try {
     const { patient_id, doctor_id, slot_id, videoSlot_id, date, type, amount, paymentMethod, transactionId } = req.body;
@@ -105,6 +107,111 @@ const BookAppointment = async (req, res) => {
   }
 };
 
+const TodayAppointment = async (req, res) => {
+  try {
+    // Get today's date in the format "DD-MM-YYYY"
+     // Get today's date
+     const today = new Date();
+
+     // Format today's date as "DD-MM-YYYY"
+     const formattedDate = `${today.getDate().toString().padStart(2, '0')}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`;
+ 
+console.log(formattedDate,"todayDate")
+    // Find appointments with the date matching today's date
+    const appointmentsToday = await Appointment.find({
+      date: formattedDate, // Find appointments with the date matching today's date
+    })
+      .populate("slot_id")
+      .populate("doctor_id")
+      .populate("patient_id")
+      .populate("videoSlot_id");
+
+    const length = appointmentsToday.length;
+
+    res.status(200).json({
+      message: "Appointments created today retrieved successfully!",
+      data: appointmentsToday,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+const PastAppointment = async (req, res) => {
+  try {
+    // Get today's date in the format "DD-MM-YYYY"
+     // Get today's date
+     const today = new Date();
+
+     // Format today's date as "DD-MM-YYYY"
+     const formattedDate = `${today.getDate().toString().padStart(2, '0')}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`;
+ 
+console.log(formattedDate,"todayDate")
+    // Find appointments with the date matching today's date
+    const appointmentsToday = await Appointment.find({
+      date: { $lt: formattedDate }, 
+    })
+      .populate("slot_id")
+      .populate("doctor_id")
+      .populate("patient_id")
+      .populate("videoSlot_id");
+
+    const length = appointmentsToday.length;
+
+    res.status(200).json({
+      message: "Appointments created today retrieved successfully!",
+      data: appointmentsToday,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+const UpcomingAppointment = async (req, res) => {
+  try {
+    // Get today's date
+    const today = new Date();
+
+    // Format today's date as "DD-MM-YYYY"
+    const formattedDate = `${today.getDate().toString().padStart(2, '0')}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`;
+
+    // Find appointments with the date after today's date
+    const upcomingAppointments = await Appointment.find({
+      date: { $gt: formattedDate }, // Find appointments with the date after today's date
+    })
+      .populate("slot_id")
+      .populate("doctor_id")
+      .populate("patient_id")
+      .populate("videoSlot_id");
+
+    const length = upcomingAppointments.length;
+
+    res.status(200).json({
+      message: "Upcoming appointments retrieved successfully!",
+      data: upcomingAppointments,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
 
 const AllAppointments = async (req, res) => {
   try {
@@ -122,6 +229,81 @@ const AllAppointments = async (req, res) => {
         length,
       },
     ]);
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+const CompleteAppointments = async (req, res) => {
+  try {
+    const pendingAppointments = await Appointment.find({ status: "completed" })
+      .populate("slot_id")
+      .populate("doctor_id")
+      .populate("patient_id")
+      .populate("videoSlot_id");
+
+    const length = pendingAppointments.length;
+
+    res.status(200).json({
+      message: "Complete appointments data retrieved successfully!",
+      data: pendingAppointments,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+const CancelAppointments = async (req, res) => {
+  try {
+    const pendingAppointments = await Appointment.find({ status: "cancel" })
+      .populate("slot_id")
+      .populate("doctor_id")
+      .populate("patient_id")
+      .populate("videoSlot_id");
+
+    const length = pendingAppointments.length;
+
+    res.status(200).json({
+      message: "Complete appointments data retrieved successfully!",
+      data: pendingAppointments,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+const PendingAppointments = async (req, res) => {
+  try {
+    const pendingAppointments = await Appointment.find({ status: "pending" })
+      .populate("slot_id")
+      .populate("doctor_id")
+      .populate("patient_id")
+      .populate("videoSlot_id");
+
+    const length = pendingAppointments.length;
+
+    res.status(200).json({
+      message: "Pending appointments data retrieved successfully!",
+      data: pendingAppointments,
+      status: true,
+      length,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Internal Server Error",
@@ -371,5 +553,5 @@ module.exports = {
   BookAppointment,
   doctor_appointments,
   UpdateAppointmentStatus,
-  Patient_appointments,
+  Patient_appointments,TodayAppointment,CompleteAppointments,PendingAppointments,CancelAppointments,PastAppointment,UpcomingAppointment
 };

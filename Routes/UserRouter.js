@@ -7,7 +7,7 @@ const { Addfeaturess, Allfeaturess, deletefeatures, editFeatures, updateFeatures
 const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails, deleteDoctorAwards, deleteDoctorEducation, deleteDoctorExperience, deleteClinicImage, FilterDoctors, search_specialities, AllDoctorPermitted, AllDoctorApproved, AllDoctorBlocked, AllDoctorPending, deleteDoctorBlock } = require('../controllers/doctorController');
 const { AllPharmacys, editPharmacy, UpdatePharmacy, deletePharmacy } = require('../controllers/pharmacyController');
 const { AllSlots, editSlot, UpdateSlot, deleteSlot, AddSlot } = require('../controllers/slotController');
-const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, BookAppointment, doctor_appointments, UpdateAppointmentStatus, Patient_appointments } = require('../controllers/appointmentController');
+const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, BookAppointment, doctor_appointments, UpdateAppointmentStatus, Patient_appointments, TodayAppointment, CompleteAppointments, PendingAppointments, CancelAppointments, PastAppointment, UpcomingAppointment } = require('../controllers/appointmentController');
 const { AddDependents, AllDependents, editDependent, UpdateDependents, deleteDependent } = require('../controllers/dependendController');
 const { AddMedicines, AllMedicines, editMedicine, UpdateMedicines, deleteMedicine } = require('../controllers/medicineController');
 const { AddFavourates, deleteFavourate, AllFavourates } = require('../controllers/favourateControllers');
@@ -169,7 +169,7 @@ router.put('/updateSpecialities/:id',upload.single('image'),updateSpecialities,a
 router.get('/editSpecialities/:id',editSpecialities);
 router.put('/updateFeatures/:id',upload.single('image'),updateFeatures,authenticateToken);
 router.get('/editFeatures/:id',editFeatures);
-router.get('/AllAppointments',authenticateToken, AllAppointments);
+router.get('/AllAppointments', AllAppointments);
 router.post('/AddSpecialitiess',upload.single('image'),authenticateToken, AddSpecialitiess);
 router.get('/AllSpecialitiess', AllSpecialitiess);
 router.delete('/deleteSpecialities/:id',authenticateToken, deleteSpecialities);
@@ -186,14 +186,16 @@ router.get('/AllInvoices',AllInvoices);
 router.get('/AllDoctorInvoice/:id',AllDoctorInvoice);
 router.get('/AllPatientInvoice/:id',AllPatientInvoice);
 router.get("/AllReviews",AllReviews);
-
-
+router.get("/TodayAppointment",authenticateToken,TodayAppointment);
+router.get("/CompleteAppointments",authenticateToken,CompleteAppointments);
+router.get("/PendingAppointments",authenticateToken,PendingAppointments);
+router.get("/CancelAppointments",authenticateToken,CancelAppointments);
+router.get('/PastAppointment',authenticateToken,PastAppointment)
+router.get('/UpcomingAppointment',authenticateToken,UpcomingAppointment)
 
 // Email Reset Password
 router.post('/ResetPassword',ResetPassword);
 router.post('/New_password/:token',New_password);
-
-
 
 
 router.post('/payment',payment);
