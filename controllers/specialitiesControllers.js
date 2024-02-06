@@ -109,28 +109,64 @@ const editSpecialities = async (req, res) => {
     }
 }
 
-const updateSpecialities = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const editSpecialities = await Specialities.findByIdAndUpdate(id); // Exclude the 'password' field
-        if (!editSpecialities) {
-            res.status(200).json({
-                message: "Specialities was not found!",
+const updateSpecialities = asyncHandler(async (req, res) => {
+    const { id } = req.params; // Assuming you are passing the speciality ID in the URL parameters
+    const { specialities_name } = req.body;
+
+    const file = req.file;
+
+    let imageUrl; // to store the Cloudinary image URL
+
+    if (file) {
+        try {
+            const result = await cloudinary.uploader.upload(file.path, {
+                folder: 'Specialities',
+                resource_type: 'auto',
             });
-        } else {
-            res.status(201).json({
-                message: "Data successfully Updated!",
-                success: true,
-                
+
+            imageUrl = result.secure_url;
+        } catch (error) {
+            console.error('Error uploading image to Cloudinary:', error);
+            return res.status(500).json({
+                message: 'Internal Server Error',
+                success: false,
             });
         }
+    }
+
+    try {
+        const existingSpeciality = await Specialities.findById(id);
+
+        if (!existingSpeciality) {
+            return res.status(404).json({
+                message: 'Speciality not found',
+                success: false,
+            });
+        }
+
+        // Update the speciality with the new data
+        existingSpeciality.specialities_name = specialities_name;
+        if (imageUrl) {
+            existingSpeciality.image = imageUrl; // Update the image URL if a new image is provided
+        }
+        await existingSpeciality.save();
+
+        return res.status(200).json({
+            message: 'Speciality successfully updated',
+            success: true,
+            data: existingSpeciality,
+        });
     } catch (error) {
-        res.status(500).json({
-            message: "Failed to Updated Data!",
-            status: false
+        console.error('Error updating speciality:', error);
+        return res.status(500).json({
+            message: 'Failed to update speciality',
+            success: false,
+            error: error.message,
         });
     }
-}
+});
+
+
 
 const deleteSpecialities = async (req, res) => {
     const { id } = req.params;

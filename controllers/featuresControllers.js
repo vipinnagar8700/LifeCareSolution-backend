@@ -132,28 +132,64 @@ const editFeatures = async (req, res) => {
     }
 }
 
-const updateFeatures = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const editFeatures = await Features.findByIdAndUpdate(id); // Exclude the 'password' field
-        if (!editFeatures) {
-            res.status(200).json({
-                message: "Features was not found!",
+const updateFeatures = asyncHandler(async (req, res) => {
+    const { id } = req.params; // Assuming you are passing the speciality ID in the URL parameters
+    const { features_name } = req.body;
+
+    const file = req.file;
+
+    let imageUrl; // to store the Cloudinary image URL
+
+    if (file) {
+        try {
+            const result = await cloudinary.uploader.upload(file.path, {
+                folder: 'Features',
+                resource_type: 'auto',
             });
-        } else {
-            res.status(201).json({
-                message: "Data successfully Updated!",
-                success: true,
-                
+
+            imageUrl = result.secure_url;
+        } catch (error) {
+            console.error('Error uploading image to Cloudinary:', error);
+            return res.status(500).json({
+                message: 'Internal Server Error',
+                success: false,
             });
         }
+    }
+
+    try {
+        const existingFeatures = await Features.findById(id);
+
+        if (!existingFeatures) {
+            return res.status(404).json({
+                message: 'Features not found',
+                success: false,
+            });
+        }
+
+        // Update the speciality with the new data
+        existingFeatures.features_name = features_name;
+        if (imageUrl) {
+            existingFeatures.image = imageUrl; // Update the image URL if a new image is provided
+        }
+        await existingFeatures.save();
+
+        return res.status(200).json({
+            message: 'Features successfully updated',
+            success: true,
+            data: existingFeatures,
+        });
     } catch (error) {
-        res.status(500).json({
-            message: "Failed to Updated Data!",
-            status: false
+        console.error('Error updating Features:', error);
+        return res.status(500).json({
+            message: 'Failed to update Features',
+            success: false,
+            error: error.message,
         });
     }
-}
+});
+
+
 
 
 module.exports = {
