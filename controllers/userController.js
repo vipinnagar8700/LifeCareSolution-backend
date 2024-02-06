@@ -198,6 +198,7 @@ const register_admin = asyncHandler(async (req, res) => {
 
 
 
+
 const login = asyncHandler(async (req, res) => {
   const { email, mobile, password, role } = req.body;
 
@@ -277,7 +278,26 @@ const login = asyncHandler(async (req, res) => {
   }
 });
 
-
+const AllUsers_role = async (req, res) => {
+  try {
+    const patients = await User.find().select("-password"); // Exclude the 'password' field;
+    const length = patients.length;
+    res.status(200).json([
+      {
+        message: "All Users data retrieved successfully!",
+        data: patients,
+        status: true,
+        length,
+      },
+    ]);
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
 
 const AllUsers = async (req, res) => {
   try {
@@ -432,12 +452,10 @@ const deleteUser = async (req, res) => {
 const Accept_User = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const userIdFromToken = req.user.userId;
-  console.log(userIdFromToken, "userIdFromToken");
   
   try {
     // Check if the user making the request is an admin
     const adminUser = await User.findById(userIdFromToken);
-console.log(adminUser,"adminUser")
     if (!adminUser || adminUser.role !== "admin") {
       return res.status(403).json({
         message: "You don't have permission to perform this action",
@@ -447,7 +465,6 @@ console.log(adminUser,"adminUser")
 
     // Find the user by userId
     const userToUpdate = await User.findById(id);
-
     if (!userToUpdate) {
       return res.status(404).json({
         message: "User not found",
@@ -467,6 +484,53 @@ console.log(adminUser,"adminUser")
     userToUpdate.permission = !userToUpdate.permission;
     await userToUpdate.save();
 
+    let updatedEntity;
+console.log(userToUpdate.role,"userToUpdate.role")
+    // Update the corresponding table based on the user's role
+    switch (userToUpdate.role) {
+      case "doctor":
+        // Update the doctor table
+        console.log("User's id:", userToUpdate._id.toString());
+        console.log("UuserToUpdate.permissiond:", userToUpdate.permission);
+        
+        updatedEntity = await Doctor.findOneAndUpdate(
+          { user_id: userToUpdate._id },
+          { permission: userToUpdate.permission },
+          { new: true }
+        );
+        console.log(updatedEntity,"updatedEntity")
+        break;
+      case "lab":
+        // Update the lab table
+        updatedEntity = await Lab.findOneAndUpdate(
+          { user_id: userToUpdate._id },
+          { permission: userToUpdate.permission },
+          { new: true }
+        );
+        break;
+      case "pharmacy":
+        // Update the pharmacy table
+        updatedEntity = await Pharmacy.findOneAndUpdate(
+          { user_id: userToUpdate._id },
+          { permission: userToUpdate.permission },
+          { new: true }
+        );
+        break;
+        case "subadmin":
+        // Update the pharmacy table
+        updatedEntity = await SubAdmin.findOneAndUpdate(
+          { user_id: userToUpdate._id },
+          { permission: userToUpdate.permission },
+          { new: true }
+        );
+        break;
+      default:
+        // Handle unknown role
+        break;
+    }
+
+    // Handle the updated entity
+
     res.status(200).json({
       message: "Permission toggled successfully!",
       success: true,
@@ -480,6 +544,8 @@ console.log(adminUser,"adminUser")
     });
   }
 });
+
+
 
 
 const changePassword = asyncHandler(async (req, res) => {
@@ -625,5 +691,5 @@ module.exports = {
   UpdateUsers,
   deleteUser,
   Accept_User,
-  changePassword,register_admin,ResetPassword,New_password,payment
+  changePassword,register_admin,ResetPassword,New_password,payment,AllUsers_role
 };

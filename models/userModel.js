@@ -185,6 +185,9 @@ const pharmacySchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+    },permission: {
+      type: Boolean,
+      default: false,
     },
     status: {
     type: String,
@@ -236,6 +239,10 @@ const doctorSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+    },
+    permission: {
+      type: Boolean,
+      default: false,
     },
     status: {
     type: String,

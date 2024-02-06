@@ -1,6 +1,6 @@
 const express = require('express')
 const { authenticateToken } = require('../config/JwtToken');
-const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword, register_admin, ResetPassword, New_password, payment } = require('../controllers/userController');
+const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword, register_admin, ResetPassword, New_password, payment, AllUsers_role } = require('../controllers/userController');
 const { AddBlogs, AllBlogs, editBlog, UpdateBlogs, AddBlogsCategory, AllCategory, deleteBlogCategory, deleteBlog } = require('../controllers/blogController');
 const { AddSpecialitiess, AllSpecialitiess, deleteSpecialities, updateSpecialities, editSpecialities } = require('../controllers/specialitiesControllers');
 const { Addfeaturess, Allfeaturess, deletefeatures, editFeatures, updateFeatures } = require('../controllers/featuresControllers');
@@ -44,6 +44,7 @@ const router = express.Router();
 // User Auth 
 router.post('/register', register);
 router.post('/login', login);
+router.get('/AllUsers_role',AllUsers_role)
 
 // Patient
 router.get('/AllUsers', AllUsers)
