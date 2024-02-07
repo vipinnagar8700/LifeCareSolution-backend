@@ -6,6 +6,7 @@ const {
   Pharmacy,
   Role,
 } = require("../models/userModel");
+const admin = require("firebase-admin");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
 const { generateRefreshToken } = require("../config/refreshToken");
@@ -22,6 +23,12 @@ cloudinary.config({
   api_key: "512412315723482",
   api_secret: "e3kLlh_vO5XhMBCMoIjkbZHjazo",
 });
+
+const serviceAccount = require("../config/lifecaresolution-984c5-firebase-adminsdk-20orx-a1a89421cf.json"); // Path to the downloaded JSON file
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
 
 
 const register = asyncHandler(async (req, res) => {
@@ -214,7 +221,6 @@ const login = asyncHandler(async (req, res) => {
     });
   }
 
-  console.log(findUser,"uuuu")
 
   if (findUser && (await findUser.isPasswordMatched(password))) {
     if (
@@ -265,6 +271,9 @@ const login = asyncHandler(async (req, res) => {
       } else if (findUser.role === "pharmacy") {
         response.pharmacyData = await Pharmacy.findOne({ user: findUser._id });
       }
+       // Send notification
+       sendNotification(findUser);
+
       res.status(200).json({
         message: "Successfully Login!",
         data: response,
@@ -277,6 +286,30 @@ const login = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
+
+// Function to send notification using FCM
+async function sendNotification(user) {
+  try {
+    // Construct the message payload
+    console.log(user.deviceToken,"user.deviceToken")
+    const message = {
+      token: user.deviceToken, // The device token of the user's device
+      notification: {
+        title: 'Login Notification',
+        body: 'You have successfully logged in!',
+      },
+    };
+
+    // Send the message
+    const response = await admin.messaging().send(message);
+    console.log('Notification sent successfully:', response);
+  } catch (error) {
+    console.error('Error sending notification:', error);
+  }
+}
+
 
 const AllUsers_role = async (req, res) => {
   try {
