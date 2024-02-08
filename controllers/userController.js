@@ -1,4 +1,6 @@
 const { generateToken } = require("../config/JwtToken");
+// Import the Twilio module
+const twilio = require('twilio');
 const {
   User,
   Doctor,
@@ -16,8 +18,9 @@ const crypto = require('crypto');
 require("dotenv/config");
 const multer = require("multer");
 const path = require("path");
-
+const firebase = require("firebase-admin");
 const cloudinary = require("cloudinary").v2;
+const { v4: uuidv4 } = require('uuid');
 cloudinary.config({
   cloud_name: "durzgbfjf",
   api_key: "512412315723482",
@@ -29,6 +32,10 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
+// Initialize Twilio client with your Account SID and Auth Token
+const accountSid = 'AC02c672773f1ebe0652d671126c189f8e';
+const authToken = 'ebd8704fc5403d9d266024e0bb857969';
+const client = twilio(accountSid, authToken);
 
 
 const register = asyncHandler(async (req, res) => {
@@ -286,6 +293,163 @@ const login = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
+
+// Function to generate a random 6-digit OTP
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+const sendOTP = async (mobileNumber) => {
+  try {
+    const user = await User.findOne({ mobile: mobileNumber });
+    if (!user) {
+      // If user is not found, return an error
+      return { success: false, message: 'User not found.' };
+    }
+
+    // Generate a random OTP
+    const otp = generateOTP();
+
+    // Store the OTP in the user object
+    user.otp = otp;
+    await user.save();
+
+    // Format the mobile number to comply with E.164 format
+    const formattedMobileNumber = `+91${mobileNumber}`; // Assuming the country code is '91' for India
+
+    // Send an SMS using Twilio
+    await client.messages.create({
+      body: `Your OTP is: ${otp}`,
+      from: '+12138982692', // Your Twilio phone number
+      to: formattedMobileNumber, // Formatted mobile number
+    });
+
+    // Return success message
+    return { success: true, message: 'OTP sent successfully' };
+  } catch (error) {
+    // Log and return error message
+    console.error('Error sending OTP:', error);
+    return { success: false, message: 'Error sending OTP' };
+  }
+};
+
+
+
+
+// Define the API endpoint for generating and sending OTP
+const generateAndSendOTP = asyncHandler(async (req, res) => {
+  // Extract mobile number from the request body
+  const { mobileNumber } = req.body;
+
+  try {
+    // Send OTP
+    const otp = await sendOTP(mobileNumber);
+
+    // Send success response with the OTP
+    res.json({ success: true, otp, message: 'OTP sent successfully' });
+  } catch (error) {
+    // Send error response if OTP sending fails
+    console.error('Error generating and sending OTP:', error);
+    res.status(500).json({ success: false, message: 'Error generating and sending OTP' });
+  }
+});
+
+const loginWithOTP = async (req, res) => {
+  // Extract mobile number and OTP from the request body
+  const { mobileNumber, otpuser } = req.body;
+
+  try {
+    // Fetch the user associated with the provided mobile number
+    const user = await User.findOne({ mobile: mobileNumber });
+    if (!user) {
+      // If user is not found, return an error
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    // Perform OTP verification
+    const isOTPVerified = verifyOTP(otpuser, user.otp); // Assuming user.otp contains the OTP stored in the database
+
+    if (isOTPVerified) {
+      // If OTP is verified, proceed with login
+      const token = generateToken(user._id);
+      const refreshToken = generateRefreshToken(user._id);
+      const updateUser = await User.findByIdAndUpdate(
+        user._id,
+        {
+          refreshToken: refreshToken,
+        },
+        { new: true }
+      );
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      const response = {
+        _id: user._id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        mobile: user.mobile,
+        status: user.status,
+        address: user.address,
+        city: user.city,
+        state: user.state,
+        role: user.role,
+        token: token,
+        passwordResetToken: user.passwordResetToken,
+        permission: user.permission
+      };
+
+      if (
+        user.role !== "patient" &&
+        user.role !== "admin" &&
+        user.role === "doctor" &&
+        !user.permission
+      ) {
+        return res.status(401).json({
+          message: "You don't have permission to login",
+          success: false,
+        });
+      }
+
+      if (user.role === "doctor") {
+        response.doctorData = await Doctor.findOne({ user_id: user._id });
+      } else if (user.role === "patient") {
+        response.patientData = await Patient.findOne({ user_id: user._id });
+      } else if (user.role === "pharmacy") {
+        response.pharmacyData = await Pharmacy.findOne({ user: user._id });
+      }
+
+      // Send notification
+      sendNotification(user);
+
+      res.status(200).json({
+        message: "Successfully Login!",
+        data: response,
+      });
+    } else {
+      // If OTP is not verified, return error message
+      res.status(400).json({ success: false, message: 'Invalid OTP. Please try again.' });
+    }
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    res.status(500).json({ success: false, message: 'Error verifying OTP' });
+  }
+};
+
+
+
+
+// Function to verify OTP
+const verifyOTP = (otp, otpuser) => {
+  console.log(otpuser,"otpuserotpuser")
+  console.log(otp,"otpuserotpuserotpuserotpuserotpuserotpuser")
+  return otp === otpuser;
+};
 
 // Function to send notification using FCM
 async function sendNotification(user) {
@@ -722,5 +886,5 @@ module.exports = {
   UpdateUsers,
   deleteUser,
   Accept_User,
-  changePassword,register_admin,ResetPassword,New_password,payment,AllUsers_role
+  changePassword,register_admin,ResetPassword,New_password,payment,AllUsers_role,loginWithOTP,generateAndSendOTP
 };

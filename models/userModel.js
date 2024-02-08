@@ -4,6 +4,7 @@ const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
   {
+    otp:String,
     // Common user fields
     firstname: String,
     lastname: String,
