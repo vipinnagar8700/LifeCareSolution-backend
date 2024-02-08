@@ -38,7 +38,7 @@ const addToCart = async (req, res) => {
 
 const AllCarts = async (req, res) => {
     try {
-        const patients = await Cart.find(); // Exclude the 'password' field;
+        const patients = await Cart.find().sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Carts data retrieved successfully!",
@@ -61,7 +61,7 @@ const AllUserCarts = async (req, res) => {
         const { id } = req.params;
 
         // Retrieve all carts for the user
-        const carts = await Cart.find({ user_id: id });
+        const carts = await Cart.find({ user_id: id }).sort({ createdAt: -1 });
 
         let grandTotal = 0; // Initialize the grand total
 

@@ -9,7 +9,7 @@ require('dotenv/config')
 
 const AllPharmacys = async (req, res) => {
     try {
-        const pharmacies = await Pharmacy.find().select('-password'); // Use 'pharmacies' instead of 'Pharmacy'
+        const pharmacies = await Pharmacy.find().select('-password').sort({ createdAt: -1 }); // Use 'pharmacies' instead of 'Pharmacy'
         const length = pharmacies.length;
         res.status(200).json([{
             message: "All Pharmacy data retrieved successfully!",

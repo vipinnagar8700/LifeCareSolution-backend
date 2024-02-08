@@ -36,7 +36,7 @@ const AddProductCategorys = asyncHandler(async (req, res) => {
 
 const AllProductCategorys = async (req, res) => {
     try {
-        const patients = await ProductCategory.find(); // Exclude the 'password' field;
+        const patients = await ProductCategory.find().sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All ProductCategorys data retrieved successfully!",
@@ -58,7 +58,7 @@ const pharmacyProductCategory = async (req, res) => {
     try {
         const { id } = req.params;
         console.log(id)
-        const productCategories = await ProductCategory.find({ pharmacy_id: id });
+        const productCategories = await ProductCategory.find({ pharmacy_id: id }).sort({ createdAt: -1 });
         console.log(productCategories)
         const length = productCategories.length;
         res.status(200).json({

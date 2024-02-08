@@ -33,7 +33,7 @@ const AllVideoSlots = async (req, res) => {
 
     const {id} = req.params;
     try {
-        const VideoSlotA = await VideoSlot.find({doctor_id:id}); // Exclude the 'password' field;
+        const VideoSlotA = await VideoSlot.find({doctor_id:id}).sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = VideoSlot.length;
         res.status(200).json([{
             message: "All VideoSlot data retrieved successfully!",

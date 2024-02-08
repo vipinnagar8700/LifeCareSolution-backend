@@ -67,7 +67,7 @@ const Addfeaturess = asyncHandler(async (req, res) => {
 
 const Allfeaturess = async (req, res) => {
     try {
-        const patients = await Features.find(); // Exclude the 'password' field;
+        const patients = await Features.find().sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All featuress data retrieved successfully!",

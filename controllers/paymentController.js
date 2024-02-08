@@ -19,7 +19,7 @@ const AllPayments = async (req, res) => {
           { path: 'doctor_id' },
           { path: 'videoSlot_id' }, // Assuming 'videoSlot_id' is a reference to the slot
         ],
-      });
+      }).sort({ createdAt: -1 });
 
       // Exclude the 'PaymentDetails' field;
     const length = Appointment.length;
@@ -76,5 +76,5 @@ const AllDoctorPayment = async (req, res) => {
 
 
 module.exports = {
-    AllPayments
+    AllPayments,AllDoctorPayment
 };

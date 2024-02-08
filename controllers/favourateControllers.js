@@ -56,7 +56,7 @@ const AllFavourates = async (req, res) => {
     try {
         // Use find instead of findOne to get an array of favourates
         const favourates = await Favourate.find({ patient_id: id })
-            .populate('doctors', '-password'); // Populate the doctors and exclude the 'password' field
+            .populate('doctors', '-password').sort({ createdAt: -1 }); // Populate the doctors and exclude the 'password' field
 
         const length = favourates.length;
 

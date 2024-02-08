@@ -33,7 +33,7 @@ const AllSlots = async (req, res) => {
 
     const {id} = req.params;
     try {
-        const SlotA = await Slot.find({doctor_id:id}); // Exclude the 'password' field;
+        const SlotA = await Slot.find({doctor_id:id}).sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = Slot.length;
         res.status(200).json([{
             message: "All Slot data retrieved successfully!",

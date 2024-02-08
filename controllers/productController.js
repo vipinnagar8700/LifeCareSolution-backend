@@ -35,7 +35,7 @@ const AllPharmacyProducts = async (req, res) => {
     try {
         const { id } = req.params;
         console.log(id)
-        const patients = await Product.find({ pharmacy_id: id }); // Exclude the 'password' field;
+        const patients = await Product.find({ pharmacy_id: id }).sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Products data retrieved successfully!",
@@ -55,7 +55,7 @@ const AllPharmacyProducts = async (req, res) => {
 
 const AllProducts = async (req, res) => {
     try {
-        const patients = await Product.find(); // Exclude the 'password' field;
+        const patients = await Product.find().sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Products data retrieved successfully!",

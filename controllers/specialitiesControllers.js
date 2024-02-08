@@ -69,7 +69,7 @@ const AddSpecialitiess = asyncHandler(async (req, res) => {
 
 const AllSpecialitiess = async (req, res) => {
     try {
-        const patients = await Specialities.find(); // Exclude the 'password' field;
+        const patients = await Specialities.find().sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Specialitiess data retrieved successfully!",

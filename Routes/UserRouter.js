@@ -22,7 +22,7 @@ const multer = require('multer');
 const path = require('path');
 const { Reviews, DislikeReview, LikeReview, PatientReview, DoctorReview, AllReviews } = require('../controllers/reviewController');
 const { AllVideoSlots, editVideoSlot, UpdateVideoSlot, deleteVideoSlot, AddVideoSlot } = require('../controllers/VideoSlotController');
-const { AllPayments } = require('../controllers/paymentController');
+const { AllPayments, AllDoctorPayment } = require('../controllers/paymentController');
 const { AllInvoices,AllDoctorInvoice, AllPatientInvoice } = require('../controllers/invoiceController');
 const { edit_admin_profile, Update_admin_profile } = require('../controllers/adminController');
 // Multer configuration
@@ -105,7 +105,7 @@ router.get("/doctors/filter", FilterDoctors);
 router.post('/Reviews',Reviews,authenticateToken);
 router.post('/DislikeReview/:id',DislikeReview,authenticateToken);
 router.post('/LikeReview/:id',LikeReview,authenticateToken);
-
+router.get('/AllDoctorPayment/:id',AllDoctorPayment)
 
 // Pharmacy
 router.get('/Allpharmacy', AllPharmacys)

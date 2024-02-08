@@ -287,8 +287,6 @@ const login = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 // Function to send notification using FCM
 async function sendNotification(user) {
   try {
@@ -313,7 +311,7 @@ async function sendNotification(user) {
 
 const AllUsers_role = async (req, res) => {
   try {
-    const patients = await User.find().select("-password"); // Exclude the 'password' field;
+    const patients = await User.find().select("-password").sort({ createdAt: -1 }); // Exclude the 'password' field;
     const length = patients.length;
     res.status(200).json([
       {
@@ -334,7 +332,7 @@ const AllUsers_role = async (req, res) => {
 
 const AllUsers = async (req, res) => {
   try {
-    const patients = await Patient.find().select("-password"); // Exclude the 'password' field;
+    const patients = await Patient.find().select("-password").sort({ createdAt: -1 }); // Exclude the 'password' field;
     const length = patients.length;
     res.status(200).json([
       {

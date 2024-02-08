@@ -17,7 +17,7 @@ const AllDoctors = async (req, res) => {
   try {
     const doctores = await Doctor.find()
       .select("-password")
-      .populate("Specailization"); // Exclude the 'password' field;
+      .populate("Specailization").sort({ createdAt: -1 }); // Exclude the 'password' field;
     const length = doctores.length;
     res.status(200).json([
       {
@@ -40,7 +40,7 @@ const AllDoctorPermitted = async (req, res) => {
   try {
     const doctors = await Doctor.find({ permission: true, status: "approved" })
       .select("-password")
-      .populate("Specailization"); // Exclude the 'password' field and populate 'Specailization'
+      .populate("Specailization").sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
 
     const length = doctors.length;
 
@@ -63,7 +63,7 @@ const AllDoctorPending = async (req, res) => {
   try {
     const doctors = await Doctor.find({ status: "pending" })
       .select("-password")
-      .populate("Specailization"); // Exclude the 'password' field and populate 'Specailization'
+      .populate("Specailization").sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
 
     const length = doctors.length;
 
@@ -86,7 +86,7 @@ const AllDoctorApproved = async (req, res) => {
   try {
     const doctors = await Doctor.find({ status: "approved" })
       .select("-password")
-      .populate("Specailization"); // Exclude the 'password' field and populate 'Specailization'
+      .populate("Specailization").sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
 
     const length = doctors.length;
 
@@ -109,7 +109,7 @@ const AllDoctorBlocked = async (req, res) => {
   try {
     const doctors = await Doctor.find({ status: "blocked" })
       .select("-password")
-      .populate("Specailization"); // Exclude the 'password' field and populate 'Specailization'
+      .populate("Specailization").sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
 
     const length = doctors.length;
 
@@ -602,16 +602,21 @@ const deleteClinicImage = async (req, res) => {
 const FilterDoctors = async (req, res) => {
   try {
     // Extract filter criteria from the request query
-    const {
+    let {
       gender,
       fees,
       specialization_id,
       Total_Exp,
       search_data,
-      Registered_Clinic_city,
+      Registered_Clinic_city,doctorNameStartsWith 
     } = req.query;
-
     // Build the filter object based on provided criteria
+
+     // Convert to lowercase or uppercase for case-insensitive search
+     gender = gender ? gender.toLowerCase() : gender;
+     search_data = search_data ? search_data.toLowerCase() : search_data;
+     Registered_Clinic_city = Registered_Clinic_city ? Registered_Clinic_city.toLowerCase() : Registered_Clinic_city;
+ 
     const filter = {};
 
     if (gender) filter.gender = gender;
@@ -633,9 +638,10 @@ const FilterDoctors = async (req, res) => {
       specialization_id &&
       mongoose.Types.ObjectId.isValid(specialization_id)
     ) {
-      filter.Specialization = { _id: specialization_id };
+           filter.Specailization = { _id: specialization_id };
+           console.log(specialization_id,"jj")
+           console.log(filter.Specialization,"filter.Specialization")
     }
-
     if (Total_Exp) {
       const [minExp, maxExp] = Total_Exp.split("-").map((part) =>
         part ? parseInt(part) : undefined
@@ -657,9 +663,28 @@ const FilterDoctors = async (req, res) => {
       ];
     }
 
+
+// Filter by doctor's first name starting with a specific letter
+if (doctorNameStartsWith) {
+  if (doctorNameStartsWith.match(/^[A-Za-z]$/)) {
+    // Valid single character from A to Z or a to z
+    filter.firstname = new RegExp('^' + doctorNameStartsWith, 'i');
+  } else {
+    // Handle invalid input
+    return res.status(400).json({
+      message: "Invalid input for doctorNameStartsWith. Please provide a single character from A to Z or a to z.",
+      status: false,
+    });
+  }
+} else {
+  // If no specific letter is provided, match any character from A to Z
+  filter.firstname = new RegExp('^[A-Za-z]', 'i');
+}
+
+
     const doctors = await Doctor.find(filter)
       .select("-password")
-      .populate("Specailization");
+      .populate("Specailization").sort({ createdAt: -1 });
 
     const length = doctors.length;
 

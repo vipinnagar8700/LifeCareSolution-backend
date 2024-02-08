@@ -124,7 +124,7 @@ console.log(formattedDate,"todayDate")
       .populate("slot_id")
       .populate("doctor_id")
       .populate("patient_id")
-      .populate("videoSlot_id");
+      .populate("videoSlot_id").sort({ createdAt: -1 });
 
     const length = appointmentsToday.length;
 
@@ -160,7 +160,7 @@ console.log(formattedDate,"todayDate")
       .populate("slot_id")
       .populate("doctor_id")
       .populate("patient_id")
-      .populate("videoSlot_id");
+      .populate("videoSlot_id").sort({ createdAt: -1 });
 
     const length = appointmentsToday.length;
 
@@ -193,7 +193,7 @@ const UpcomingAppointment = async (req, res) => {
       .populate("slot_id")
       .populate("doctor_id")
       .populate("patient_id")
-      .populate("videoSlot_id");
+      .populate("videoSlot_id").sort({ createdAt: -1 });
 
     const length = upcomingAppointments.length;
 
@@ -219,7 +219,7 @@ const AllAppointments = async (req, res) => {
       .populate("slot_id")
       .populate("doctor_id")
       .populate("patient_id")
-      .populate("videoSlot_id"); // Exclude the 'password' field;
+      .populate("videoSlot_id").sort({ createdAt: -1 }); // Exclude the 'password' field;
     const length = Appointment.length;
     res.status(200).json([
       {
@@ -244,7 +244,7 @@ const CompleteAppointments = async (req, res) => {
       .populate("slot_id")
       .populate("doctor_id")
       .populate("patient_id")
-      .populate("videoSlot_id");
+      .populate("videoSlot_id").sort({ createdAt: -1 });
 
     const length = pendingAppointments.length;
 
@@ -269,7 +269,7 @@ const CancelAppointments = async (req, res) => {
       .populate("slot_id")
       .populate("doctor_id")
       .populate("patient_id")
-      .populate("videoSlot_id");
+      .populate("videoSlot_id").sort({ createdAt: -1 });
 
     const length = pendingAppointments.length;
 
@@ -294,7 +294,7 @@ const PendingAppointments = async (req, res) => {
       .populate("slot_id")
       .populate("doctor_id")
       .populate("patient_id")
-      .populate("videoSlot_id");
+      .populate("videoSlot_id").sort({ createdAt: -1 });
 
     const length = pendingAppointments.length;
 
@@ -319,7 +319,7 @@ const editAppointment = async (req, res) => {
   try {
     const AppointmentA = await Appointment.findById(id)
       .populate("slot_id")
-      .populate("videoSlot_id");
+      .populate("videoSlot_id")
     console.log(AppointmentA); // Exclude the 'password' field
     if (!Appointment) {
       res.status(404).json({
@@ -388,7 +388,7 @@ const deleteAppointment = async (req, res) => {
     }
 
     // If the Appointment is not an admin, proceed with the deletion
-    const deletedAppointment = await Appointment.findByIdAndDelete(id);
+    const deletedAppointment = await Appointment.findByIdAndDelete(id).sort({ createdAt: -1 });
 
     if (!deletedAppointment) {
       return res.status(200).json({

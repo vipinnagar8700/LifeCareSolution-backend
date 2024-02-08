@@ -46,7 +46,7 @@ const AddDependents = asyncHandler(async (req, res) => {
 
 const AllDependents = async (req, res) => {
     try {
-        const patients = await Dependent.find().populate('patient_id');;// Exclude the 'password' field;
+        const patients = await Dependent.find().populate('patient_id').sort({ createdAt: -1 });// Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Dependents data retrieved successfully!",

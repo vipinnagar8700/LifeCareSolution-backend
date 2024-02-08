@@ -29,7 +29,7 @@ const AddPurchases = asyncHandler(async (req, res) => {
 
 const AllPurchases = async (req, res) => {
     try {
-        const patients = await Purchase.find(); // Exclude the 'password' field;
+        const patients = await Purchase.find().sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Purchases data retrieved successfully!",
@@ -52,7 +52,7 @@ const AllPharmacyPurchases = async (req, res) => {
         const {id}= req.params;
         const patients = await Purchase.find({
             pharmacy_id:id
-        }); // Exclude the 'password' field;
+        }).sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Purchases data retrieved successfully!",

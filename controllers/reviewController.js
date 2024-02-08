@@ -19,7 +19,7 @@ const Reviews =  async (req, res) => {
   // Route to get all reviews
  const AllReviews = async (req, res) => {
     try {
-      const reviews = await Review.find().populate('patient_id').populate('doctor_id');
+      const reviews = await Review.find().populate('patient_id').populate('doctor_id').sort({ createdAt: -1 });
       const length = reviews.length;
       res.status(200).json([{
         message :"all Reviews",status:true,data:reviews,
@@ -35,7 +35,7 @@ const DoctorReview = async (req, res) => {
     const doctor_id = req.params.doctor_id; // Assuming doctor_id is in the request parameters
   
     try {
-      const reviews = await Review.find({ doctor_id }).populate('patient_id').populate('doctor_id');
+      const reviews = await Review.find({ doctor_id }).populate('patient_id').populate('doctor_id').sort({ createdAt: -1 });
       const length = reviews.length;
       res.status(200).json([{
         message:"All Doctor Reviews",status:true,
@@ -52,7 +52,7 @@ const DoctorReview = async (req, res) => {
     const patient_id = req.params.patient_id; // Assuming doctor_id is in the request parameters
   
     try {
-      const reviews = await Review.find({ patient_id }).populate('patient_id').populate('doctor_id');
+      const reviews = await Review.find({ patient_id }).populate('patient_id').populate('doctor_id').sort({ createdAt: -1 });
       const length = reviews.length;
       res.status(200).json([{
         message:"All Patient Reviews",status:true,

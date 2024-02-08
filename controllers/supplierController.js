@@ -33,7 +33,7 @@ const AddSupplier = asyncHandler(async (req, res) => {
 
 const AllSupplier = async (req, res) => {
     try {
-        const patients = await Supplier.find(); // Exclude the 'password' field;
+        const patients = await Supplier.find().sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Supplier data retrieved successfully!",
@@ -53,7 +53,7 @@ const AllPharmacySupplier = async (req, res) => {
     try {
         const { id } = req.params;
         console.log(id)
-        const patients = await Supplier.find({pharmacy_id:id}); // Exclude the 'password' field;
+        const patients = await Supplier.find({pharmacy_id:id}).sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Supplier data retrieved successfully!",

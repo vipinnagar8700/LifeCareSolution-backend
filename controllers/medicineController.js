@@ -43,7 +43,7 @@ const AllMedicines = async (req, res) => {
             data: patients,
             status: true,
             length
-        }]);
+        }]).sort({ createdAt: -1 });
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error",

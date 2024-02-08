@@ -20,7 +20,7 @@ const AllInvoices = async (req, res) => {
           { path: 'doctor_id' },
           { path: 'videoSlot_id' }, // Assuming 'videoSlot_id' is a reference to the slot
         ],
-      });
+      }).sort({ createdAt: -1 });
 
       // Exclude the 'PaymentDetails' field;
     const length = InvoiceDetails.length;
@@ -45,7 +45,7 @@ const AllDoctorInvoice = async (req, res) => {
     const { id } = req.params;
     try {
         const InvoiceDetails = await Invoice.find({ 'appointment_id.doctor_id._id': id })
-        .populate('appointment_id', 'patient_id doctor_id') // Specify the fields to populate
+        .populate('appointment_id', 'patient_id doctor_id').sort({ createdAt: -1 }); // Specify the fields to populate
 
             
 
@@ -77,7 +77,7 @@ const AllPatientInvoice  =  async (req, res) => {
     const { id } = req.params;
     try {
         const InvoiceDetails = await Invoice.find({ 'appointment_id.patient_id._id': id })
-        .populate('appointment_id', ' doctor_id') // Specify the fields to populate
+        .populate('appointment_id', ' doctor_id').sort({ createdAt: -1 }); // Specify the fields to populate
 
             
 

@@ -82,7 +82,7 @@ const getUserOrders = async (req, res) => {
         const { user_id } = req.params;
 
         // Retrieve all orders for the user
-        const orders = await Order.find({ user_id });
+        const orders = await Order.find({ user_id }).sort({ createdAt: -1 });
 
         res.status(200).json({
             message: "User's orders retrieved successfully!",

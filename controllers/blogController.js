@@ -85,7 +85,7 @@ console.log(title, content, category_id,specailitie_id,written_by )
 
 const AllBlogs = async (req, res) => {
     try {
-        const patients = await Blog.find().populate('category_id').populate('specailitie_id'); // Exclude the 'password' field;
+        const patients = await Blog.find().populate('category_id').populate('specailitie_id').sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Blogs data retrieved successfully!",
@@ -184,7 +184,7 @@ const AddBlogsCategory = asyncHandler(async (req, res) => {
 });
 const AllCategory = async (req, res) => {
     try {
-        const patients = await BlogCategory.find(); // Exclude the 'password' field;
+        const patients = await BlogCategory.find().sort({ createdAt: -1 }); // Exclude the 'password' field;
         const length = patients.length;
         res.status(200).json([{
             message: "All Blogs Category data retrieved successfully!",
