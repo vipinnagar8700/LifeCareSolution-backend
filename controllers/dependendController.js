@@ -64,6 +64,26 @@ const AllDependents = async (req, res) => {
 };
 
 
+const AllPatientDependents = async (req, res) => {
+  const { patient_id } = req.params;
+  try {
+      const patients = await Dependent.find({ patient_id }).populate('patient_id').sort({ createdAt: -1 });// Exclude the 'password' field;
+      const length = patients.length;
+      res.status(200).json([{
+          message: "All Dependents data retrieved successfully!",
+          data: patients,
+          status: true,
+          length
+      }]);
+  } catch (error) {
+      res.status(500).json({
+          message: "Internal Server Error",
+          error: error.message,
+          status: false
+      });
+  }
+};
+
 const editDependent = async (req, res) => {
     const { id } = req.params;
     try {
@@ -154,5 +174,5 @@ const deleteDependent = async (req, res) => {
 
 module.exports = {
     AddDependents,
-    AllDependents, editDependent, UpdateDependents, deleteDependent
+    AllDependents, editDependent, UpdateDependents, deleteDependent,AllPatientDependents
 }

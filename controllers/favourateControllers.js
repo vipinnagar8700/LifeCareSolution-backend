@@ -51,20 +51,31 @@ const AddFavourates = asyncHandler(async (req, res) => {
 
 
 
+
+
 const AllFavourates = async (req, res) => {
     const { id } = req.params;
     try {
-        // Use find instead of findOne to get an array of favourates
-        const favourates = await Favourate.find({ patient_id: id })
-            .populate('doctors', '-password').sort({ createdAt: -1 }); // Populate the doctors and exclude the 'password' field
-
-        const length = favourates.length;
+        const favourateses = await Favourate.find({ patient_id: id }).populate('doctors')
+            .populate({
+                path: 'doctors',
+                populate: {
+                    path: 'Specailization', // Populate the Specialization field within each doctor object
+                    select: '-_id -__v' // Exclude unnecessary fields
+                }
+            })
+            .sort({ createdAt: -1 });
+            let totalDoctors = 0;
+            favourateses.forEach(favourate => {
+                totalDoctors += favourate.doctors.length;
+            });
+    
 
         res.status(200).json({
             message: "All Doctor Favourates data retrieved successfully!",
-            data: favourates,
+            data: favourateses,
             status: true,
-            length
+            length:totalDoctors 
         });
     } catch (error) {
         res.status(500).json({
@@ -74,6 +85,7 @@ const AllFavourates = async (req, res) => {
         });
     }
 };
+
 
 
 

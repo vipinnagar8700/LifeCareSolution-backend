@@ -209,10 +209,6 @@ const register_admin = asyncHandler(async (req, res) => {
   }
 });
 
-
-
-
-
 const login = asyncHandler(async (req, res) => {
   const { email, mobile, password, role } = req.body;
 
@@ -294,8 +290,6 @@ const login = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 // Function to generate a random 6-digit OTP
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -334,9 +328,6 @@ const sendOTP = async (mobileNumber) => {
     return { success: false, message: 'Error sending OTP' };
   }
 };
-
-
-
 
 // Define the API endpoint for generating and sending OTP
 const generateAndSendOTP = asyncHandler(async (req, res) => {
@@ -441,9 +432,6 @@ const loginWithOTP = async (req, res) => {
   }
 };
 
-
-
-
 // Function to verify OTP
 const verifyOTP = (otp, otpuser) => {
   console.log(otpuser,"otpuserotpuser")
@@ -472,6 +460,160 @@ async function sendNotification(user) {
   }
 }
 
+// Facebook login Api
+
+const login_fb =async (req,res)=>{
+  try {
+    const { accessToken } = req.body;
+
+    // Verify Facebook access token
+    const { uid, email, displayName, photoURL } = await admin.auth().verifyIdToken(accessToken, true);
+
+    // Check if user exists in your application's database
+    let findUser;
+    // Assuming you have a User model and mongoose for MongoDB
+    // Check if a user with the given email exists and matches the role
+    findUser = await User.findOne({ email });
+
+    if (findUser) {
+      // If user exists, proceed with authentication
+      const token = generateToken(findUser._id);
+      const refreshToken = generateRefreshToken(findUser._id);
+
+      // Update user's refreshToken in the database
+      const updateUser = await User.findByIdAndUpdate(
+        findUser._id,
+        { refreshToken },
+        { new: true }
+      );
+
+      // Set refreshToken as a cookie
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      const response = {
+        _id: findUser._id,
+        firstname: findUser.firstname,
+        lastname: findUser.lastname,
+        email: findUser.email,
+        mobile: findUser.mobile,
+        status: findUser.status,
+        address: findUser.address,
+        city: findUser.city,
+        state: findUser.state,
+        role: findUser.role,
+        token,
+      };
+
+      // If the user is a doctor, include doctorData in the response
+      if (findUser.role === "doctor") {
+        response.doctorData = await Doctor.findOne({ user_id: findUser._id });
+      } else if (findUser.role === "patient") {
+        response.patientData = await Patient.findOne({ user_id: findUser._id });
+      } else if (findUser.role === "pharmacy") {
+        response.pharmacyData = await Pharmacy.findOne({ user: findUser._id });
+      }
+
+      // Send notification
+      sendNotification(findUser);
+
+      res.status(200).json({
+        message: "Successfully Login!",
+        data: response,
+      });
+    } else {
+      // If user doesn't exist, return an error
+      res.status(401).json({
+        message: "User not found. Please register first.",
+        success: false,
+      });
+    }
+  } catch (error) {
+    console.error('Error logging in with Facebook:', error);
+    res.status(500).json({ error: 'Failed to login with Facebook' });
+  }
+}
+
+// Google Login Api
+const login_google = asyncHandler(async (req,res)=>{
+  try {
+    const { accessToken } = req.body;
+
+     // Verify Google access token
+    const { uid, email, displayName, photoURL } = await admin.auth().verifyIdToken(accessToken, true);
+
+    // Check if user exists in your application's database
+    let findUser;
+    // Assuming you have a User model and mongoose for MongoDB
+    // Check if a user with the given email exists and matches the role
+    findUser = await User.findOne({ email });
+
+    if (findUser) {
+      // If user exists, proceed with authentication
+      const token = generateToken(findUser._id);
+      const refreshToken = generateRefreshToken(findUser._id);
+
+      // Update user's refreshToken in the database
+      const updateUser = await User.findByIdAndUpdate(
+        findUser._id,
+        { refreshToken },
+        { new: true }
+      );
+
+      // Set refreshToken as a cookie
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      const response = {
+        _id: findUser._id,
+        firstname: findUser.firstname,
+        lastname: findUser.lastname,
+        email: findUser.email,
+        mobile: findUser.mobile,
+        status: findUser.status,
+        address: findUser.address,
+        city: findUser.city,
+        state: findUser.state,
+        role: findUser.role,
+        token,
+      };
+
+      // If the user is a doctor, include doctorData in the response
+      if (findUser.role === "doctor") {
+        response.doctorData = await Doctor.findOne({ user_id: findUser._id });
+      } else if (findUser.role === "patient") {
+        response.patientData = await Patient.findOne({ user_id: findUser._id });
+      } else if (findUser.role === "pharmacy") {
+        response.pharmacyData = await Pharmacy.findOne({ user: findUser._id });
+      }
+
+      // Send notification
+      sendNotification(findUser);
+
+      // Customize the API response
+      const customResponse = {
+        message: "Successfully Login!",
+        data: response,
+      };
+
+      res.status(200).json(customResponse);
+    } else {
+      // If user doesn't exist, return an error
+      res.status(401).json({
+        message: "User not found. Please register first.",
+        success: false,
+      });
+    }
+  } catch (error) {
+    console.error('Error logging in with Google:', error);
+    res.status(500).json({ error: 'Failed to login with Google' });
+  }
+
+})
 
 const AllUsers_role = async (req, res) => {
   try {
@@ -643,7 +785,6 @@ const deleteUser = async (req, res) => {
 };
 
 
-
 const Accept_User = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const userIdFromToken = req.user.userId;
@@ -739,7 +880,6 @@ console.log(userToUpdate.role,"userToUpdate.role")
     });
   }
 });
-
 
 
 
@@ -866,8 +1006,6 @@ const New_password = asyncHandler(async(req,res)=>{
   }
 })
 
-
-
 const payment = asyncHandler(async(req,res)=>{
   try {
     
@@ -886,5 +1024,5 @@ module.exports = {
   UpdateUsers,
   deleteUser,
   Accept_User,
-  changePassword,register_admin,ResetPassword,New_password,payment,AllUsers_role,loginWithOTP,generateAndSendOTP
+  changePassword,register_admin,ResetPassword,New_password,payment,AllUsers_role,loginWithOTP,generateAndSendOTP,login_fb,login_google
 };

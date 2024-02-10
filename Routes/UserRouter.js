@@ -1,6 +1,6 @@
 const express = require('express')
 const { authenticateToken } = require('../config/JwtToken');
-const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword, register_admin, ResetPassword, New_password, payment, AllUsers_role, loginWithOTP, generateAndSendOTP } = require('../controllers/userController');
+const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_User, changePassword, register_admin, ResetPassword, New_password, payment, AllUsers_role, loginWithOTP, generateAndSendOTP, login_fb, login_google, SendEmail } = require('../controllers/userController');
 const { AddBlogs, AllBlogs, editBlog, UpdateBlogs, AddBlogsCategory, AllCategory, deleteBlogCategory, deleteBlog } = require('../controllers/blogController');
 const { AddSpecialitiess, AllSpecialitiess, deleteSpecialities, updateSpecialities, editSpecialities } = require('../controllers/specialitiesControllers');
 const { Addfeaturess, Allfeaturess, deletefeatures, editFeatures, updateFeatures } = require('../controllers/featuresControllers');
@@ -8,7 +8,7 @@ const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_M
 const { AllPharmacys, editPharmacy, UpdatePharmacy, deletePharmacy } = require('../controllers/pharmacyController');
 const { AllSlots, editSlot, UpdateSlot, deleteSlot, AddSlot } = require('../controllers/slotController');
 const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, BookAppointment, doctor_appointments, UpdateAppointmentStatus, Patient_appointments, TodayAppointment, CompleteAppointments, PendingAppointments, CancelAppointments, PastAppointment, UpcomingAppointment } = require('../controllers/appointmentController');
-const { AddDependents, AllDependents, editDependent, UpdateDependents, deleteDependent } = require('../controllers/dependendController');
+const { AddDependents, AllDependents, editDependent, UpdateDependents, deleteDependent, AllPatientDependents } = require('../controllers/dependendController');
 const { AddMedicines, AllMedicines, editMedicine, UpdateMedicines, deleteMedicine } = require('../controllers/medicineController');
 const { AddFavourates, deleteFavourate, AllFavourates } = require('../controllers/favourateControllers');
 const { sendMessages, AddUserforChat, GetAllChat, AllParticipants, deleteChat, getMessages } = require('../controllers/chatController');
@@ -47,7 +47,8 @@ router.post('/login', login);
 router.get('/AllUsers_role',AllUsers_role)
 router.post('/loginWithOTP',loginWithOTP)
 router.post('/generateAndSendOTP',generateAndSendOTP)
-
+router.post('/login_fb',login_fb)
+router.post('/login_google',login_google)
 
 // Patient
 router.get('/AllUsers', AllUsers)
@@ -56,8 +57,9 @@ router.put('/UpdateUsers/:id', upload.single('image'),authenticateToken, UpdateU
 router.delete('/deleteUser/:id',authenticateToken, deleteUser)
 router.get('/Patient_appointments/:id',authenticateToken, Patient_appointments)
 router.get("/PatientReview/:patient_id",PatientReview,authenticateToken);
-router.get('/AllDependents',authenticateToken, AllDependents)
+router.get('/AllDependents', AllDependents)
 router.get('/editDependent/:id',authenticateToken, editDependent)
+router.get('/AllPatientDependents/:patient_id',authenticateToken,AllPatientDependents)
 router.put('/UpdateDependents/:id', upload.single('image'),authenticateToken, UpdateDependents)
 router.delete('/deleteDependent/:id', authenticateToken,deleteDependent)
 router.post('/AddDependents',upload.single('image'),authenticateToken, AddDependents)
