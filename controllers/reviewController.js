@@ -3,10 +3,10 @@ const Review = require('../models/reviewsModel')
 require("dotenv/config");
 
 const Reviews =  async (req, res) => {
-    const { patient_id, doctor_id, comment } = req.body;
+    const { patient_id, doctor_id, comment ,star} = req.body;
   
     try {
-      const newReview = new Review({ patient_id, doctor_id, comment });
+      const newReview = new Review({ patient_id, doctor_id, comment,star });
       await newReview.save();
       res.status(201).json([{
         message:"Review Successfully Posted!",status:true
