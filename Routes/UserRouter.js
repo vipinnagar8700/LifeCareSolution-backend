@@ -107,7 +107,7 @@ router.delete('/deleteDoctorExperience/:doctorId/:ExperienceId',deleteDoctorExpe
 router.delete('/deleteClinicImage/:doctorId/:ClinicImageId',deleteClinicImage,authenticateToken)
 router.post('/changePassword/:resetToken',authenticateToken,changePassword)
 router.get("/doctors/filter", FilterDoctors);
-router.post('/Reviews',Reviews,authenticateToken);
+router.post('/Reviews',authenticateToken,Reviews);
 router.post('/DislikeReview/:id',DislikeReview,authenticateToken);
 router.post('/LikeReview/:id',LikeReview,authenticateToken);
 router.get('/AllDoctorPayment/:id',AllDoctorPayment)

@@ -1,11 +1,16 @@
 const asyncHandler = require("express-async-handler");
-const Review = require('../models/reviewsModel')
+const Review = require('../models/reviewsModel');
+const { Patient } = require("../models/userModel");
 require("dotenv/config");
 
 const Reviews =  async (req, res) => {
-    const { patient_id, doctor_id, comment ,star} = req.body;
+  const PatintIDD = req.user.userId;
+    const { doctor_id, comment ,star} = req.body;
   
     try {
+
+
+      const patient_id = await Patient.findOne({user_id:PatintIDD})
       const newReview = new Review({ patient_id, doctor_id, comment,star });
       await newReview.save();
       res.status(201).json([{
