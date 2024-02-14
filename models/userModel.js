@@ -257,19 +257,7 @@ const doctorSchema = new mongoose.Schema(
     address: String,
     city: String,
     state: String,
-    Website_Name: {
-      type: String,
-      default: null,
-    },
-    Website_Logo: {
-      type: String,
-      default: null,
-    },
-    Favicon: {
-      type: String,
-      default: null,
-    },
-   
+    
     image: {
       type: String,
       default: null,
@@ -298,7 +286,11 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    Aadhar_id: {
+    Aadhar_no: {
+      type: String,
+      default: null,
+    },
+     Aadhar_image: {
       type: String,
       default: null,
     },
@@ -418,6 +410,10 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    BranchAddress: {
+      type: String,
+      default: null,
+    },
     Account_Number: {
       type: String,
       default: null,
@@ -426,10 +422,24 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    IFSC_code: {
+      type: String, 
+      default: null,
+    },
+    Pan_no: {
+      type: String, 
+      default: null,
+    },
+    Pan_image: {
+      type: String, 
+      default: null,
+    },
+    
     country: {
       type: String, 
       default: null,
     },
+
     Experience: {
       type: [
         {

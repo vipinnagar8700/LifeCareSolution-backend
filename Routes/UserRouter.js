@@ -25,6 +25,7 @@ const { AllVideoSlots, editVideoSlot, UpdateVideoSlot, deleteVideoSlot, AddVideo
 const { AllPayments, AllDoctorPayment } = require('../controllers/paymentController');
 const { AllInvoices,AllDoctorInvoice, AllPatientInvoice } = require('../controllers/invoiceController');
 const { edit_admin_profile, Update_admin_profile } = require('../controllers/adminController');
+const { AddAvailibility, editAvailability, UpdateAvailability, deleteAvailability, AllAvailabilitys, doctor_Availabilitys, UpdateAvailabilityStatus } = require('../controllers/availibilityController');
 // Multer configuration
 const storage = multer.diskStorage({
     destination: './public/images', // Specify the destination folder
@@ -81,9 +82,13 @@ router.post('/deleteChat',authenticateToken, deleteChat)
 router.get('/AllDoctors', AllDoctors)
 router.get('/editDoctor/:id', editDoctor)
 router.put('/UpdateDoctor/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'ClinicImage', maxCount: 5 }]), authenticateToken, UpdateDoctor);
+router.put('/UpdateDoctorRegister/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'ClinicImage', maxCount: 5 }]), UpdateDoctor);
 router.delete('/deleteDoctor/:id',authenticateToken, deleteDoctor)
 router.put('/UpdateDoctorSocail_Media/:id',authenticateToken, UpdateDoctorSocail_Media)
-router.put('/UpdateDoctorBankDetails/:id',authenticateToken, UpdateDoctorBankDetails)
+router.put('/UpdateDoctorBankDetails',authenticateToken, upload.fields([
+    { name: 'Aadhar_image', maxCount: 1 },
+    { name: 'Pan_image', maxCount: 1 }
+]),UpdateDoctorBankDetails)
 router.get('/AllSlots/:id', AllSlots)
 router.get('/editSlot/:id', editSlot)
 router.put('/UpdateSlot/:id',authenticateToken, UpdateSlot)
@@ -111,6 +116,15 @@ router.post('/Reviews',authenticateToken,Reviews);
 router.post('/DislikeReview/:id',DislikeReview,authenticateToken);
 router.post('/LikeReview/:id',LikeReview,authenticateToken);
 router.get('/AllDoctorPayment/:id',AllDoctorPayment)
+// Availibility
+router.get('/AllAvailabilitys', AllAvailabilitys)
+router.get('/editAvailability/:id',authenticateToken, editAvailability)
+router.get('/doctor_Availabilitys/:id', authenticateToken,doctor_Availabilitys)
+router.put('/UpdateAvailability/:id',authenticateToken,authenticateToken, UpdateAvailability)
+router.put('/UpdateAvailabilityStatus/:id',authenticateToken, UpdateAvailabilityStatus)
+router.delete('/deleteAvailability/:id',authenticateToken, deleteAvailability)
+router.post('/AddAvailibility',authenticateToken, AddAvailibility)
+
 
 // Pharmacy
 router.get('/Allpharmacy', AllPharmacys)
