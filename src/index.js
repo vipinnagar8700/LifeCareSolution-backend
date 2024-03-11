@@ -30,6 +30,8 @@ app.use((req, res, next) => {
   console.log("Request received:", req.method, req.url);
   next();
 });
+
+
 const path = require('path');
 app.set('view engine', 'ejs'); // Set EJS as the template engine
 app.set('Views', path.join(__dirname, 'Views'));

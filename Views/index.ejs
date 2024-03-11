@@ -3,24 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCavenue Payment</title>
+    <title>Document</title>
 </head>
 <body>
-
-    <h1>CCavenue Payment Form</h1>
-
-    <form action="http://localhost:3000/api/ccavenue" method="post">
-        <!-- Add your input fields for user information here -->
-        <label for="order_id">Order ID:</label>
-        <input type="text" id="order_id" name="order_id" value="UNIQUE_ORDER_ID" required>
-
-        <label for="amount">Amount (INR):</label>
-        <input type="text" id="amount" name="amount" value="AMOUNT_IN_INR" required>
-
-        <!-- Add other input fields as needed -->
-
-        <input type="submit" value="Proceed to Payment">
-    </form>
-
+    <section className="error-section">
+        <div className="container">
+            <div className="row justify-content-center">
+                <div className="col-lg-8 col-md-12 text-center">
+                    <div className="error-info">
+                        <div className="error-img">
+                            <img
+                                src='../public/Assets/Image/CommingSoon.png'
+                                className="img-fluid"
+                                alt=""
+                            />
+                        </div>
+                        <div className="error-content">
+                            <h2>We're Launching Soon!</h2>
+                            <p>We're currently working hard on this page.</p>
+                        </div>
+                        <div className="coming-soon-info">
+                            <div className="coming-soon-count">
+                                <h4 id="day-box">5</h4>
+                                <p>Days</p>
+                            </div>
+                            <div className="coming-soon-count">
+                                <h4 id="hr-box">8</h4>
+                                <p>Hours</p>
+                            </div>
+                            <div className="coming-soon-count">
+                                <h4 id="min-box">48</h4>
+                                <p>Minutes</p>
+                            </div>
+                            <div className="coming-soon-count">
+                                <h4 id="sec-box">20</h4>
+                                <p>Seconds</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
 </html>

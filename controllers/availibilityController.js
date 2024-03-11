@@ -2,28 +2,39 @@ const Availability = require("../models/availabilityModel");
 
 
 const AddAvailibility = async (req, res) => {
-    try {
-      const { doctor_id, day, from, to } = req.body;
-      // Create a new Availability with availability details
-      const newAvailability = await Availability.create({
+  try {
+    const { doctor_id, day, from, to } = req.body;
+
+    // Check if availability record already exists for the doctor
+    const existingAvailability = await Availability.findOne({ doctor_id });
+
+    if (existingAvailability) {
+      // If availability record already exists, update it
+      existingAvailability.day = day;
+      existingAvailability.from = from;
+      existingAvailability.to = to;
+      await existingAvailability.save();
+    } else {
+      // If availability record does not exist, create a new one
+      await Availability.create({
         doctor_id,
         day,
         from,
         to
       });
-  
-      return res.status(201).json({
-        message: "Availability Successfully Booked!",
-        success: true,
-      });
-      // If COD, return success response without creating a Payment entry
-    } catch (error) {
-      res.status(500).json({
-        message: "Failed to book Availability.",
-        success: false,
-        error: error.message,
-      });
     }
+
+    return res.status(201).json({
+      message: "Availability Successfully Booked!",
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to book Availability.",
+      success: false,
+      error: error.message,
+    });
+  }
 };
 
 const AllAvailabilitys = async (req, res) => {
@@ -148,7 +159,7 @@ const doctor_Availabilitys = async (req, res) => {
 
   try {
     // Retrieve Availabilitys for the given doctor
-    const Availabilitys = await Availability.find({ doctor_id: id })
+    const Availabilitys = await Availability.find({ doctor_id: id , status: 'active'})
       .populate("doctor_id")
       .sort({ createdAt: -1 }) // Sort by date in descending order
       .exec();
