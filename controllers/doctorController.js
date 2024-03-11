@@ -383,7 +383,6 @@ const UpdateDoctorSocail_Media = async (req, res) => {
   }
 };
 
-// Bank Details update
 const UpdateDoctorBankDetails = async (req, res) => {
   const id = req.user.userId;
   const updateData = req.body;
@@ -394,16 +393,22 @@ const UpdateDoctorBankDetails = async (req, res) => {
     Account_Number: updateData.Account_Number || null,
     AccountName: updateData.AccountName || null,
     Aadhar_no: updateData.Aadhar_no || null,
-    Aadhar_image: updateData.Aadhar_image || null,
+    Aadhar_image: null, // Initialize to null for now
     BranchAddress: updateData.BranchAddress || null,
     IFSC_code: updateData.IFSC_code || null,
     Pan_no: updateData.Pan_no || null,
-    Pan_image: updateData.Pan_image || null,
+    Pan_image: null, // Initialize to null for now
   };
 
   try {
+    // Check if required data is provided
+    if (!updateData.BankName || !updateData.BranchName || !updateData.Account_Number ||
+        !updateData.AccountName || !updateData.Aadhar_no || !updateData.BranchAddress ||
+        !updateData.IFSC_code || !updateData.Pan_no) {
+      throw new Error("Required bank details are missing");
+    }
+
     // Image upload to Cloudinary
-    console.log("Files:", req.files); // Log uploaded files
     const aadharImage = req.files && req.files.Aadhar_image ? req.files.Aadhar_image[0] : null;
     const panImage = req.files && req.files.Pan_image ? req.files.Pan_image[0] : null;
 
@@ -413,10 +418,16 @@ const UpdateDoctorBankDetails = async (req, res) => {
 
     // Upload Aadhar image
     const aadharResult = await cloudinary.uploader.upload(aadharImage.path);
+    if (!aadharResult || !aadharResult.secure_url) {
+      throw new Error("Failed to upload Aadhar image to Cloudinary");
+    }
     UpdateBankDetails.Aadhar_image = aadharResult.secure_url;
 
     // Upload Pan image
     const panResult = await cloudinary.uploader.upload(panImage.path);
+    if (!panResult || !panResult.secure_url) {
+      throw new Error("Failed to upload Pan image to Cloudinary");
+    }
     UpdateBankDetails.Pan_image = panResult.secure_url;
 
     // Update doctor details
@@ -425,25 +436,26 @@ const UpdateDoctorBankDetails = async (req, res) => {
     });
 
     if (!editDoctor) {
-      res.status(404).json({
-        message: "Doctor was not found!",
-        status: false,
-      });
-    } else {
-      res.status(200).json({
-        message: "Bank Account data successfully updated!",
-        success: true,
-        data: editDoctor,
+      return res.status(404).json({
+        message: "Doctor not found",
+        success: false,
       });
     }
+
+    return res.status(200).json({
+      message: "Bank Account data successfully updated",
+      success: true,
+      data: editDoctor,
+    });
   } catch (error) {
     console.error("Error:", error.message);
-    res.status(500).json({
-      message: "Failed to update Bank Account data!",
-      status: false,
+    return res.status(500).json({
+      message: "Failed to update Bank Account data",
+      success: false,
     });
   }
 };
+
 
 
 const deleteDoctor = async (req, res) => {
