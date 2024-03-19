@@ -26,6 +26,7 @@ const { AllPayments, AllDoctorPayment } = require('../controllers/paymentControl
 const { AllInvoices,AllDoctorInvoice, AllPatientInvoice } = require('../controllers/invoiceController');
 const { edit_admin_profile, Update_admin_profile } = require('../controllers/adminController');
 const { AddAvailibility, editAvailability, UpdateAvailability, deleteAvailability, AllAvailabilitys, doctor_Availabilitys, UpdateAvailabilityStatus } = require('../controllers/availibilityController');
+const { getAllActivities, markActivityAsRead } = require('../controllers/activityController');
 // Multer configuration
 const storage = multer.diskStorage({
     destination: './public/images', // Specify the destination folder
@@ -211,6 +212,8 @@ router.get("/PendingAppointments",authenticateToken,PendingAppointments);
 router.get("/CancelAppointments",authenticateToken,CancelAppointments);
 router.get('/PastAppointment',authenticateToken,PastAppointment)
 router.get('/UpcomingAppointment',authenticateToken,UpcomingAppointment)
+router.get('/getAllActivities',getAllActivities);
+router.put('/markActivityAsRead/:id',authenticateToken,markActivityAsRead );
 
 // Email Reset Password
 router.post('/ResetPassword',ResetPassword);

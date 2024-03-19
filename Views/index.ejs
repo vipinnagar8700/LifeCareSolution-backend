@@ -1,49 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stripe Payment</title>
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-    <section className="error-section">
-        <div className="container">
-            <div className="row justify-content-center">
-                <div className="col-lg-8 col-md-12 text-center">
-                    <div className="error-info">
-                        <div className="error-img">
-                            <img
-                                src='../public/Assets/Image/CommingSoon.png'
-                                className="img-fluid"
-                                alt=""
-                            />
-                        </div>
-                        <div className="error-content">
-                            <h2>We're Launching Soon!</h2>
-                            <p>We're currently working hard on this page.</p>
-                        </div>
-                        <div className="coming-soon-info">
-                            <div className="coming-soon-count">
-                                <h4 id="day-box">5</h4>
-                                <p>Days</p>
-                            </div>
-                            <div className="coming-soon-count">
-                                <h4 id="hr-box">8</h4>
-                                <p>Hours</p>
-                            </div>
-                            <div className="coming-soon-count">
-                                <h4 id="min-box">48</h4>
-                                <p>Minutes</p>
-                            </div>
-                            <div className="coming-soon-count">
-                                <h4 id="sec-box">20</h4>
-                                <p>Seconds</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <h1>Payment Options</h1>
+  <form id="payment-form">
+    <div id="card-element"><!--Stripe.js injects the Card Element--></div>
+    <button id="submit-card">
+      <span id="button-text">Pay with Card</span>
+    </button>
+    <button id="submit-upi">
+      <span id="button-text">Pay with UPI</span>
+    </button>
+    <div id="card-errors" role="alert"></div>
+  </form>
+
+  <script>
+    // Your existing Stripe integration code here...
+
+    // Handle UPI payment button click
+    const upiButton = document.getElementById('submit-upi');
+    upiButton.addEventListener('click', async (event) => {
+      event.preventDefault();
+
+      // Trigger UPI payment flow...
+      // You would typically initiate a request to your backend to handle UPI payments
+    });
+  </script>
 </body>
+
 </html>

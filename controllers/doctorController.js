@@ -1,6 +1,6 @@
 const { Doctor, User } = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
-
+const Activity = require('../models/activityModel')
 require("dotenv/config");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
@@ -132,7 +132,6 @@ const editDoctor = async (req, res) => {
     const doctor = await Doctor.findOne({ user_id: id }).populate(
       "Specailization"
     );
-    console.log(doctor); // Exclude the 'password' field
     if (!doctor) {
       res.status(404).json({
         // Correct the status code to 404 (Not Found)
@@ -140,6 +139,13 @@ const editDoctor = async (req, res) => {
         success: false,
       });
     } else {
+      const activity = new Activity({
+        doctor_id: doctor._id, // Use doctor's ID
+        type: "Doctor edit there profile",
+        details: "Doctor edit their profile information",
+      });
+      await activity.save(); // Save activity to the database
+
       res.status(200).json({
         // Correct the status code to 200 (OK)
         message: "Data successfully Retrieved!",
@@ -158,7 +164,7 @@ const editDoctor = async (req, res) => {
 const UpdateDoctor = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
-
+console.log(updateData?.email)
   const imageFile = req.files["image"]; // Use req.files to get multiple files
   const clinicImageFile = req.files["ClinicImage"];
 
@@ -225,6 +231,18 @@ const UpdateDoctor = async (req, res) => {
   delete updateData.role;
 
   try {
+    // Check if the email is being updated
+    if (updateData.email) {
+      const existingUser = await User.findOne({ email: updateData.email });
+
+      if (existingUser && existingUser._id.toString() !== id) {
+          return res.status(400).json({
+              message: "Email already exists",
+              success: false,
+          });
+      }
+  }
+    
     const finding = await Doctor.findOne({ user_id: id });
     const editDoctor = await Doctor.findByIdAndUpdate(finding._id, updateData, {
       new: true,
@@ -235,7 +253,26 @@ const UpdateDoctor = async (req, res) => {
         message: "Doctor was not found!",
         status: false,
       });
+
     } else {
+       // If email is updated, update User table as well
+       if (updateData.email && updateData.email !== editDoctor.email) {
+        const updateUser = await User.findByIdAndUpdate(editDoctor._id, { email: updateData.email }, { new: true });
+console.log(updateUser,"updateUser")
+        if (!updateUser) {
+            return res.status(500).json({
+                message: "Failed to update email in User table",
+                success: false,
+            });
+        }
+    }
+
+      const activity = new Activity({
+        doctor_id: editDoctor._id, // Use doctor's ID
+        type: "Doctor updated there profile",
+        details: "Doctor updated their profile information",
+      });
+      await activity.save(); 
       res.status(201).json({
         message: "Data successfully updated!",
         success: true,
@@ -249,6 +286,8 @@ const UpdateDoctor = async (req, res) => {
     });
   }
 };
+
+
 const UpdateDoctorRegister = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
