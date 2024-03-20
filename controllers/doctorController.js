@@ -1,6 +1,6 @@
 const { Doctor, User } = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
-const Activity = require('../models/activityModel')
+const Activity = require("../models/activityModel");
 require("dotenv/config");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
@@ -14,7 +14,8 @@ const AllDoctors = async (req, res) => {
   try {
     const doctores = await Doctor.find()
       .select("-password")
-      .populate("Specailization").sort({ createdAt: -1 }); // Exclude the 'password' field;
+      .populate("Specailization")
+      .sort({ createdAt: -1 }); // Exclude the 'password' field;
     const length = doctores.length;
     res.status(200).json([
       {
@@ -37,7 +38,8 @@ const AllDoctorPermitted = async (req, res) => {
   try {
     const doctors = await Doctor.find({ permission: true, status: "approved" })
       .select("-password")
-      .populate("Specailization").sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
+      .populate("Specailization")
+      .sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
 
     const length = doctors.length;
 
@@ -60,7 +62,8 @@ const AllDoctorPending = async (req, res) => {
   try {
     const doctors = await Doctor.find({ status: "pending" })
       .select("-password")
-      .populate("Specailization").sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
+      .populate("Specailization")
+      .sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
 
     const length = doctors.length;
 
@@ -83,7 +86,8 @@ const AllDoctorApproved = async (req, res) => {
   try {
     const doctors = await Doctor.find({ status: "approved" })
       .select("-password")
-      .populate("Specailization").sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
+      .populate("Specailization")
+      .sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
 
     const length = doctors.length;
 
@@ -106,7 +110,8 @@ const AllDoctorBlocked = async (req, res) => {
   try {
     const doctors = await Doctor.find({ status: "blocked" })
       .select("-password")
-      .populate("Specailization").sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
+      .populate("Specailization")
+      .sort({ createdAt: -1 }); // Exclude the 'password' field and populate 'Specailization'
 
     const length = doctors.length;
 
@@ -164,7 +169,6 @@ const editDoctor = async (req, res) => {
 const UpdateDoctor = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
-console.log(updateData?.email)
   const imageFile = req.files["image"]; // Use req.files to get multiple files
   const clinicImageFile = req.files["ClinicImage"];
 
@@ -236,43 +240,59 @@ console.log(updateData?.email)
       const existingUser = await User.findOne({ email: updateData.email });
 
       if (existingUser && existingUser._id.toString() !== id) {
-          return res.status(400).json({
-              message: "Email already exists",
-              success: false,
-          });
+        return res.status(400).json({
+          message: "Email already exists",
+          success: false,
+        });
       }
-  }
-    
+    }
+
     const finding = await Doctor.findOne({ user_id: id });
     const editDoctor = await Doctor.findByIdAndUpdate(finding._id, updateData, {
       new: true,
     }).select("-password");
-
     if (!editDoctor) {
       res.status(200).json({
         message: "Doctor was not found!",
         status: false,
       });
-
     } else {
-       // If email is updated, update User table as well
-       if (updateData.email && updateData.email !== editDoctor.email) {
-        const updateUser = await User.findByIdAndUpdate(editDoctor._id, { email: updateData.email }, { new: true });
-console.log(updateUser,"updateUser")
-        if (!updateUser) {
+      // If email is updated, update User table as well
+      if (updateData.email && updateData.email !== editDoctor.email) {
+        try {
+            // Find the user in the User table and update their email
+            const updateUser = await User.findOneAndUpdate(
+                { _id: editDoctor.user_id }, // Filter by user ID
+                { email: updateData.email }, // Update email field
+                { new: true } // Return the updated document
+            );
+    
+            if (!updateUser) {
+                return res.status(500).json({
+                    message: "Failed to update email in User table",
+                    success: false,
+                });
+            }
+    
+            console.log(updateUser, "updateUser");
+    
+        } catch (error) {
+            console.error("Error updating email in User table:", error);
             return res.status(500).json({
                 message: "Failed to update email in User table",
                 success: false,
+                error: error.message
             });
         }
     }
+    
 
       const activity = new Activity({
         doctor_id: editDoctor._id, // Use doctor's ID
         type: "Doctor updated there profile",
         details: "Doctor updated their profile information",
       });
-      await activity.save(); 
+      await activity.save();
       res.status(201).json({
         message: "Data successfully updated!",
         success: true,
@@ -286,7 +306,6 @@ console.log(updateUser,"updateUser")
     });
   }
 };
-
 
 const UpdateDoctorRegister = async (req, res) => {
   const { id } = req.params;
@@ -441,15 +460,24 @@ const UpdateDoctorBankDetails = async (req, res) => {
 
   try {
     // Check if required data is provided
-    if (!updateData.BankName || !updateData.BranchName || !updateData.Account_Number ||
-        !updateData.AccountName || !updateData.Aadhar_no || !updateData.BranchAddress ||
-        !updateData.IFSC_code || !updateData.Pan_no) {
+    if (
+      !updateData.BankName ||
+      !updateData.BranchName ||
+      !updateData.Account_Number ||
+      !updateData.AccountName ||
+      !updateData.Aadhar_no ||
+      !updateData.BranchAddress ||
+      !updateData.IFSC_code ||
+      !updateData.Pan_no
+    ) {
       throw new Error("Required bank details are missing");
     }
 
     // Image upload to Cloudinary
-    const aadharImage = req.files && req.files.Aadhar_image ? req.files.Aadhar_image[0] : null;
-    const panImage = req.files && req.files.Pan_image ? req.files.Pan_image[0] : null;
+    const aadharImage =
+      req.files && req.files.Aadhar_image ? req.files.Aadhar_image[0] : null;
+    const panImage =
+      req.files && req.files.Pan_image ? req.files.Pan_image[0] : null;
 
     if (!aadharImage || !panImage) {
       throw new Error("Aadhar or Pan image not provided");
@@ -470,9 +498,13 @@ const UpdateDoctorBankDetails = async (req, res) => {
     UpdateBankDetails.Pan_image = panResult.secure_url;
 
     // Update doctor details
-    const editDoctor = await Doctor.findOneAndUpdate({ user_id: id }, UpdateBankDetails, {
-      new: true,
-    });
+    const editDoctor = await Doctor.findOneAndUpdate(
+      { user_id: id },
+      UpdateBankDetails,
+      {
+        new: true,
+      }
+    );
 
     if (!editDoctor) {
       return res.status(404).json({
@@ -494,8 +526,6 @@ const UpdateDoctorBankDetails = async (req, res) => {
     });
   }
 };
-
-
 
 const deleteDoctor = async (req, res) => {
   const { id } = req.params;
@@ -774,15 +804,18 @@ const FilterDoctors = async (req, res) => {
       specialization_id,
       Total_Exp,
       search_data,
-      Registered_Clinic_city,doctorNameStartsWith 
+      Registered_Clinic_city,
+      doctorNameStartsWith,
     } = req.query;
     // Build the filter object based on provided criteria
 
-     // Convert to lowercase or uppercase for case-insensitive search
-     gender = gender ? gender.toLowerCase() : gender;
-     search_data = search_data ? search_data.toLowerCase() : search_data;
-     Registered_Clinic_city = Registered_Clinic_city ? Registered_Clinic_city.toLowerCase() : Registered_Clinic_city;
- 
+    // Convert to lowercase or uppercase for case-insensitive search
+    gender = gender ? gender.toLowerCase() : gender;
+    search_data = search_data ? search_data.toLowerCase() : search_data;
+    Registered_Clinic_city = Registered_Clinic_city
+      ? Registered_Clinic_city.toLowerCase()
+      : Registered_Clinic_city;
+
     const filter = {};
 
     if (gender) filter.gender = gender;
@@ -804,9 +837,9 @@ const FilterDoctors = async (req, res) => {
       specialization_id &&
       mongoose.Types.ObjectId.isValid(specialization_id)
     ) {
-           filter.Specailization = { _id: specialization_id };
-           console.log(specialization_id,"jj")
-           console.log(filter.Specialization,"filter.Specialization")
+      filter.Specailization = { _id: specialization_id };
+      console.log(specialization_id, "jj");
+      console.log(filter.Specialization, "filter.Specialization");
     }
     if (Total_Exp) {
       const [minExp, maxExp] = Total_Exp.split("-").map((part) =>
@@ -829,28 +862,28 @@ const FilterDoctors = async (req, res) => {
       ];
     }
 
-
-// Filter by doctor's first name starting with a specific letter
-if (doctorNameStartsWith) {
-  if (doctorNameStartsWith.match(/^[A-Za-z]$/)) {
-    // Valid single character from A to Z or a to z
-    filter.firstname = new RegExp('^' + doctorNameStartsWith, 'i');
-  } else {
-    // Handle invalid input
-    return res.status(400).json({
-      message: "Invalid input for doctorNameStartsWith. Please provide a single character from A to Z or a to z.",
-      status: false,
-    });
-  }
-} else {
-  // If no specific letter is provided, match any character from A to Z
-  filter.firstname = new RegExp('^[A-Za-z]', 'i');
-}
-
+    // Filter by doctor's first name starting with a specific letter
+    if (doctorNameStartsWith) {
+      if (doctorNameStartsWith.match(/^[A-Za-z]$/)) {
+        // Valid single character from A to Z or a to z
+        filter.firstname = new RegExp("^" + doctorNameStartsWith, "i");
+      } else {
+        // Handle invalid input
+        return res.status(400).json({
+          message:
+            "Invalid input for doctorNameStartsWith. Please provide a single character from A to Z or a to z.",
+          status: false,
+        });
+      }
+    } else {
+      // If no specific letter is provided, match any character from A to Z
+      filter.firstname = new RegExp("^[A-Za-z]", "i");
+    }
 
     const doctors = await Doctor.find(filter)
       .select("-password")
-      .populate("Specailization").sort({ createdAt: -1 });
+      .populate("Specailization")
+      .sort({ createdAt: -1 });
 
     const length = doctors.length;
 

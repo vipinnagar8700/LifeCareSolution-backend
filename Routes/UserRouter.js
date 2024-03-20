@@ -74,7 +74,7 @@ router.delete('/deleteFavourate/:id',authenticateToken, deleteFavourate)
 router.post('/AddFavourates',authenticateToken, AddFavourates)
 router.get('/AllFavourates/:id',authenticateToken, AllFavourates)
 router.post('/sendMessages',upload.single('image'),authenticateToken, sendMessages)
-router.get('/getMessages/:userId',authenticateToken, getMessages)
+router.get('/getMessages/:userId', getMessages)
 router.post('/deleteChat',authenticateToken, deleteChat)
 
 
@@ -117,6 +117,8 @@ router.post('/Reviews',authenticateToken,Reviews);
 router.post('/DislikeReview/:id',DislikeReview,authenticateToken);
 router.post('/LikeReview/:id',LikeReview,authenticateToken);
 router.get('/AllDoctorPayment/:id',AllDoctorPayment)
+
+
 // Availibility
 router.get('/AllAvailabilitys', AllAvailabilitys)
 router.get('/editAvailability/:id',authenticateToken, editAvailability)
