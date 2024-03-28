@@ -166,11 +166,6 @@ const markMessageAsRead = asyncHandler(async (req, res) => {
   }
 });
 
-
-
-
-
-
 const deleteChat = asyncHandler(async (req, res) => {
   const { chatId } = req.params;
 

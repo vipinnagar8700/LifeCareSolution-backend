@@ -7,7 +7,7 @@ const { Addfeaturess, Allfeaturess, deletefeatures, editFeatures, updateFeatures
 const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails, deleteDoctorAwards, deleteDoctorEducation, deleteDoctorExperience, deleteClinicImage, FilterDoctors, search_specialities, AllDoctorPermitted, AllDoctorApproved, AllDoctorBlocked, AllDoctorPending, deleteDoctorBlock } = require('../controllers/doctorController');
 const { AllPharmacys, editPharmacy, UpdatePharmacy, deletePharmacy } = require('../controllers/pharmacyController');
 const { AllSlots, editSlot, UpdateSlot, deleteSlot, AddSlot } = require('../controllers/slotController');
-const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, BookAppointment, doctor_appointments, UpdateAppointmentStatus, Patient_appointments, TodayAppointment, CompleteAppointments, PendingAppointments, CancelAppointments, PastAppointment, UpcomingAppointment, PatientChats } = require('../controllers/appointmentController');
+const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, BookAppointment, doctor_appointments, UpdateAppointmentStatus, Patient_appointments, TodayAppointment, CompleteAppointments, PendingAppointments, CancelAppointments, PastAppointment, UpcomingAppointment, PatientChats, AllChatUsers, AllChatDoctors, AllChatPatient } = require('../controllers/appointmentController');
 const { AddDependents, AllDependents, editDependent, UpdateDependents, deleteDependent, AllPatientDependents } = require('../controllers/dependendController');
 const { AddMedicines, AllMedicines, editMedicine, UpdateMedicines, deleteMedicine } = require('../controllers/medicineController');
 const { AddFavourates, deleteFavourate, AllFavourates } = require('../controllers/favourateControllers');
@@ -79,8 +79,9 @@ router.post('/deleteChat',authenticateToken, deleteChat)
 router.get('/PatientChats/:id',PatientChats)
 router.post('/newPayment',newPayment)
 router.post('/checkStatus',checkStatus)
-
-
+router.get('/AllChatUsers',AllChatUsers)
+router.get('/AllChatPatient/:id',AllChatPatient)
+router.get('/AllChatDoctors/:id',AllChatDoctors)
 // Doctor
 router.get('/AllDoctors', AllDoctors)
 router.get('/editDoctor/:id', editDoctor)

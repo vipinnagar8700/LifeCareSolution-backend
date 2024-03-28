@@ -605,12 +605,110 @@ const UpdateAppointmentStatus = async (req, res) => {
   }
 };
 
+const AllChatUsers = async (req, res) => {
+  try {
+    const appointments = await Appointment.find({
+     "type": "Video"
+    })
+    .populate("doctor_id")
+    .populate("patient_id")
+    .sort({ createdAt: -1 });
+
+    const length = appointments.length;
+
+    res.status(200).json({
+      message: "AllUsers for Chats",
+      data: appointments,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+// For Patient
+const AllChatDoctors = async (req, res) => {
+  try {
+    const { id } = req.params; // Assuming the doctor's ID is passed in the URL parameters
+
+    // Find appointments for the specific doctor ID and type "Video"
+    const appointments = await Appointment.find({
+      "type": "Video",
+      "doctor_id": id
+    })
+    .populate("doctor_id")
+    .populate("patient_id")
+    .sort({ createdAt: -1 });
+
+    // Extract unique patient IDs from appointments
+    const uniquePatientIds = [...new Set(appointments.map(appointment => appointment.doctor_id))];
+
+    // Filter appointments to include only unique patient IDs
+
+    const length = uniquePatientIds.length;
+
+    res.status(200).json({
+      message: "All Doctor for Chats",
+      data: uniquePatientIds,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+// For Doctor
+const AllChatPatient = async (req, res) => {
+  try {
+    const { id } = req.params; // Assuming the patient's ID is passed in the URL parameters
+
+    // Find appointments for the specific patient ID and type "Video"
+    const appointments = await Appointment.find({
+      "type": "Video",
+      "patient_id": id
+    })
+    .populate("doctor_id")
+    .populate("patient_id")
+    .sort({ createdAt: -1 });
+
+    // Extract unique patient IDs from appointments
+    const uniquePatientIds = [...new Set(appointments.map(appointment => appointment.patient_id))];
+
+    const length = uniquePatientIds.length;
+
+    res.status(200).json({
+      message: "All Patient for Chats",
+      data: uniquePatientIds,
+      status: true,
+      length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+
+
 module.exports = {
-  AllAppointments,
+  AllAppointments,AllChatUsers,
   editAppointment,
   UpdateAppointment,
   deleteAppointment,
-  BookAppointment,
+  BookAppointment,AllChatDoctors,AllChatPatient,
   doctor_appointments,
   UpdateAppointmentStatus,PatientChats,
   Patient_appointments,TodayAppointment,CompleteAppointments,PendingAppointments,CancelAppointments,PastAppointment,UpcomingAppointment
