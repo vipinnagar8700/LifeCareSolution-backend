@@ -258,7 +258,9 @@ const UpdateDoctor = async (req, res) => {
       });
     } else {
       // If email is updated, update User table as well
-      if (updateData.email && updateData.email !== editDoctor.email) {
+      console.log(updateData.email,"kdjdjdjjd11")
+      if (updateData.email) {
+        console.log(updateData.email,"kdjdjdjjd")
         try {
             // Find the user in the User table and update their email
             const updateUser = await User.findOneAndUpdate(

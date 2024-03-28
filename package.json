@@ -30,6 +30,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.9",
     "nodemon": "^3.1.0",
+    "phonepesdk": "^0.3.18",
     "razorpay": "^2.9.2",
     "socket.io": "^4.7.5",
     "stripe": "^14.20.0",

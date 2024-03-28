@@ -784,7 +784,6 @@ const deleteUser = async (req, res) => {
   }
 };
 
-
 const Accept_User = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const userIdFromToken = req.user.userId;

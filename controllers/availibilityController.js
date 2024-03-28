@@ -4,30 +4,38 @@ const Availability = require("../models/availabilityModel");
 const AddAvailibility = async (req, res) => {
   try {
     const { doctor_id, day, from, to } = req.body;
+    
+    // Check if there are already 7 availability records for the doctor
+    const doctorAvailabilityCount = await Availability.countDocuments({ doctor_id });
+    if (doctorAvailabilityCount >= 7) {
+      return res.status(400).json({
+        message: "Cannot add more than 7 availability records for a doctor.",
+        success: false,
+      });
+    }
 
-    // Check if availability record already exists for the doctor
-    const existingAvailability = await Availability.findOne({ doctor_id });
+    // Check if availability record already exists for the doctor on the same day
+    const existingAvailability = await Availability.findOne({ doctor_id, day });
 
     if (existingAvailability) {
-      // If availability record already exists, update it
-      existingAvailability.day = day;
-      existingAvailability.from = from;
-      existingAvailability.to = to;
-      await existingAvailability.save();
+      return res.status(400).json({
+        message: "Availability record already exists for the same day.",
+        success: false,
+      });
     } else {
-      // If availability record does not exist, create a new one
+      // Create a new availability record
       await Availability.create({
         doctor_id,
         day,
         from,
         to
       });
-    }
 
-    return res.status(201).json({
-      message: "Availability Successfully Booked!",
-      success: true,
-    });
+      return res.status(201).json({
+        message: "Availability Successfully Booked!",
+        success: true,
+      });
+    }
   } catch (error) {
     res.status(500).json({
       message: "Failed to book Availability.",
@@ -36,6 +44,7 @@ const AddAvailibility = async (req, res) => {
     });
   }
 };
+
 
 const AllAvailabilitys = async (req, res) => {
   try {

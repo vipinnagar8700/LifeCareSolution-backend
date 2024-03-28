@@ -7,7 +7,7 @@ const { Addfeaturess, Allfeaturess, deletefeatures, editFeatures, updateFeatures
 const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails, deleteDoctorAwards, deleteDoctorEducation, deleteDoctorExperience, deleteClinicImage, FilterDoctors, search_specialities, AllDoctorPermitted, AllDoctorApproved, AllDoctorBlocked, AllDoctorPending, deleteDoctorBlock } = require('../controllers/doctorController');
 const { AllPharmacys, editPharmacy, UpdatePharmacy, deletePharmacy } = require('../controllers/pharmacyController');
 const { AllSlots, editSlot, UpdateSlot, deleteSlot, AddSlot } = require('../controllers/slotController');
-const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, BookAppointment, doctor_appointments, UpdateAppointmentStatus, Patient_appointments, TodayAppointment, CompleteAppointments, PendingAppointments, CancelAppointments, PastAppointment, UpcomingAppointment } = require('../controllers/appointmentController');
+const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, BookAppointment, doctor_appointments, UpdateAppointmentStatus, Patient_appointments, TodayAppointment, CompleteAppointments, PendingAppointments, CancelAppointments, PastAppointment, UpcomingAppointment, PatientChats } = require('../controllers/appointmentController');
 const { AddDependents, AllDependents, editDependent, UpdateDependents, deleteDependent, AllPatientDependents } = require('../controllers/dependendController');
 const { AddMedicines, AllMedicines, editMedicine, UpdateMedicines, deleteMedicine } = require('../controllers/medicineController');
 const { AddFavourates, deleteFavourate, AllFavourates } = require('../controllers/favourateControllers');
@@ -22,7 +22,7 @@ const multer = require('multer');
 const path = require('path');
 const { Reviews, DislikeReview, LikeReview, PatientReview, DoctorReview, AllReviews } = require('../controllers/reviewController');
 const { AllVideoSlots, editVideoSlot, UpdateVideoSlot, deleteVideoSlot, AddVideoSlot } = require('../controllers/VideoSlotController');
-const { AllPayments, AllDoctorPayment } = require('../controllers/paymentController');
+const { AllPayments, AllDoctorPayment, newPayment, checkStatus } = require('../controllers/paymentController');
 const { AllInvoices,AllDoctorInvoice, AllPatientInvoice } = require('../controllers/invoiceController');
 const { edit_admin_profile, Update_admin_profile } = require('../controllers/adminController');
 const { AddAvailibility, editAvailability, UpdateAvailability, deleteAvailability, AllAvailabilitys, doctor_Availabilitys, UpdateAvailabilityStatus } = require('../controllers/availibilityController');
@@ -76,7 +76,9 @@ router.get('/AllFavourates/:id',authenticateToken, AllFavourates)
 router.post('/sendMessages',upload.single('image'),authenticateToken, sendMessages)
 router.get('/getMessages/:userId', getMessages)
 router.post('/deleteChat',authenticateToken, deleteChat)
-
+router.get('/PatientChats/:id',PatientChats)
+router.post('/newPayment',newPayment)
+router.post('/checkStatus',checkStatus)
 
 
 // Doctor

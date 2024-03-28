@@ -8,6 +8,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const dbConnect = require("../config/db");
 const path = require('path');
+
 // Check if Firebase Admin SDK is already initialized
 if (!admin.apps.length) {
   // Initialize Firebase Admin SDK only if it's not already initialized
@@ -37,6 +38,9 @@ app.get("/", (req, res) => {
     "status": true
   });
 });
+
+
+
 
 
 app.use("/api", userRoutes);

@@ -3,6 +3,8 @@ const Appointment = require("../models/appointmentModel");
 const asyncHandler = require("express-async-handler");
 const { generateRefreshToken } = require("../config/refreshToken");
 const jwt = require("jsonwebtoken");
+const mongoose = require('mongoose');
+
 const { Patient, Doctor } = require("../models/userModel");
 const Slot = require("../models/slotModel");
 const VideoSlot = require("../models/videoSlotModel");
@@ -473,6 +475,64 @@ const Patient_appointments = async (req, res) => {
   }
 };
 
+
+const PatientChats = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const ChatUsers = await Appointment.aggregate([
+      {
+        $group: {
+          _id: "$doctor_id",
+          appointment: { $first: "$$ROOT" }
+        }
+      },
+      {
+        $lookup: {
+          from: "users", // Assuming the user details are in the "users" collection
+          localField: "_id",
+          foreignField: "_id",
+          as: "doctor"
+        }
+      },
+      {
+        $unwind: "$doctor"
+      },
+      {
+        $lookup: {
+          from: "users", // Assuming the user details are in the "users" collection
+          localField: "appointment.patient_id",
+          foreignField: "_id",
+          as: "patient"
+        }
+      },
+      {
+        $unwind: "$patient"
+      },
+      {
+        $sort: { "appointment.createdAt": -1 }
+      }
+    ]).exec();
+
+    const length = ChatUsers.length;
+
+    res.status(200).json({
+      message: "Chats by patient retrieved successfully!",
+      data: ChatUsers,
+      length,
+      status: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to retrieve chats.",
+      status: false,
+      error: error.message,
+    });
+  }
+};
+
+
 const UpdateAppointmentStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -552,6 +612,6 @@ module.exports = {
   deleteAppointment,
   BookAppointment,
   doctor_appointments,
-  UpdateAppointmentStatus,
+  UpdateAppointmentStatus,PatientChats,
   Patient_appointments,TodayAppointment,CompleteAppointments,PendingAppointments,CancelAppointments,PastAppointment,UpcomingAppointment
 };

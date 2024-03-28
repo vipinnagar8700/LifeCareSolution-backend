@@ -118,7 +118,7 @@ const getMessages = asyncHandler(async (req, res) => {
     } else if (senderRole === 'patient') {
       senderData = await Patient.find({ user_id: senderID }).exec();
     }
-    // Fetch data based on receiver's role
+    // Fetch data based on receiver's roleno
     if (receiverRole === 'doctor') {
       receiverData = await Doctor.find({ user_id: receiverID }).exec();
     } else if (receiverRole === 'patient') {
