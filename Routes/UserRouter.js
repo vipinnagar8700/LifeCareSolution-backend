@@ -25,8 +25,8 @@ const { AllInvoices,AllDoctorInvoice, AllPatientInvoice } = require('../controll
 const { edit_admin_profile, Update_admin_profile } = require('../controllers/adminController');
 const { AddAvailibility} = require('../controllers/availibilityController');
 const { getAllActivities, markActivityAsRead } = require('../controllers/activityController');
-const { AllChatUsersMain } = require('../controllers/ChatUserControllers');
-const { SendMessages, GetMessages, DeleteAllChats } = require('../controllers/ChatController');
+// const { AllChatUsersMain } = require('../controllers/ChatUserControllers');
+// const { SendMessages, GetMessages, DeleteAllChats } = require('../controllers/ChatController');
 // Multer configuration
 const storage = multer.diskStorage({
     destination: './public/images', // Specify the destination folder
@@ -78,10 +78,10 @@ router.get('/AllChatUsers',AllChatUsers)
 router.get('/AllChatPatient/:id',AllChatPatient)
 router.get('/AllChatDoctors/:id',AllChatDoctors)
 // Chat Api users
-router.get('/AllChatUsersMain',AllChatUsersMain)
-router.post('/SendMessages',upload.single('image'),SendMessages)
-router.get('/GetMessages',GetMessages)
-router.delete('/DeleteAllChats',DeleteAllChats)
+// router.get('/AllChatUsersMain',AllChatUsersMain)
+// router.post('/SendMessages',upload.single('image'),SendMessages)
+// router.get('/GetMessages',GetMessages)
+// router.delete('/DeleteAllChats',DeleteAllChats)
 
 // Doctor
 router.get('/AllDoctors', AllDoctors)
