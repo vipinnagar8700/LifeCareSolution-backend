@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Payment = require('../models/paymentModel')
 
 const appointmentSchema = new mongoose.Schema({
   patient_id: { type: mongoose.Schema.Types.ObjectId, ref: "Patient" },
@@ -58,37 +57,7 @@ const appointmentSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  payment: {
-    method: {
-      type: String,
-      enum: ['code', 'online'],
-      required: true,
-      default: 'code',
-    },
-    transactionId: {
-      type: String,
-      default: null,
-    },
-    status: {
-      type: String,
-      enum: ['pending', 'success', 'failed'],
-      default: 'pending',
-    },
-    confirmationCode: {
-      type: String,
-      default: null,
-    },
-    timestamps: {
-      created_at: {
-        type: Date,
-        default: Date.now(),
-      },
-      updated_at: {
-        type: Date,
-        default: null,
-      },
-    },
-  },
+ 
 }, {
   timestamps: true
 });
@@ -96,15 +65,8 @@ const appointmentSchema = new mongoose.Schema({
 // Middleware to handle post-save logic
 appointmentSchema.post('save', async function (doc) {
   // Extract payment details and save in the Payment model
-  const { patient_id, doctor_id, slot_id, videoSlot_id, date, type, amount, payment } = doc;
+  const { patient_id, doctor_id, slot_id, videoSlot_id, date, type, amount,  } = doc;
 
-  const newPayment = await Payment.create({
-    appointment_id: doc._id,
-    method: payment.method,
-    transactionId: payment.transactionId,
-    status: payment.status,
-    amount,
-  });
 });
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);

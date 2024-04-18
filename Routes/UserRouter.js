@@ -11,7 +11,6 @@ const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, 
 const { AddDependents, AllDependents, editDependent, UpdateDependents, deleteDependent, AllPatientDependents } = require('../controllers/dependendController');
 const { AddMedicines, AllMedicines, editMedicine, UpdateMedicines, deleteMedicine } = require('../controllers/medicineController');
 const { AddFavourates, deleteFavourate, AllFavourates } = require('../controllers/favourateControllers');
-const { sendMessages, AddUserforChat, GetAllChat, AllParticipants, deleteChat, getMessages } = require('../controllers/chatController');
 const { AddProducts, AllProducts, editProduct, UpdateProducts, deleteProduct, AllPharmacyProducts } = require('../controllers/productController');
 const { AllProductCategorys, editProductCategory, UpdateProductCategorys, deleteProductCategory, AddProductCategorys, pharmacyProductCategory } = require('../controllers/productCategoryController');
 const { AddSupplier, AllSupplier, editSupplier, UpdateSupplier, deleteSupplier, AllPharmacySupplier } = require('../controllers/supplierController');
@@ -22,11 +21,12 @@ const multer = require('multer');
 const path = require('path');
 const { Reviews, DislikeReview, LikeReview, PatientReview, DoctorReview, AllReviews } = require('../controllers/reviewController');
 const { AllVideoSlots, editVideoSlot, UpdateVideoSlot, deleteVideoSlot, AddVideoSlot } = require('../controllers/VideoSlotController');
-const { AllPayments, AllDoctorPayment, newPayment, checkStatus } = require('../controllers/paymentController');
 const { AllInvoices,AllDoctorInvoice, AllPatientInvoice } = require('../controllers/invoiceController');
 const { edit_admin_profile, Update_admin_profile } = require('../controllers/adminController');
-const { AddAvailibility, editAvailability, UpdateAvailability, deleteAvailability, AllAvailabilitys, doctor_Availabilitys, UpdateAvailabilityStatus } = require('../controllers/availibilityController');
+const { AddAvailibility} = require('../controllers/availibilityController');
 const { getAllActivities, markActivityAsRead } = require('../controllers/activityController');
+const { AllChatUsersMain } = require('../controllers/ChatUserControllers');
+const { SendMessages, GetMessages, DeleteAllChats } = require('../controllers/chatController');
 // Multer configuration
 const storage = multer.diskStorage({
     destination: './public/images', // Specify the destination folder
@@ -73,15 +73,16 @@ router.post('/AddMedicines',authenticateToken, AddMedicines)
 router.delete('/deleteFavourate/:id',authenticateToken, deleteFavourate)
 router.post('/AddFavourates',authenticateToken, AddFavourates)
 router.get('/AllFavourates/:id',authenticateToken, AllFavourates)
-router.post('/sendMessages',upload.single('image'),authenticateToken, sendMessages)
-router.get('/getMessages/:userId', getMessages)
-router.post('/deleteChat',authenticateToken, deleteChat)
 router.get('/PatientChats/:id',PatientChats)
-router.post('/newPayment',newPayment)
-router.post('/checkStatus',checkStatus)
 router.get('/AllChatUsers',AllChatUsers)
 router.get('/AllChatPatient/:id',AllChatPatient)
 router.get('/AllChatDoctors/:id',AllChatDoctors)
+// Chat Api users
+router.get('/AllChatUsersMain',AllChatUsersMain)
+router.post('/SendMessages',upload.single('image'),SendMessages)
+router.get('/GetMessages',GetMessages)
+router.delete('/DeleteAllChats',DeleteAllChats)
+
 // Doctor
 router.get('/AllDoctors', AllDoctors)
 router.get('/editDoctor/:id', editDoctor)
@@ -119,16 +120,10 @@ router.get("/doctors/filter", FilterDoctors);
 router.post('/Reviews',authenticateToken,Reviews);
 router.post('/DislikeReview/:id',DislikeReview,authenticateToken);
 router.post('/LikeReview/:id',LikeReview,authenticateToken);
-router.get('/AllDoctorPayment/:id',AllDoctorPayment)
 
 
 // Availibility
-router.get('/AllAvailabilitys', AllAvailabilitys)
-router.get('/editAvailability/:id',authenticateToken, editAvailability)
-router.get('/doctor_Availabilitys/:id', authenticateToken,doctor_Availabilitys)
-router.put('/UpdateAvailability/:id',authenticateToken,authenticateToken, UpdateAvailability)
-router.put('/UpdateAvailabilityStatus/:id',authenticateToken, UpdateAvailabilityStatus)
-router.delete('/deleteAvailability/:id',authenticateToken, deleteAvailability)
+
 router.post('/AddAvailibility',authenticateToken, AddAvailibility)
 
 
@@ -206,7 +201,6 @@ router.get('/AllDoctorApproved', AllDoctorApproved,authenticateToken);
 router.get('/AllDoctorBlocked', AllDoctorBlocked,authenticateToken);
 router.get('/AllDoctorPending', AllDoctorPending,authenticateToken);
 router.put('/deleteDoctorBlock/:id',authenticateToken,deleteDoctorBlock)
-router.get('/AllPayments',AllPayments);
 router.get('/AllInvoices',AllInvoices);
 router.get('/AllDoctorInvoice/:id',AllDoctorInvoice);
 router.get('/AllPatientInvoice/:id',AllPatientInvoice);

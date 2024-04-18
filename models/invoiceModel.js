@@ -7,7 +7,6 @@ const invoiceSchema = new mongoose.Schema({
     ref: 'Appointment',
     required: true,
   },
-
   invoice_id: {
     type: String,
     unique: true,

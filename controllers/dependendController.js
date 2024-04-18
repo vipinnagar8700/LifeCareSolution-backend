@@ -1,8 +1,5 @@
-const { generateToken } = require('../config/JwtToken');
 const Dependent = require('../models/dependentModel');
 const asyncHandler = require('express-async-handler');
-const { generateRefreshToken } = require('../config/refreshToken');
-const jwt = require('jsonwebtoken');
 require('dotenv/config')
 
 const cloudinary = require('cloudinary').v2;  // Make sure to install the 'cloudinary' package

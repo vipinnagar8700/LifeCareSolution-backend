@@ -257,7 +257,12 @@ const doctorSchema = new mongoose.Schema(
     address: String,
     city: String,
     state: String,
-    
+    availability:[ {
+      day: { type: String, required: true },
+      from: { type: String, required: true },
+      to: { type: String, required: true },
+      status: { type: String, default: "" }
+    }],
     image: {
       type: String,
       default: null,

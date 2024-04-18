@@ -1,37 +1,22 @@
-const { generateToken } = require("../config/JwtToken");
 const Appointment = require("../models/appointmentModel");
-const asyncHandler = require("express-async-handler");
-const { generateRefreshToken } = require("../config/refreshToken");
-const jwt = require("jsonwebtoken");
-const mongoose = require('mongoose');
-
-const { Patient, Doctor } = require("../models/userModel");
+const ChatUsers = require('../models/ChatUserModel')
 const Slot = require("../models/slotModel");
 const VideoSlot = require("../models/videoSlotModel");
 require("dotenv/config");
 
-const Payment = require("../models/paymentModel");
 const Invoice = require("../models/invoiceModel");
 
 
 const BookAppointment = async (req, res) => {
   try {
-    const { patient_id, doctor_id, slot_id, videoSlot_id, date, type, amount, paymentMethod, transactionId } = req.body;
+    const { patient_id, doctor_id, slot_id, videoSlot_id, date, type, amount } = req.body;
 
     // Check if payment details are incomplete for online payments
-    if (paymentMethod === 'online' && (!amount || !transactionId)) {
-      return res.status(400).json({
-        message: "Payment details are incomplete.",
-        success: false,
-      });
-    }
     const generateInvoiceId = () => {
       // Generating a numeric invoice ID
       const numericId = Math.floor(10000 + Math.random() * 90000); // Generates a random 5-digit number
       return `${numericId}`;
     };
-    
-    
 
     const invoiceId = generateInvoiceId();
 
@@ -44,13 +29,7 @@ const BookAppointment = async (req, res) => {
       date,
       type,
       amount,
-      payment: {
-        method: paymentMethod,
-        transactionId: paymentMethod === 'code' ? null : transactionId,
-        status: 'pending', // Set an initial status if needed
-      },
       invoice_id: invoiceId, // Include the generated invoice ID
-      // Other appointment details
       // Other appointment details
     });
 
@@ -59,38 +38,20 @@ const BookAppointment = async (req, res) => {
       invoice_id: invoiceId,
       // Other invoice details
     });
+
+    // If the appointment type is 'Video' and the videoSlot_id is available
+    if (type === 'Video' && videoSlot_id) {
+      // Update or create a new document in the ChatUsers collection with appointment details
+      await ChatUsers.findOneAndUpdate(
+        { patient: patient_id, doctor: doctor_id },
+        { status: 'accepted', lastMessage: `Appointment scheduled for ${date}`, isOnline: true }, // Update status and last message
+        { upsert: true, new: true }
+      );
+    }
+
     // Update the status of the associated slot to 'booked'
     await Slot.findByIdAndUpdate(slot_id, { status: 'booked' });
     await VideoSlot.findByIdAndUpdate(videoSlot_id, { status: 'booked' });
-
-    // Extract payment details from the appointment
-    const { payment } = newAppointment;
-
-    // Create a new Payment using the Payment model for online payments
-    if (paymentMethod === 'online') {
-      const newPayment = await Payment.create({
-        appointment_id: newAppointment._id,
-        method: payment.method,
-        transactionId: payment.transactionId,
-        status: payment.status,
-        amount: payment.amount,
-        // Other payment details
-      });
-
-      // Optionally, you can update the appointment to include the payment's _id
-      await Appointment.findByIdAndUpdate(newAppointment._id, { payment: newPayment._id });
-
-      return res.status(201).json({
-        message: "Appointment Successfully Booked!",
-        success: true,
-        data: {
-          appointment: newAppointment,
-          invoice: newInvoice,
-        payment: newPayment
-
-        },
-      });
-    }
 
     // If COD, return success response without creating a Payment entry
     return res.status(201).json({
@@ -100,7 +61,6 @@ const BookAppointment = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       message: "Failed to book Appointment.",
       success: false,
@@ -108,6 +68,7 @@ const BookAppointment = async (req, res) => {
     });
   }
 };
+
 
 const TodayAppointment = async (req, res) => {
   try {

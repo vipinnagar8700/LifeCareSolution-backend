@@ -1,14 +1,8 @@
-const { generateToken } = require("../config/JwtToken");
-const Appointment = require("../models/appointmentModel");
-const asyncHandler = require("express-async-handler");
-const { generateRefreshToken } = require("../config/refreshToken");
-const jwt = require("jsonwebtoken");
-const { Patient, Doctor } = require("../models/userModel");
-const Slot = require("../models/slotModel");
-const VideoSlot = require("../models/videoSlotModel");
+
 require("dotenv/config");
 
 const Invoice = require("../models/invoiceModel");
+const Appointment = require("../models/appointmentModel");
 
 const AllInvoices = async (req, res) => {
     const { id } = req.params;
@@ -41,73 +35,101 @@ const AllInvoices = async (req, res) => {
   }
 };
 
+
 const AllDoctorInvoice = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const InvoiceDetails = await Invoice.find({ 'appointment_id.doctor_id._id': id })
-        .populate('appointment_id', 'patient_id doctor_id').sort({ createdAt: -1 }); // Specify the fields to populate
+  const { id } = req.params;
+  console.log(id);
+  try {
+      // Find appointments with the specified doctor_id
+      const appointments = await Appointment.find({ doctor_id: id });
 
-            
+      // Extract the appointment IDs
+      const appointmentIds = appointments.map(appointment => appointment._id);
 
-        const length = InvoiceDetails.length;
-        const message = length > 0
-            ? "All InvoiceDetails data retrieved successfully!"
-            : "No InvoiceDetails data found for the specified doctor_id.";
+      // Find invoices related to the extracted appointment IDs
+      const invoiceDetails = await Invoice.find({ appointment_id: { $in: appointmentIds } }).populate({
+        path: 'appointment_id',
+        populate: [
+            { path: 'patient_id' },
+            { path: 'doctor_id' },
+            { path: 'videoSlot_id' },
+            {path:'slot_id'}
+        ]
+    })
+          .sort({ createdAt: -1 });
 
-        res.status(200).json([
-            {
-                message,
-                data: InvoiceDetails,
-                status: true,
-                length,
-            },
-        ]);
-    } catch (error) {
-        res.status(500).json({
-            message: "Internal Server Error",
-            error: error.message,
-            status: false,
-        });
-    }
+      console.log("Invoice Details:", invoiceDetails); 
+
+      const length = invoiceDetails.length;
+      const message = length > 0
+          ? "All InvoiceDetails data retrieved successfully!"
+          : "No InvoiceDetails data found for the specified doctor_id.";
+
+      res.status(200).json([
+          {
+              message,
+              data: invoiceDetails,
+              status: true,
+              length,
+          },
+      ]);
+  } catch (error) {
+      res.status(500).json({
+          message: "Internal Server Error",
+          error: error.message,
+          status: false,
+      });
+  }
 };
 
 
 
 const AllPatientInvoice  =  async (req, res) => {
-    const { id } = req.params;
-    try {
-        const InvoiceDetails = await Invoice.find({ 'appointment_id.patient_id._id': id })
-        .populate('appointment_id', ' doctor_id').sort({ createdAt: -1 }); // Specify the fields to populate
+  const { id } = req.params;
+  console.log(id);
+  try {
+      // Find appointments with the specified doctor_id
+      const appointments = await Appointment.find({ patient_id: id });
 
-            
+      // Extract the appointment IDs
+      const appointmentIds = appointments.map(appointment => appointment._id);
 
-        const length = InvoiceDetails.length;
-        const message = length > 0
-            ? "All InvoiceDetails data retrieved successfully!"
-            : "No InvoiceDetails data found for the specified patient_id.";
+      // Find invoices related to the extracted appointment IDs
+      const invoiceDetails = await Invoice.find({ appointment_id: { $in: appointmentIds } }).populate({
+        path: 'appointment_id',
+        populate: [
+            { path: 'patient_id' },
+            { path: 'doctor_id' },
+            { path: 'videoSlot_id' },
+            {path:'slot_id'}
+        ]
+    })
+          .sort({ createdAt: -1 });
 
-        res.status(200).json([
-            {
-                message,
-                data: InvoiceDetails,
-                status: true,
-                length,
-            },
-        ]);
-    } catch (error) {
-        res.status(500).json({
-            message: "Internal Server Error",
-            error: error.message,
-            status: false,
-        });
-    }
+      console.log("Invoice Details:", invoiceDetails); 
+
+      const length = invoiceDetails.length;
+      const message = length > 0
+          ? "All InvoiceDetails data retrieved successfully!"
+          : "No InvoiceDetails data found for the specified doctor_id.";
+
+      res.status(200).json([
+          {
+              message,
+              data: invoiceDetails,
+              status: true,
+              length,
+          },
+      ]);
+  } catch (error) {
+      res.status(500).json({
+          message: "Internal Server Error",
+          error: error.message,
+          status: false,
+      });
+  }
 
 }
-
-
-
-
-
 
 
 
