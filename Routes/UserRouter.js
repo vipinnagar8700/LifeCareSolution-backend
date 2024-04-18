@@ -26,7 +26,7 @@ const { edit_admin_profile, Update_admin_profile } = require('../controllers/adm
 const { AddAvailibility} = require('../controllers/availibilityController');
 const { getAllActivities, markActivityAsRead } = require('../controllers/activityController');
 const { AllChatUsersMain } = require('../controllers/ChatUserControllers');
-const { SendMessages, GetMessages, DeleteAllChats } = require('../controllers/chatController');
+const { SendMessages, GetMessages, DeleteAllChats } = require('../controllers/ChatController');
 // Multer configuration
 const storage = multer.diskStorage({
     destination: './public/images', // Specify the destination folder
