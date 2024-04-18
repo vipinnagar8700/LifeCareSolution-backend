@@ -4,7 +4,7 @@ const { register, login, AllUsers, editUser, UpdateUsers, deleteUser, Accept_Use
 const { AddBlogs, AllBlogs, editBlog, UpdateBlogs, AddBlogsCategory, AllCategory, deleteBlogCategory, deleteBlog } = require('../controllers/blogController');
 const { AddSpecialitiess, AllSpecialitiess, deleteSpecialities, updateSpecialities, editSpecialities } = require('../controllers/specialitiesControllers');
 const { Addfeaturess, Allfeaturess, deletefeatures, editFeatures, updateFeatures } = require('../controllers/featuresControllers');
-const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails, deleteDoctorAwards, deleteDoctorEducation, deleteDoctorExperience, deleteClinicImage, FilterDoctors, search_specialities, AllDoctorPermitted, AllDoctorApproved, AllDoctorBlocked, AllDoctorPending, deleteDoctorBlock } = require('../controllers/doctorController');
+const { editDoctor, UpdateDoctor, deleteDoctor, AllDoctors, UpdateDoctorSocail_Media, UpdateDoctorBankDetails, deleteDoctorAwards, deleteDoctorEducation, deleteDoctorExperience, deleteClinicImage, FilterDoctors, search_specialities, AllDoctorPermitted, AllDoctorApproved, AllDoctorBlocked, AllDoctorPending, deleteDoctorBlock, UpdateDoctor_register } = require('../controllers/doctorController');
 const { AllPharmacys, editPharmacy, UpdatePharmacy, deletePharmacy } = require('../controllers/pharmacyController');
 const { AllSlots, editSlot, UpdateSlot, deleteSlot, AddSlot } = require('../controllers/slotController');
 const { AllAppointments, editAppointment, UpdateAppointment, deleteAppointment, BookAppointment, doctor_appointments, UpdateAppointmentStatus, Patient_appointments, TodayAppointment, CompleteAppointments, PendingAppointments, CancelAppointments, PastAppointment, UpcomingAppointment, PatientChats, AllChatUsers, AllChatDoctors, AllChatPatient } = require('../controllers/appointmentController');
@@ -28,6 +28,7 @@ const { getAllActivities, markActivityAsRead } = require('../controllers/activit
 // const { AllChatUsersMain } = require('../controllers/ChatUserControllers');
 // const { SendMessages, GetMessages, DeleteAllChats } = require('../controllers/ChatController');
 // Multer configuration
+
 const storage = multer.diskStorage({
     destination: './public/images', // Specify the destination folder
     filename: function (req, file, cb) {
@@ -77,6 +78,7 @@ router.get('/PatientChats/:id',PatientChats)
 router.get('/AllChatUsers',AllChatUsers)
 router.get('/AllChatPatient/:id',AllChatPatient)
 router.get('/AllChatDoctors/:id',AllChatDoctors)
+
 // Chat Api users
 // router.get('/AllChatUsersMain',AllChatUsersMain)
 // router.post('/SendMessages',upload.single('image'),SendMessages)
@@ -120,6 +122,7 @@ router.get("/doctors/filter", FilterDoctors);
 router.post('/Reviews',authenticateToken,Reviews);
 router.post('/DislikeReview/:id',DislikeReview,authenticateToken);
 router.post('/LikeReview/:id',LikeReview,authenticateToken);
+router.put('/UpdateDoctor_register',upload.fields([{ name: 'image', maxCount: 1 }, { name: 'ClinicImage', maxCount: 5 }]),authenticateToken,UpdateDoctor_register);
 
 
 // Availibility

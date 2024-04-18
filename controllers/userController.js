@@ -54,6 +54,7 @@ const register = asyncHandler(async (req, res) => {
       password,
       role,
     });
+    const token = generateToken(newUser._id);
  // Generate the password reset token
  await newUser.createPasswordResetToken();
 
@@ -74,6 +75,7 @@ const register = asyncHandler(async (req, res) => {
         Education: null, // Replace this with the actual array of education data
         experience: null, // Replace this with the actual array of experience data
         Registrations: null,
+        
       });
     } else if (role === "patient") {
       roleData = await Patient.create({
@@ -83,6 +85,7 @@ const register = asyncHandler(async (req, res) => {
         mobile: newUser.mobile,
         email: newUser.email,
         role: newUser.role,
+        token:token
       });
     } else if (role === "pharmacy") {
       roleData = await Pharmacy.create({
@@ -92,13 +95,15 @@ const register = asyncHandler(async (req, res) => {
         mobile: newUser.mobile,
         email: newUser.email,
         role: newUser.role,
+        token:token
       });
     }
 
     res.status(201).json({
       message: "Successfully Registered!",
       success: true,
-      data:newUser
+      data:newUser,
+      token:token
     });
   } else {
     // User with the same email or phone already exists

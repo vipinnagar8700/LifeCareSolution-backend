@@ -309,6 +309,151 @@ const UpdateDoctor = async (req, res) => {
   }
 };
 
+
+const UpdateDoctor_register = async (req, res) => {
+  const id  = req.user.userId;
+  console.log(id,"id")
+  const updateData = req.body;
+  const imageFile = req.files["image"]; // Use req.files to get multiple files
+  const clinicImageFile = req.files["ClinicImage"];
+
+  if (imageFile) {
+    try {
+      const result = await cloudinary.uploader.upload(imageFile[0].path, {
+        folder: "LifeCareSolution", // Optional: You can specify a folder in your Cloudinary account
+        resource_type: "auto", // Automatically detect the file type
+      });
+
+      updateData.image = result.secure_url;
+      console.log("Updated Image:", updateData.image);
+
+      // Optional: Delete the local file after successfully uploading to Cloudinary
+      // fs.unlinkSync(imageFile[0].path);
+    } catch (error) {
+      console.error("Error uploading image to Cloudinary:", error);
+      // Handle the error appropriately
+    }
+  } else {
+    console.log("No image file found in req.files");
+  }
+
+  if (clinicImageFile) {
+    try {
+      const clinicImages = await Promise.all(
+        clinicImageFile.map(async (file) => {
+          const result = await cloudinary.uploader.upload(file.path, {
+            folder: "LifeCareSolution",
+            resource_type: "auto",
+          });
+          return { image: result.secure_url };
+        })
+      );
+
+      updateData.ClinicImage = clinicImages;
+    } catch (error) {
+      console.error("Error uploading clinic images to Cloudinary:", error);
+      // Handle the error appropriately
+    }
+  }
+
+  if (updateData.Services) {
+    updateData.Services = updateData.Services.split(",").map((service) =>
+      service.trim()
+    );
+  }
+  if (updateData.Specailization) {
+    updateData.Specailization = updateData.Specailization.split(",").map(
+      (service) => service.trim()
+    );
+  }
+  if (updateData.Education) {
+    updateData.Education = JSON.parse(updateData.Education);
+  }
+  if (updateData.Experience) {
+    updateData.Experience = JSON.parse(updateData.Experience);
+  }
+
+  if (updateData.Awards) {
+    updateData.Awards = JSON.parse(updateData.Awards);
+  }
+
+  delete updateData.role;
+
+  try {
+    // Check if the email is being updated
+    if (updateData.email) {
+      const existingUser = await User.findOne({ email: updateData.email });
+
+      if (existingUser && existingUser._id.toString() !== id) {
+        return res.status(400).json({
+          message: "Email already exists",
+          success: false,
+        });
+      }
+    }
+
+    const finding = await Doctor.findOne({ user_id: id });
+    const editDoctor = await Doctor.findByIdAndUpdate(finding._id, updateData, {
+      new: true,
+    }).select("-password");
+    if (!editDoctor) {
+      res.status(200).json({
+        message: "Doctor was not found!",
+        status: false,
+      });
+    } else {
+      // If email is updated, update User table as well
+      console.log(updateData.email,"kdjdjdjjd11")
+      if (updateData.email) {
+        console.log(updateData.email,"kdjdjdjjd")
+        try {
+            // Find the user in the User table and update their email
+            const updateUser = await User.findOneAndUpdate(
+                { _id: editDoctor.user_id }, // Filter by user ID
+                { email: updateData.email }, // Update email field
+                { new: true } // Return the updated document
+            );
+    
+            if (!updateUser) {
+                return res.status(500).json({
+                    message: "Failed to update email in User table",
+                    success: false,
+                });
+            }
+    
+            console.log(updateUser, "updateUser");
+    
+        } catch (error) {
+            console.error("Error updating email in User table:", error);
+            return res.status(500).json({
+                message: "Failed to update email in User table",
+                success: false,
+                error: error.message
+            });
+        }
+    }
+    
+
+      const activity = new Activity({
+        doctor_id: editDoctor._id, // Use doctor's ID
+        type: "Doctor updated there profile",
+        details: "Doctor updated their profile information",
+      });
+      await activity.save();
+      res.status(201).json({
+        message: "Data successfully updated!",
+        success: true,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to update data!",
+      status: false,
+    });
+  }
+};
+
 const UpdateDoctorRegister = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
@@ -946,5 +1091,5 @@ module.exports = {
   AllDoctorApproved,
   AllDoctorBlocked,
   AllDoctorPending,
-  deleteDoctorBlock,
+  deleteDoctorBlock,UpdateDoctor_register
 };
