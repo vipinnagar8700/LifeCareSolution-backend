@@ -33,10 +33,11 @@ app.set('view engine', 'ejs');
 app.set('Views', path.join(__dirname, 'Views'));
 
 app.get("/", (req, res) => {
-  res.json({
-    "message": "Successfully Run!",
-    "status": true
-  });
+  // res.json({
+  //   "message": "Successfully Run!",
+  //   "status": true
+  // });
+  res.render('index')
 });
 
 

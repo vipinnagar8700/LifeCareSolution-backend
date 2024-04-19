@@ -131,8 +131,38 @@ const AllPatientInvoice  =  async (req, res) => {
 
 }
 
+const SingleInvoices = async (req, res) => {
+  const { id } = req.params;
+try {
+  const InvoiceDetails = await Invoice.findById(id).populate({
+      path: 'appointment_id',
+      populate: [
+        { path: 'patient_id' },
+        { path: 'doctor_id' },
+        { path: 'videoSlot_id' }, // Assuming 'videoSlot_id' is a reference to the slot
+        { path: 'slot_id' },
+      ],
+    }).sort({ createdAt: -1 });
 
+    // Exclude the 'PaymentDetails' field;
+  const length = InvoiceDetails.length;
+  res.status(200).json([
+    {
+      message: "All InvoiceDetails data retrieved successfully!",
+      data: InvoiceDetails,
+      status: true,
+      length,
+    },
+  ]);
+} catch (error) {
+  res.status(500).json({
+    message: "Internal Server Error",
+    error: error.message,
+    status: false,
+  });
+}
+};
 
 module.exports = {
-    AllInvoices,AllDoctorInvoice,AllPatientInvoice
+    AllInvoices,AllDoctorInvoice,AllPatientInvoice,SingleInvoices
 };

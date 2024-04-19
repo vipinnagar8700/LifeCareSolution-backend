@@ -1,36 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stripe Payment</title>
-  <script src="https://js.stripe.com/v3/"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
 </head>
 <body>
-  <h1>Payment Options</h1>
-  <form id="payment-form">
-    <div id="card-element"><!--Stripe.js injects the Card Element--></div>
-    <button id="submit-card">
-      <span id="button-text">Pay with Card</span>
-    </button>
-    <button id="submit-upi">
-      <span id="button-text">Pay with UPI</span>
-    </button>
-    <div id="card-errors" role="alert"></div>
-  </form>
+    <h1>Chat Application</h1>
 
-  <script>
-    // Your existing Stripe integration code here...
+    <div id="chat-box"></div>
 
-    // Handle UPI payment button click
-    const upiButton = document.getElementById('submit-upi');
-    upiButton.addEventListener('click', async (event) => {
-      event.preventDefault();
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Enter your message">
+        <input type="file" id="file-input">
+        <button type="submit">Send</button>
+    </form>
 
-      // Trigger UPI payment flow...
-      // You would typically initiate a request to your backend to handle UPI payments
-    });
-  </script>
+    <script>
+        const form = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
+        const fileInput = document.getElementById('file-input');
+        const chatBox = document.getElementById('chat-box');
+
+        // Function to send a message
+        const sendMessage = async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('sender', '658bab1824ef87ba89307766'); // Replace 'sender_id' with actual sender ID
+            formData.append('receiver', '658bab1824ef87ba89307766'); // Replace 'receiver_id' with actual receiver ID
+            formData.append('content', messageInput.value);
+
+            if (fileInput.files.length > 0) {
+                formData.append('file', fileInput.files[0]);
+            }
+
+            try {
+                const response = await fetch('/api/SendMessages', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    messageInput.value = '';
+                    fileInput.value = '';
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        };
+
+        // Function to display received messages
+        const displayMessage = (message) => {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `${message.sender}: ${message.content}`;
+            chatBox.appendChild(messageElement);
+        };
+
+        // Event listener for message form submission
+        form.addEventListener('submit', sendMessage);
+
+        // Socket.io connection for receiving messages
+        const socket = io();
+        socket.on('chat', (newChat) => {
+            displayMessage(newChat);
+        });
+    </script>
 </body>
-
 </html>

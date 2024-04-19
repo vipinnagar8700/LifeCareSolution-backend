@@ -1,16 +1,11 @@
 const Chat = require('../models/ChatModel');
-const io = require('../config/socket'); // Assuming you have a separate file for socket.io setup
-
-
-
-
-
-
+const io = require('../config/socket');
 const cloudinary = require("cloudinary").v2;
+
 cloudinary.config({
-  cloud_name: "durzgbfjf",
-  api_key: "512412315723482",
-  api_secret: "e3kLlh_vO5XhMBCMoIjkbZHjazo",
+    cloud_name: "durzgbfjf",
+    api_key: "512412315723482",
+    api_secret: "e3kLlh_vO5XhMBCMoIjkbZHjazo",
 });
 
 // Route for sending chat
@@ -21,10 +16,8 @@ const SendMessages = async (req, res) => {
 
         // Check if file is uploaded
         if (req.file) {
-            console.log(req.file,"req.file")
             // Upload file to Cloudinary
             const result = await cloudinary.uploader.upload(req.file.path, { folder: 'chat-images' });
-            console.log(result,"result")
             fileName = result.secure_url;
             fileSize = result.bytes;
         }
@@ -43,7 +36,7 @@ const SendMessages = async (req, res) => {
         // Save the new chat message
         await newChat.save();
 
-        // Emit the new chat to all connected clients
+        // Emit the new chat to all connected clients including the sender
         io.emit('chat', newChat);
 
         // Respond with success message
@@ -57,15 +50,13 @@ const SendMessages = async (req, res) => {
     }
 };
 
-
-
 // Route for getting chats
 const GetMessages = async (req, res) => {
     try {
         const chats = await Chat.find().populate("sender").populate("receiver").sort({ timestamp: 1 });
-        res.json(chats);
+        res.json({ data: chats, length: chats.length, status: true });
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: error, status: false });
     }
 };
 
@@ -111,16 +102,4 @@ const DeleteAllChats = async (req, res) => {
     }
 };
 
-
-// Socket.IO connection handling
-io.on('connection', (socket) => {
-    console.log('A user connected');
-
-    // You can handle various events here, like joining rooms, disconnecting, etc.
-    // For example, if you want to handle disconnection:
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
-    });
-});
-
-module.exports = { SendMessages, GetMessages ,markMessageAsRead,DeleteAllChats};
+module.exports = { SendMessages, GetMessages, markMessageAsRead, DeleteAllChats };

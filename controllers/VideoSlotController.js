@@ -116,8 +116,6 @@ const deleteVideoSlot = async (req, res) => {
                 message: "VideoSlot was not found!",
             });
         }
-
-
         // If the VideoSlot is not an admin, proceed with the deletion
         const deletedVideoSlot = await VideoSlot.findByIdAndDelete(id);
 

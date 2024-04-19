@@ -21,12 +21,12 @@ const multer = require('multer');
 const path = require('path');
 const { Reviews, DislikeReview, LikeReview, PatientReview, DoctorReview, AllReviews } = require('../controllers/reviewController');
 const { AllVideoSlots, editVideoSlot, UpdateVideoSlot, deleteVideoSlot, AddVideoSlot } = require('../controllers/VideoSlotController');
-const { AllInvoices,AllDoctorInvoice, AllPatientInvoice } = require('../controllers/invoiceController');
+const { AllInvoices,AllDoctorInvoice, AllPatientInvoice, SingleInvoices } = require('../controllers/invoiceController');
 const { edit_admin_profile, Update_admin_profile } = require('../controllers/adminController');
 const { AddAvailibility} = require('../controllers/availibilityController');
 const { getAllActivities, markActivityAsRead } = require('../controllers/activityController');
-// const { AllChatUsersMain } = require('../controllers/ChatUserControllers');
-// const { SendMessages, GetMessages, DeleteAllChats } = require('../controllers/ChatController');
+const { AllChatUsersMain, AllChatDoctorMain, AllChatPatientMain } = require('../controllers/ChatUserControllers');
+const { SendMessages, GetMessages, DeleteAllChats } = require('../controllers/ChatController');
 // Multer configuration
 
 const storage = multer.diskStorage({
@@ -80,10 +80,12 @@ router.get('/AllChatPatient/:id',AllChatPatient)
 router.get('/AllChatDoctors/:id',AllChatDoctors)
 
 // Chat Api users
-// router.get('/AllChatUsersMain',AllChatUsersMain)
-// router.post('/SendMessages',upload.single('image'),SendMessages)
-// router.get('/GetMessages',GetMessages)
-// router.delete('/DeleteAllChats',DeleteAllChats)
+router.get('/AllChatUsersMain',AllChatUsersMain)
+router.post('/SendMessages',upload.single('image'),SendMessages)
+router.get('/GetMessages',GetMessages)
+router.delete('/DeleteAllChats',DeleteAllChats)
+router.get('/AllChatDoctorMain/:id',authenticateToken,AllChatDoctorMain);
+router.get('/AllChatPatientMain/:id',authenticateToken,AllChatPatientMain)
 
 // Doctor
 router.get('/AllDoctors', AllDoctors)
@@ -123,7 +125,7 @@ router.post('/Reviews',authenticateToken,Reviews);
 router.post('/DislikeReview/:id',DislikeReview,authenticateToken);
 router.post('/LikeReview/:id',LikeReview,authenticateToken);
 router.put('/UpdateDoctor_register',upload.fields([{ name: 'image', maxCount: 1 }, { name: 'ClinicImage', maxCount: 5 }]),authenticateToken,UpdateDoctor_register);
-
+router.get('/SingleInvoices/:id',authenticateToken,SingleInvoices)
 
 // Availibility
 
