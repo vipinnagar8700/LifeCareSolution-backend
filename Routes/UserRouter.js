@@ -25,8 +25,8 @@ const { AllInvoices,AllDoctorInvoice, AllPatientInvoice, SingleInvoices } = requ
 const { edit_admin_profile, Update_admin_profile } = require('../controllers/adminController');
 const { AddAvailibility} = require('../controllers/availibilityController');
 const { getAllActivities, markActivityAsRead } = require('../controllers/activityController');
-const { AllChatUsersMain, AllChatDoctorMain, AllChatPatientMain } = require('../controllers/ChatUserControllers');
-const { SendMessages, GetMessages, DeleteAllChats } = require('../controllers/ChatController');
+// const { AllChatUsersMain, AllChatDoctorMain, AllChatPatientMain } = require('../controllers/ChatUserControllers');
+// const { SendMessages, GetMessages, DeleteAllChats } = require('../controllers/ChatController');
 const { sendNotification, GetAllNotification, GetNotify } = require('../controllers/NotificationController');
 // Multer configuration
 
@@ -81,12 +81,12 @@ router.get('/AllChatPatient/:id',AllChatPatient)
 router.get('/AllChatDoctors/:id',AllChatDoctors)
 
 // Chat Api users
-router.get('/AllChatUsersMain',AllChatUsersMain)
-router.post('/SendMessages',upload.single('image'),SendMessages)
-router.get('/GetMessages',GetMessages)
-router.delete('/DeleteAllChats',DeleteAllChats)
-router.get('/AllChatDoctorMain/:id',authenticateToken,AllChatDoctorMain);
-router.get('/AllChatPatientMain/:id',authenticateToken,AllChatPatientMain)
+// router.get('/AllChatUsersMain',AllChatUsersMain)
+// router.post('/SendMessages',upload.single('image'),SendMessages)
+// router.get('/GetMessages',GetMessages)
+// router.delete('/DeleteAllChats',DeleteAllChats)
+// router.get('/AllChatDoctorMain/:id',authenticateToken,AllChatDoctorMain);
+// router.get('/AllChatPatientMain/:id',authenticateToken,AllChatPatientMain)
 
 // Doctor
 router.get('/AllDoctors', AllDoctors)
