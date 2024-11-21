@@ -21,11 +21,7 @@ const ChatUsersSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    lastMessage: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Chat', // Reference to the Chat model
-        default: null
-    }
+    lastMessage: { type: String },
 });
 
 // Define model for ChatUsers relationships

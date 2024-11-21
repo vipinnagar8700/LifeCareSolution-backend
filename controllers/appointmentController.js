@@ -7,14 +7,25 @@ require("dotenv/config");
 const Invoice = require("../models/invoiceModel");
 
 
+const admin = require('firebase-admin');
+const { sendNotification } = require("./NotificationController");
+const { User } = require("../models/userModel");
+
 const BookAppointment = async (req, res) => {
   try {
     const { patient_id, doctor_id, slot_id, videoSlot_id, date, type, amount } = req.body;
 
-    // Check if payment details are incomplete for online payments
+    // Validate required fields
+    if (!patient_id || !doctor_id || !date || !type || !amount) {
+      return res.status(400).json({
+        message: "Missing required fields.",
+        success: false,
+      });
+    }
+
+    // Generate an Invoice ID
     const generateInvoiceId = () => {
-      // Generating a numeric invoice ID
-      const numericId = Math.floor(10000 + Math.random() * 90000); // Generates a random 5-digit number
+      const numericId = Math.floor(10000 + Math.random() * 90000); // Random 5-digit ID
       return `${numericId}`;
     };
 
@@ -30,37 +41,68 @@ const BookAppointment = async (req, res) => {
       type,
       amount,
       invoice_id: invoiceId, // Include the generated invoice ID
-      // Other appointment details
     });
 
+    // Create an associated Invoice
     const newInvoice = await Invoice.create({
       appointment_id: newAppointment._id,
       invoice_id: invoiceId,
-      // Other invoice details
     });
 
-    // If the appointment type is 'Video' and the videoSlot_id is available
+    // If the appointment type is 'Video', update or create a ChatUsers document
     if (type === 'Video' && videoSlot_id) {
-      // Update or create a new document in the ChatUsers collection with appointment details
       await ChatUsers.findOneAndUpdate(
         { patient: patient_id, doctor: doctor_id },
-        { status: 'accepted', lastMessage: `Appointment scheduled for ${date}`, isOnline: true }, // Update status and last message
+        { status: 'accepted', lastMessage: `Appointment scheduled for ${date}`, isOnline: true },
         { upsert: true, new: true }
       );
     }
 
     // Update the status of the associated slot to 'booked'
     await Slot.findByIdAndUpdate(slot_id, { status: 'booked' });
-    await VideoSlot.findByIdAndUpdate(videoSlot_id, { status: 'booked' });
+    if (videoSlot_id) await VideoSlot.findByIdAndUpdate(videoSlot_id, { status: 'booked' });
 
-    // If COD, return success response without creating a Payment entry
+    // Fetch the doctor and admin details for notifications
+    const doctor = await User.findById(doctor_id);
+    const admin = await User.findOne({ role: 'admin' });
+
+    if (!doctor || !admin) {
+      console.warn("Doctor or Admin not found.");
+    }
+
+    const doctorToken = doctor?.fcm_token;
+    const adminToken = admin?.fcm_token;
+
+    // Prepare notification details
+    const title = type === 'Video' 
+      ? "New Video Appointment Booked" 
+      : "New Appointment Booked";
+    const body = type === 'Video'
+      ? `A new chat and video appointment has been booked with Dr. ${doctor?.name || "the doctor"} on ${date}.`
+      : `An appointment has been scheduled for ${date} with Patient ID: ${patient_id}.`;
+
+    // Send notifications for the doctor and admin
+    if (doctorToken) {
+      await sendNotification(doctor_id, title, body, doctorToken, 'appointment',patient_id, doctor_id);
+    } else {
+      console.warn("Doctor notification token missing.");
+    }
+
+    if (adminToken) {
+      await sendNotification(admin._id, "New Appointment Notification", body, adminToken, 'appointment',patient_id, doctor_id);
+    } else {
+      console.warn("Admin notification token missing.");
+    }
+
+    // Return a success response
     return res.status(201).json({
       message: "Appointment Successfully Booked!",
       success: true,
       data: newAppointment,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error booking appointment:", error.message);
+
     res.status(500).json({
       message: "Failed to book Appointment.",
       success: false,
@@ -68,6 +110,7 @@ const BookAppointment = async (req, res) => {
     });
   }
 };
+
 
 
 const TodayAppointment = async (req, res) => {

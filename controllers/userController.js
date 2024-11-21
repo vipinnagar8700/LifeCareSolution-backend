@@ -28,6 +28,7 @@ cloudinary.config({
 });
 
 const serviceAccount = require("../config/lifecaresolution-984c5-firebase-adminsdk-20orx-a1a89421cf.json"); // Path to the downloaded JSON file
+const { sendNotification } = require("./NotificationController");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -41,6 +42,7 @@ const client = twilio(accountSid, authToken);
 const register = asyncHandler(async (req, res) => {
   const { email, mobile, password, role } = req.body;
   console.log(email, mobile, password, role);
+
   // Check if a user with the given email or phone already exists
   const existingUser = await User.findOne({
     $or: [{ email }, { mobile }],
@@ -55,55 +57,65 @@ const register = asyncHandler(async (req, res) => {
       role,
     });
     const token = generateToken(newUser._id);
- // Generate the password reset token
- await newUser.createPasswordResetToken();
 
- // Save the user with the generated token
- await newUser.save();
+    // Generate the password reset token
+    await newUser.createPasswordResetToken();
+
+    // Save the user with the generated token
+    await newUser.save();
 
     // Add role-specific data based on the role
     let roleData;
+    let title = '';
+    let body = '';
 
     if (role === "doctor") {
+      title = "A new Doctor added";
+      body = `A new doctor has been registered `;
       roleData = await Doctor.create({
         user_id: newUser._id,
-        // Add the necessary fields for the Student model here
-        password: newUser.password, // Assuming this is the password from newUser
+        password: newUser.password,
         mobile: newUser.mobile,
         email: newUser.email,
         role: newUser.role,
-        Education: null, // Replace this with the actual array of education data
-        experience: null, // Replace this with the actual array of experience data
-        Registrations: null,
-        
       });
     } else if (role === "patient") {
+      title = "A new Patient added";
+      body = `A new patient has been registered `;
       roleData = await Patient.create({
         user_id: newUser._id,
-        // Add the necessary fields for the Student model here
-        password: newUser.password, // Assuming this is the password from newUser
+        password: newUser.password,
         mobile: newUser.mobile,
         email: newUser.email,
         role: newUser.role,
-        token:token
       });
     } else if (role === "pharmacy") {
+      title = "A new Pharmacy added";
+      body = `A new pharmacy has been registered`;
       roleData = await Pharmacy.create({
         user_id: newUser._id,
-        // Add the necessary fields for the Student model here
-        password: newUser.password, // Assuming this is the password from newUser
+        password: newUser.password,
         mobile: newUser.mobile,
         email: newUser.email,
         role: newUser.role,
-        token:token
       });
+    }
+
+    // Send notification to admin or other users
+    const admin = await User.findOne({ role: 'admin' });
+
+    if (admin && admin?.fcm_token) {
+      // Send notification to admin's FCM token
+      await sendNotification(title, body, admin?.fcm_token);
+    } else {
+      console.log('Admin not found or admin does not have FCM token');
     }
 
     res.status(201).json({
       message: "Successfully Registered!",
       success: true,
-      data:newUser,
-      token:token
+      data: newUser,
+      token: token
     });
   } else {
     // User with the same email or phone already exists
@@ -117,7 +129,6 @@ const register = asyncHandler(async (req, res) => {
     });
   }
 });
-
 
 
 const register_admin = asyncHandler(async (req, res) => {
@@ -215,10 +226,9 @@ const register_admin = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-  const { email, mobile, password, role } = req.body;
+  const { email, mobile, password, role, fcm_token } = req.body;  // Ensure fcm_token is passed
 
   let findUser;
-  // Check if a user with the given email or mobile exists and matches the role
   if (role) {
     findUser = await User.findOne({
       $and: [{ $or: [{ email }, { mobile }] }, { role }],
@@ -229,12 +239,11 @@ const login = asyncHandler(async (req, res) => {
     });
   }
 
-
   if (findUser && (await findUser.isPasswordMatched(password))) {
     if (
-      findUser.role !== "patient" &&
-      findUser.role !== "admin" &&
-      findUser.role == "doctor" &&
+      findUser.role !== 'patient' &&
+      findUser.role !== 'admin' &&
+      findUser.role == 'doctor' &&
       !findUser.permission
     ) {
       return res.status(401).json({
@@ -244,6 +253,12 @@ const login = asyncHandler(async (req, res) => {
     } else {
       const token = generateToken(findUser._id);
       const refreshToken = generateRefreshToken(findUser._id);
+
+      // Save the FCM token here if it exists
+      if (fcm_token) {
+        await User.findByIdAndUpdate(findUser._id, { fcm_token: fcm_token });
+      }
+
       const updateUser = await User.findByIdAndUpdate(
         findUser._id,
         {
@@ -252,7 +267,7 @@ const login = asyncHandler(async (req, res) => {
         { new: true }
       );
 
-      res.cookie("refreshToken", refreshToken, {
+      res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
@@ -269,31 +284,34 @@ const login = asyncHandler(async (req, res) => {
         state: findUser.state,
         role: findUser.role,
         token: token,
-        passwordResetToken:findUser.passwordResetToken,
-        permission:findUser.permission
+        passwordResetToken: findUser.passwordResetToken,
+        permission: findUser.permission,
       };
-      if (findUser.role === "doctor") {
+
+      if (findUser.role === 'doctor') {
         response.doctorData = await Doctor.findOne({ user_id: findUser._id });
-      } else if (findUser.role === "patient") {
+      } else if (findUser.role === 'patient') {
         response.patientData = await Patient.findOne({ user_id: findUser._id });
-      } else if (findUser.role === "pharmacy") {
+      } else if (findUser.role === 'pharmacy') {
         response.pharmacyData = await Pharmacy.findOne({ user: findUser._id });
       }
-       // Send notification
-       sendNotification(findUser);
+
+      // Send notification (if needed)
+      sendNotification(findUser);
 
       res.status(200).json({
-        message: "Successfully Login!",
+        message: 'Successfully logged in!',
         data: response,
       });
     }
   } else {
     res.status(401).json({
-      message: "Invalid Credentials!",
+      message: 'Invalid credentials!',
       success: false,
     });
   }
 });
+
 
 // Function to generate a random 6-digit OTP
 const generateOTP = () => {
@@ -444,26 +462,6 @@ const verifyOTP = (otp, otpuser) => {
   return otp === otpuser;
 };
 
-// Function to send notification using FCM
-async function sendNotification(user) {
-  try {
-    // Construct the message payload
-    console.log(user.deviceToken,"user.deviceToken")
-    const message = {
-      token: user.deviceToken, // The device token of the user's device
-      notification: {
-        title: 'Login Notification',
-        body: 'You have successfully logged in!',
-      },
-    };
-
-    // Send the message
-    const response = await admin.messaging().send(message);
-    console.log('Notification sent successfully:', response);
-  } catch (error) {
-    console.error('Error sending notification:', error);
-  }
-}
 
 // Facebook login Api
 
@@ -789,6 +787,7 @@ const deleteUser = async (req, res) => {
   }
 };
 
+
 const Accept_User = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const userIdFromToken = req.user.userId;
@@ -885,8 +884,6 @@ console.log(userToUpdate.role,"userToUpdate.role")
   }
 });
 
-
-
 const changePassword = asyncHandler(async (req, res) => {
   const resetToken = req.params.resetToken;
   console.log(resetToken,"AAA")
@@ -932,7 +929,6 @@ await user.createPasswordResetToken();
   }
 });
 
-
 const ResetPassword = asyncHandler(async(req,res)=>{
   const { email } = req.body;
   try {
@@ -973,7 +969,6 @@ const ResetPassword = asyncHandler(async(req,res)=>{
     res.status(500).json({ message: 'Internal server error',status:false });
   }
 })
-
 
 const New_password = asyncHandler(async(req,res)=>{
   const { token } = req.params;

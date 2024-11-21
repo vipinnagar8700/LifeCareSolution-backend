@@ -27,6 +27,7 @@ const { AddAvailibility} = require('../controllers/availibilityController');
 const { getAllActivities, markActivityAsRead } = require('../controllers/activityController');
 const { AllChatUsersMain, AllChatDoctorMain, AllChatPatientMain } = require('../controllers/ChatUserControllers');
 const { SendMessages, GetMessages, DeleteAllChats } = require('../controllers/ChatController');
+const { sendNotification, GetAllNotification, GetNotify } = require('../controllers/NotificationController');
 // Multer configuration
 
 const storage = multer.diskStorage({
@@ -222,6 +223,11 @@ router.put('/markActivityAsRead/:id',authenticateToken,markActivityAsRead );
 // Email Reset Password
 router.post('/ResetPassword',ResetPassword);
 router.post('/New_password/:token',New_password);
+
+
+// Notification
+router.post('/sendNotification',sendNotification);
+router.get('/GetNotify',GetNotify);
 
 
 router.post('/payment',payment);
